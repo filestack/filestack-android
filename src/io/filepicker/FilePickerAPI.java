@@ -554,8 +554,8 @@ public class FilePickerAPI {
 		httppost.setHeader("Content-Type", "application/octet-stream");
 		String response = getStringFromNetworkRequest(httppost);
 		try {
-			JSONArray json = new JSONArray(response);//NEW FETCHCODES
-			JSONObject data = ((JSONObject)json.get(0)).getJSONObject("data");//b/c you may be attaching mutliple files at a time?
+			JSONObject json = new JSONObject(response);
+			JSONObject data = json.getJSONObject("data");
 			String url = data.getString("url");
 			return url;
 		} catch (JSONException e) {
