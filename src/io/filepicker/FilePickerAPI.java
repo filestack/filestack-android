@@ -555,7 +555,7 @@ public class FilePickerAPI {
 		String response = getStringFromNetworkRequest(httppost);
 		try {
 			JSONObject json = new JSONObject(response);
-			JSONObject data = json.getJSONObject("data").getJSONObject("data");
+			JSONObject data = json.getJSONArray("data").getJSONObject(0);
 			String url = data.getString("url");
 			return url;
 		} catch (JSONException e) {
