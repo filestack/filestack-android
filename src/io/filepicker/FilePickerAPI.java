@@ -570,7 +570,7 @@ public class FilePickerAPI {
 		try {
 			String query = getJSSession();
 			HttpGet httpget = new HttpGet(FPBASEURL + "api/path"
-					+ pathUrlEncode(path) + "?format=fpurl&js_session="
+					+ path + "?format=fpurl&js_session="
 					+ URLEncoder.encode(query, "utf-8"));
 			String response = getStringFromNetworkRequest(httpget);
 			// return parseFolder(builder.toString(), path);
