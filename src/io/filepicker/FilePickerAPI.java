@@ -232,7 +232,10 @@ public class FilePickerAPI {
 				true, "facebook"));
 		services.add(new Service("Instagram", "/Instagram/",
 				new String[] { "image/*" }, R.drawable.glyphicons_011_camera,
-				true, "instagram"));
+                                 true, "instagram"));
+        services.add(new Service("Flickr", "/Flickr/",
+				new String[] { "image/*" }, R.drawable.glyphicons_011_camera,
+				true, "flickr"));
 		services.add(new Service("Box", "/Box/", new String[] { "*/*" },
 				R.drawable.glyphicons_154_show_big_thumbnails, true, "box"));
 		services.add(new Service("Gmail", "/Gmail/", new String[] { "*/*" },
