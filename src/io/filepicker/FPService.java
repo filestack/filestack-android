@@ -9,4 +9,7 @@ public class FPService {
 	public static final String GITHUB = "Github";
 	public static final String GMAIL = "Gmail";
 	public static final String GDRIVE = "Google Drive";
+	public static final String INSTAGRAM = "Instagram";
+    public static final String FLICKR = "Flickr";
+    public static final String PICASA = "Picasa";
 }
