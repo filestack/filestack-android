@@ -43,7 +43,7 @@ import android.widget.Toast;
 public class FilePicker extends Activity {
 	public static final String SAVE_CONTENT = "SAVE_CONTENT";
 
-	private static final String PREFS_NAME = "filepicker";
+	public static final String PREFS_NAME = "filepicker";
 
 	private ListView listview;
 	private GridView gridview;

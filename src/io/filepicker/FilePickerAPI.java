@@ -24,7 +24,6 @@ import java.net.Socket;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.CookieStore;
@@ -49,108 +48,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-class Folder {
-	private final Inode[] inodes;
-	private final String view;
-	private final String name;
-
-	public Folder(Inode[] inodes, String view, String name) {
-		this.inodes = inodes;
-		this.view = view;
-		this.name = name;
-	}
-
-	public Inode[] getInodes() {
-		return this.inodes;
-	}
-
-	public String getView() {
-		return this.view;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-}
-
-class FPFile {
-	private String localpath;
-	private String fpurl;
-
-	public FPFile(String localpath, String fpurl) {
-		this.localpath = localpath;
-		this.fpurl = fpurl;
-	}
-
-	public String getLocalPath() {
-		return this.localpath;
-	}
-
-	public String getFPUrl() {
-		return this.fpurl;
-	}
-}
-
-class Service extends Inode {
-	private String[] mimetypes;
-	private boolean saveSupported;
-	private String id;
-
-	public Service(String displayName, String path, String[] mimetypes,
-			int drawable, boolean saveSupported, String id) {
-		super(displayName, path, true, drawable);
-		this.mimetypes = mimetypes;
-		this.saveSupported = saveSupported;
-		this.id = id;
-	}
-
-	public String[] getMimetypes() {
-		return this.mimetypes;
-	}
-
-	public boolean isSaveSupported() {
-		return this.saveSupported;
-	}
-
-	public String getServiceId() {
-		return this.id;
-	}
-
-}
-
-class AuthError extends Exception {
-	private static final long serialVersionUID = 3873865053998671409L;
-	private final String path;
-	private final String service;
-
-	public AuthError(String path, String service) {
-		this.path = path;
-		this.service = service;
-	}
-
-	public String getPath() {
-		return this.path;
-	}
-
-	public String getService() {
-		return this.service;
-	}
-}
-
-class FixedSizeList<T> {
-	private final int maxSize;
-	private final LinkedList<T> list = new LinkedList<T>();
-
-	public FixedSizeList(int maxSize) {
-		this.maxSize = maxSize < 0 ? 0 : maxSize; // don't make bigger than 0
-	}
-
-	public T add(T t) {
-		list.add(t);
-		return list.size() > maxSize ? list.remove() : null;
-	}
-}
-
 public class FilePickerAPI {
 
 	public final static String FPHOSTNAME = "www.filepicker.io";
@@ -161,7 +58,7 @@ public class FilePickerAPI {
 	public final static int REQUEST_CODE_AUTH = 600;
 	public final static int REQUEST_CODE_GETFILE = 601;
 	public final static int REQUEST_CODE_SAVEFILE = 602;
-	protected final static int REQUEST_CODE_GETFILE_LOCAL = 603;
+	public final static int REQUEST_CODE_GETFILE_LOCAL = 603;
 
 	private static FilePickerAPI filepickerapi = null;
 	private HttpContext httpContext;
