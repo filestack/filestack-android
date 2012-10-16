@@ -9,7 +9,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 
 
-class ThumbnailView extends android.widget.ImageView {
+public class ThumbnailView extends android.widget.ImageView {
 	private final String url;
 	private final Inode inode;
 	private ThumbnailLoaderTask task = null;
