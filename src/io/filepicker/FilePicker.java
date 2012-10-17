@@ -317,14 +317,14 @@ public class FilePicker extends Activity {
 
 	}
 
-	class UploadLocalFileTask extends AsyncTask<Uri, Integer, String> {
+	class UploadLocalFileTask extends AsyncTask<Uri, Integer, FPFile> {
 		private Uri uri;
 
-		protected String doInBackground(Uri... uris) {
+		protected FPFile doInBackground(Uri... uris) {
 			// only one parameter may be passed
 			if (uris.length != 1) {
 				FilePickerAPI.debug("ERROR, too many urls passed as arguments");
-				return "";
+				return null;
 			}
 			this.uri = uris[0];
 			FilePickerAPI fpapi = FilePickerAPI.getInstance();
@@ -332,14 +332,18 @@ public class FilePicker extends Activity {
 				return fpapi.uploadFileToTemp(uri, FilePicker.this);
 			} catch (IOException e) {
 				e.printStackTrace();
-				return "";
+				return null;
 			}
 		}
 
-		protected void onPostExecute(String result) {
+		protected void onPostExecute(FPFile result) {
 			Intent resultIntent = new Intent();
 			resultIntent.setData(uri);
-			resultIntent.putExtra("fpurl", result);
+			if (result == null) {
+				resultIntent.putExtra("fpurl", "");
+			} else {
+				resultIntent.putExtra("fpurl", result.getFPUrl());
+			}
 			setResult(RESULT_OK, resultIntent);
 			DataCache.getInstance().clearCache();
 			finish();

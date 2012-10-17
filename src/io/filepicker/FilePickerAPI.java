@@ -423,7 +423,7 @@ public class FilePickerAPI {
 
 	public void saveFileAs(String path, Uri contentURI, Context context)
 			throws IOException {
-		String url = uploadFileToTemp(contentURI, context);
+		String url = uploadFileToTemp(contentURI, context).getFPUrl();
 		HttpPost httppost = new HttpPost(URI.create(FPBASEURL + "api/path"
 				+ pathUrlEncode(path) + "?js_session="
 				+ URLEncoder.encode(getJSSessionWithMimetypes("*/*"), "utf-8")));
@@ -448,7 +448,7 @@ public class FilePickerAPI {
 		return buffer.toByteArray();
 	}
 
-	public String uploadFileToTemp(Uri contentURI, Context context)
+	public FPFile uploadFileToTemp(Uri contentURI, Context context)
 			throws IOException {
 		String postUrl = FPBASEURL + "api/path/computer/" + "?js_session="
 				+ URLEncoder.encode(getJSSession(), "utf-8");
@@ -465,7 +465,8 @@ public class FilePickerAPI {
 			JSONObject json = new JSONObject(response);
 			JSONObject data = json.getJSONArray("data").getJSONObject(0);
 			String url = data.getString("url");
-			return url;
+			String key = data.getJSONObject("data").getString("key");
+			return new FPFile(contentURI.toString(), url, key);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
