@@ -24,7 +24,7 @@ public class ThumbnailView extends android.widget.ImageView {
 				return inode.getThumbnailBitmap();
 			Bitmap bitmap = FilePickerAPI.getInstance().getThumbnail(url);
 			int MAXSIZE = width;
-			if (bitmap.getHeight() > MAXSIZE || bitmap.getWidth() > MAXSIZE) {
+			if (bitmap != null && (bitmap.getHeight() > MAXSIZE || bitmap.getWidth() > MAXSIZE)) {
 				//scale
 				int h = bitmap.getHeight();
 				int w = bitmap.getWidth();
