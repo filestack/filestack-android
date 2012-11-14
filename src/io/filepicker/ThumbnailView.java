@@ -9,7 +9,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 
 
-class ThumbnailView extends android.widget.ImageView {
+public class ThumbnailView extends android.widget.ImageView {
 	private final String url;
 	private final Inode inode;
 	private ThumbnailLoaderTask task = null;
@@ -24,7 +24,7 @@ class ThumbnailView extends android.widget.ImageView {
 				return inode.getThumbnailBitmap();
 			Bitmap bitmap = FilePickerAPI.getInstance().getThumbnail(url);
 			int MAXSIZE = width;
-			if (bitmap.getHeight() > MAXSIZE || bitmap.getWidth() > MAXSIZE) {
+			if (bitmap != null && (bitmap.getHeight() > MAXSIZE || bitmap.getWidth() > MAXSIZE)) {
 				//scale
 				int h = bitmap.getHeight();
 				int w = bitmap.getWidth();

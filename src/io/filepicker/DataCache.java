@@ -2,18 +2,7 @@ package io.filepicker;
 
 import java.util.HashMap;
 
-class CacheElement {
-	private Folder data;
-	public CacheElement(Folder data) {
-		this.data = data;
-	}
-	
-	public Folder getData() {
-		return this.data;
-	}
-}
-
-class DataCache {
+public class DataCache {
 	private static DataCache datacache;
 	private HashMap<String, CacheElement> cache;
 
