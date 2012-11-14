@@ -1,7 +1,6 @@
 package io.filepicker;
 
-public
-    class AuthError extends Exception {
+public class AuthError extends Exception {
 	private static final long serialVersionUID = 3873865053998671409L;
 	private final String path;
 	private final String service;
