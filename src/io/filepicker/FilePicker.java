@@ -43,7 +43,7 @@ import android.widget.Toast;
 public class FilePicker extends Activity {
 	public static final String SAVE_CONTENT = "SAVE_CONTENT";
 
-	private static final String PREFS_NAME = "filepicker";
+	public static final String PREFS_NAME = "filepicker";
 
 	private ListView listview;
 	private GridView gridview;
@@ -52,7 +52,7 @@ public class FilePicker extends Activity {
 	private boolean saveas = false;
 	private Uri fileToSave = null;
 	private String mimetypes = "*/*";
-	private String TAG = "FilePickerActivity";
+	private final String TAG = "FilePickerActivity";
 	private Uri imageUri = null; // for camera
 	private String[] selectedServices = null;
 	private String extension = "";
@@ -98,7 +98,7 @@ public class FilePicker extends Activity {
 
 			if (inode.getIsDir()) {
 				FilePickerAPI.getInstance()
-						.precache(inode.getPath(), mimetypes);
+				.precache(inode.getPath(), mimetypes);
 			}
 		}
 
@@ -117,6 +117,7 @@ public class FilePicker extends Activity {
 			super(context, textViewResourceId, objects);
 		}
 
+		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			Inode inode = (Inode) getItem(position);
 
@@ -139,6 +140,7 @@ public class FilePicker extends Activity {
 	class FpapiTask extends AsyncTask<Long, Integer, Folder> {
 		private AuthError authError = null;
 
+		@Override
 		protected Folder doInBackground(Long... l) {
 			FilePickerAPI fpapi = FilePickerAPI.getInstance();
 			try {
@@ -148,19 +150,19 @@ public class FilePicker extends Activity {
 						root = fpapi.getProvidersForMimetype(mimetypes, saveas);
 					else
 						root = fpapi
-								.getProvidersForServiceArray(selectedServices);
+						.getProvidersForServiceArray(selectedServices);
 					return new Folder(root, "list", "");
 				} else {
 					return fpapi.getPath(path, mimetypes);
 				}
 			} catch (AuthError e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				this.authError = e;
 			}
 			return null;
 		}
 
+		@Override
 		protected void onPostExecute(Folder result) {
 			if (this.authError != null) {
 				// Display auth activity
@@ -192,6 +194,7 @@ public class FilePicker extends Activity {
 				currentview.setVisibility(View.VISIBLE);
 				currentview.setOnItemClickListener(new OnItemClickListener() {
 
+					@Override
 					@SuppressLint("NewApi")
 					public void onItemClick(AdapterView<?> parent, View view,
 							int position, long id) {
@@ -221,7 +224,6 @@ public class FilePicker extends Activity {
 											+ File.createTempFile("fpf",
 													".jpg"));
 								} catch (IOException e) {
-									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
 								intent.putExtra(MediaStore.EXTRA_OUTPUT,
@@ -259,27 +261,6 @@ public class FilePicker extends Activity {
 					}
 
 				});
-				
-				//broken		
-//				if (path.equals("/")) {
-//					currentview.setOnItemLongClickListener(new OnItemLongClickListener() {
-//	
-//						public boolean onItemLongClick(AdapterView<?> parent,
-//								View view, int position, long id) {
-//							// TODO Auto-generated method stub
-//							Inode inode = (Inode) (parent.getAdapter()
-//									.getItem(position));
-//							System.out.println(inode.getDisplayName());
-//							System.out.println(inode.getClass().toString());
-//							if (Service.class.isInstance(inode)) {
-//								System.out.println("IS SERVICE");
-//								Service service = (Service) inode;
-//								FilePicker.this.unauth(service);	
-//							}
-//							return true;
-//						}
-//					});
-//				}
 			}
 		}
 	}
@@ -290,7 +271,6 @@ public class FilePicker extends Activity {
 
 		@Override
 		protected FPFile doInBackground(String... arg0) {
-			// TODO Auto-generated method stub
 			if (arg0.length != 1) {
 				FilePickerAPI.debug("ERROR");
 				return null;
@@ -300,7 +280,6 @@ public class FilePicker extends Activity {
 				return FilePickerAPI.getInstance().getLocalFileForPath(path,
 						FilePicker.this);
 			} catch (AuthError e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return null;
@@ -317,14 +296,15 @@ public class FilePicker extends Activity {
 
 	}
 
-	class UploadLocalFileTask extends AsyncTask<Uri, Integer, String> {
+	class UploadLocalFileTask extends AsyncTask<Uri, Integer, FPFile> {
 		private Uri uri;
 
-		protected String doInBackground(Uri... uris) {
+		@Override
+		protected FPFile doInBackground(Uri... uris) {
 			// only one parameter may be passed
 			if (uris.length != 1) {
 				FilePickerAPI.debug("ERROR, too many urls passed as arguments");
-				return "";
+				return null;
 			}
 			this.uri = uris[0];
 			FilePickerAPI fpapi = FilePickerAPI.getInstance();
@@ -332,14 +312,19 @@ public class FilePicker extends Activity {
 				return fpapi.uploadFileToTemp(uri, FilePicker.this);
 			} catch (IOException e) {
 				e.printStackTrace();
-				return "";
+				return null;
 			}
 		}
 
-		protected void onPostExecute(String result) {
+		@Override
+		protected void onPostExecute(FPFile result) {
 			Intent resultIntent = new Intent();
 			resultIntent.setData(uri);
-			resultIntent.putExtra("fpurl", result);
+			if (result == null) {
+				resultIntent.putExtra("fpurl", "");
+			} else {
+				resultIntent.putExtra("fpurl", result.getFPUrl());
+			}
 			setResult(RESULT_OK, resultIntent);
 			DataCache.getInstance().clearCache();
 			finish();
@@ -374,17 +359,18 @@ public class FilePicker extends Activity {
 		.setTitle("Logout")
 		.setMessage("Log out of " + service.getDisplayName() + "?")
 		.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-			
+
+			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				FilePickerAPI.debug("Starting unauth");
 				new UnAuthTask().execute(service);
-				
+
 			}
 		})
 		.setNegativeButton("Cancel", null)
 		.show();
 	}
-	
+
 	class UnAuthTask extends AsyncTask<Service, Integer, Void> {
 		@Override
 		protected Void doInBackground(Service... arg0) {
@@ -402,7 +388,6 @@ public class FilePicker extends Activity {
 
 		@Override
 		protected String doInBackground(String... arg0) {
-			// TODO Auto-generated method stub
 			if (arg0.length != 1) {
 				FilePickerAPI.debug("ERROR");
 				return "ERROR";
@@ -412,7 +397,6 @@ public class FilePicker extends Activity {
 				FilePickerAPI.getInstance().saveFileAs(path, fileToSave,
 						FilePicker.this);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return "ERROR";
@@ -521,6 +505,7 @@ public class FilePicker extends Activity {
 				saveButton.setEnabled(false);
 			} else {
 				saveButton.setOnClickListener(new OnClickListener() {
+					@Override
 					public void onClick(View v) {
 						FilePicker.this.save();
 					}

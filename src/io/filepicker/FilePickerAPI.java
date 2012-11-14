@@ -24,7 +24,6 @@ import java.net.Socket;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.CookieStore;
@@ -49,108 +48,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-class Folder {
-	private final Inode[] inodes;
-	private final String view;
-	private final String name;
-
-	public Folder(Inode[] inodes, String view, String name) {
-		this.inodes = inodes;
-		this.view = view;
-		this.name = name;
-	}
-
-	public Inode[] getInodes() {
-		return this.inodes;
-	}
-
-	public String getView() {
-		return this.view;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-}
-
-class FPFile {
-	private String localpath;
-	private String fpurl;
-
-	public FPFile(String localpath, String fpurl) {
-		this.localpath = localpath;
-		this.fpurl = fpurl;
-	}
-
-	public String getLocalPath() {
-		return this.localpath;
-	}
-
-	public String getFPUrl() {
-		return this.fpurl;
-	}
-}
-
-class Service extends Inode {
-	private String[] mimetypes;
-	private boolean saveSupported;
-	private String id;
-
-	public Service(String displayName, String path, String[] mimetypes,
-			int drawable, boolean saveSupported, String id) {
-		super(displayName, path, true, drawable);
-		this.mimetypes = mimetypes;
-		this.saveSupported = saveSupported;
-		this.id = id;
-	}
-
-	public String[] getMimetypes() {
-		return this.mimetypes;
-	}
-
-	public boolean isSaveSupported() {
-		return this.saveSupported;
-	}
-
-	public String getServiceId() {
-		return this.id;
-	}
-
-}
-
-class AuthError extends Exception {
-	private static final long serialVersionUID = 3873865053998671409L;
-	private final String path;
-	private final String service;
-
-	public AuthError(String path, String service) {
-		this.path = path;
-		this.service = service;
-	}
-
-	public String getPath() {
-		return this.path;
-	}
-
-	public String getService() {
-		return this.service;
-	}
-}
-
-class FixedSizeList<T> {
-	private final int maxSize;
-	private final LinkedList<T> list = new LinkedList<T>();
-
-	public FixedSizeList(int maxSize) {
-		this.maxSize = maxSize < 0 ? 0 : maxSize; // don't make bigger than 0
-	}
-
-	public T add(T t) {
-		list.add(t);
-		return list.size() > maxSize ? list.remove() : null;
-	}
-}
-
 public class FilePickerAPI {
 
 	public final static String FPHOSTNAME = "www.filepicker.io";
@@ -161,11 +58,11 @@ public class FilePickerAPI {
 	public final static int REQUEST_CODE_AUTH = 600;
 	public final static int REQUEST_CODE_GETFILE = 601;
 	public final static int REQUEST_CODE_SAVEFILE = 602;
-	protected final static int REQUEST_CODE_GETFILE_LOCAL = 603;
+	public final static int REQUEST_CODE_GETFILE_LOCAL = 603;
 
 	private static FilePickerAPI filepickerapi = null;
-	private HttpContext httpContext;
-	private CookieStore cookieStore;
+	private final HttpContext httpContext;
+	private final CookieStore cookieStore;
 	private static FixedSizeList<PrecacheTask> precacheTaskList = new FixedSizeList<PrecacheTask>(
 			16); // FIXME: arbitrary constant
 	private static String TAG = "FilePickerAPI";
@@ -181,7 +78,7 @@ public class FilePickerAPI {
 	public static void setKey(String key) {
 		FPAPIKEY = key;
 		FILE_GET_JS_SESSION_PART = "{\"app\":{\"apikey\":\""
-			+ FPAPIKEY + "\"}";
+				+ FPAPIKEY + "\"}";
 	}
 
 	protected static boolean isKeySet() {
@@ -234,11 +131,11 @@ public class FilePickerAPI {
 				true, "facebook"));
 		services.add(new Service("Instagram", "/Instagram/",
 				new String[] { "image/*" }, R.drawable.instagram,
-                                 true, "instagram"));
-        services.add(new Service("Flickr", "/Flickr/",
+				true, "instagram"));
+		services.add(new Service("Flickr", "/Flickr/",
 				new String[] { "image/*" }, R.drawable.glyphicons_395_flickr,
 				true, "flickr"));
-        services.add(new Service("Picasa", "/Picasa/",
+		services.add(new Service("Picasa", "/Picasa/",
 				new String[] { "image/*" }, R.drawable.glyphicons_366_picasa,
 				true, "picasa"));
 		services.add(new Service("Box", "/Box/", new String[] { "*/*" },
@@ -298,6 +195,7 @@ public class FilePickerAPI {
 	}
 
 	private Inode inodeForJSONObject(JSONObject content) throws JSONException {
+		Log.d(TAG, "inodeForJSONObject: " + content.toString() );
 		String displayName = content.getString("display_name");
 		String path = content.getString("link_path");
 		boolean is_dir = content.getBoolean("is_dir");
@@ -310,7 +208,7 @@ public class FilePickerAPI {
 			thumbnail = content.getString("thumbnail");
 			if (!thumbnail.startsWith("http"))
 				thumbnail = FPBASEURL + thumbnail; // pathUrlEncode(thumbnail).replace("%3F",
-													// "?").replace(
+			// "?").replace(
 			// "%3D", "=");
 			inode.setThumb_exists(thumb_exists); // true
 			inode.setThumbnail(thumbnail);
@@ -384,7 +282,6 @@ public class FilePickerAPI {
 			return URLEncoder.encode(path, "utf-8").replace("+", "%20")
 					.replace("%2F", "/");
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return path;
@@ -447,42 +344,40 @@ public class FilePickerAPI {
 			String response = getStringFromNetworkRequest(httpget);
 			return parseFolder(response, path);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
-	
+
+
 	public void unauth(Service service) {
 		HttpGet httpget = new HttpGet(FPBASEURL + "api/client/" + service.getServiceId() + "/unauth/");
 		try {
 			getStringFromNetworkRequest(httpget);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
 	private File getTempFileForName(String filename, Context context) {
+		Log.d(TAG, "getTempFileForName" );
 		boolean mExternalStorageAvailable = false;
 		boolean mExternalStorageWriteable = false;
 		String state = Environment.getExternalStorageState();
 
 		if (Environment.MEDIA_MOUNTED.equals(state)) {
-		    // We can read and write the media
-		    mExternalStorageAvailable = mExternalStorageWriteable = true;
+			// We can read and write the media
+			mExternalStorageAvailable = mExternalStorageWriteable = true;
 		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-		    // We can only read the media
-		    mExternalStorageAvailable = true;
-		    mExternalStorageWriteable = false;
+			// We can only read the media
+			mExternalStorageAvailable = true;
+			mExternalStorageWriteable = false;
 		} else {
-		    // Something else is wrong. It may be one of many other states, but all we need
-		    //  to know is we can neither read nor write
-		    mExternalStorageAvailable = mExternalStorageWriteable = false;
+			// Something else is wrong. It may be one of many other states, but all we need
+			//  to know is we can neither read nor write
+			mExternalStorageAvailable = mExternalStorageWriteable = false;
 		}
 		File dir = null;
 		if (mExternalStorageWriteable) {
@@ -493,10 +388,11 @@ public class FilePickerAPI {
 		File tempFile = new File(dir, filename);
 		return tempFile;
 	}
-	
+
 	// Download uri and store into a tmp file
 	public String downloadUrl(String URI, String filename, Context context)
 			throws IllegalStateException, IOException {
+		Log.d(TAG, "downloadUrl" );
 		HttpGet httpget = new HttpGet(URI.replace(" ", "%20"));
 		AndroidHttpClient httpClient = getHttpClient();
 		HttpResponse httpResponse = httpClient.execute(httpget, httpContext);
@@ -516,7 +412,6 @@ public class FilePickerAPI {
 				fout.close();
 				return filePath;
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				httpClient.close();
 			}
@@ -526,7 +421,8 @@ public class FilePickerAPI {
 
 	public void saveFileAs(String path, Uri contentURI, Context context)
 			throws IOException {
-		String url = uploadFileToTemp(contentURI, context);
+		Log.d(TAG, "saveFileAs" );
+		String url = uploadFileToTemp(contentURI, context).getFPUrl();
 		HttpPost httppost = new HttpPost(URI.create(FPBASEURL + "api/path"
 				+ pathUrlEncode(path) + "?js_session="
 				+ URLEncoder.encode(getJSSessionWithMimetypes("*/*"), "utf-8")));
@@ -551,8 +447,9 @@ public class FilePickerAPI {
 		return buffer.toByteArray();
 	}
 
-	public String uploadFileToTemp(Uri contentURI, Context context)
+	public FPFile uploadFileToTemp(Uri contentURI, Context context)
 			throws IOException {
+		Log.d(TAG, "uploadFileToTemp");
 		String postUrl = FPBASEURL + "api/path/computer/" + "?js_session="
 				+ URLEncoder.encode(getJSSession(), "utf-8");
 		HttpPost httppost = new HttpPost(URI.create(postUrl));
@@ -567,10 +464,11 @@ public class FilePickerAPI {
 		try {
 			JSONObject json = new JSONObject(response);
 			JSONObject data = json.getJSONArray("data").getJSONObject(0);
+			Log.d(TAG, "data: " + data.toString() );
 			String url = data.getString("url");
-			return url;
+			String key = data.getJSONObject("data").getString("key");
+			return new FPFile(contentURI.toString(), url, key);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new IOException();
 		}
@@ -578,6 +476,7 @@ public class FilePickerAPI {
 
 	public FPFile getLocalFileForPath(String path, Context context)
 			throws AuthError {
+		Log.d(TAG, "getLocalFileForPath" );
 		try {
 			String query = getJSSession();
 			HttpGet httpget = new HttpGet(FPBASEURL + "api/path"
@@ -588,16 +487,16 @@ public class FilePickerAPI {
 			JSONObject json;
 			try {
 				json = new JSONObject(response);
+				Log.d(TAG, "getLocalFileForPath: " + json.toString() );
 				String url = json.getString("url");
 				String filename = json.getString("filename");
-				return new FPFile(downloadUrl(url, filename, context), url);
+				String key = json.getString("key");
+				return new FPFile(downloadUrl(url, filename, context), url, key);
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -615,26 +514,30 @@ public class FilePickerAPI {
 			SSLSocketFactory delegate = SSLSocketFactory.getSocketFactory();
 
 			// @Override
+			@Override
 			public Socket createSocket() throws IOException {
 				System.out.println("CREATE SOCKET");
 				return delegate.createSocket();
 			}
 
 			// @Override
+			@Override
 			public Socket connectSocket(Socket sock, String host, int port,
 					InetAddress localAddress, int localPort, HttpParams params)
-					throws IOException {
+							throws IOException {
 				return delegate.connectSocket(sock, host, port, localAddress,
 						localPort, params);
 			}
 
 			// @Override
+			@Override
 			public boolean isSecure(Socket sock)
 					throws IllegalArgumentException {
 				return delegate.isSecure(sock);
 			}
 
 			// @Override
+			@Override
 			public Socket createSocket(Socket socket, String host, int port,
 					boolean autoClose) throws IOException {
 				injectHostname(socket, host);
@@ -652,7 +555,7 @@ public class FilePickerAPI {
 			}
 		};
 		client.getConnectionManager().getSchemeRegistry()
-				.register(new Scheme("https", socketFactory, 443));
+		.register(new Scheme("https", socketFactory, 443));
 	}
 
 	private AndroidHttpClient getHttpClient() {
@@ -674,7 +577,6 @@ public class FilePickerAPI {
 			if (httpResponse.getStatusLine().getStatusCode() != 200) {
 				debug("Http error: "
 						+ httpResponse.getStatusLine().getStatusCode());
-				// TODO: read error
 				throw new IOException();
 			} else {
 				// success
@@ -682,7 +584,7 @@ public class FilePickerAPI {
 				BufferedReader reader = new BufferedReader(
 						new InputStreamReader(
 								AndroidHttpClient
-										.getUngzippedContent(responseEntity)));
+								.getUngzippedContent(responseEntity)));
 				StringBuilder builder = new StringBuilder();
 				String line;
 				while ((line = reader.readLine()) != null) {

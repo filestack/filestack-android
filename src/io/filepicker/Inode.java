@@ -4,7 +4,7 @@ import io.filepicker.R;
 
 import android.graphics.Bitmap;
 
-class Inode {
+public class Inode {
 	private String displayName;
 	private String path;
 	private boolean is_dir;
