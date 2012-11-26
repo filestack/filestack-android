@@ -490,7 +490,13 @@ public class FilePickerAPI {
 				Log.d(TAG, "getLocalFileForPath: " + json.toString() );
 				String url = json.getString("url");
 				String filename = json.getString("filename");
-				String key = json.getString("key");
+				String key = null;
+				try{
+					key = json.getString("key");
+				}
+				catch(JSONException e){
+					Log.d(TAG, "No key in json");
+				}
 				return new FPFile(downloadUrl(url, filename, context), url, key);
 			} catch (JSONException e) {
 				e.printStackTrace();
