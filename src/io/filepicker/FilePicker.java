@@ -58,7 +58,11 @@ public class FilePicker extends Activity {
 	private String extension = "";
 	private String displayName = null;
 
+	
+	
 	private static final int CAMERA_REQUEST = 1888;
+	
+	private static final String API_KEY = "api_key";
 
 	class ThumbnailLoaderDataHolder {
 		public final String url;
@@ -102,10 +106,6 @@ public class FilePicker extends Activity {
 			}
 		}
 
-		@Override
-		public void onWindowSystemUiVisibilityChanged(int visible) {
-			System.out.println("Visibility: visible");
-		}
 	}
 
 	// Handle the listview
@@ -438,6 +438,15 @@ public class FilePicker extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		
+		
+		if(savedInstanceState != null){
+			String key = savedInstanceState.getString(API_KEY);//NEW FETCHCODES
+		
+			if(key != null)
+				FilePickerAPI.setKey(key);//NEW FETCHCODES
+		}
 
 		if (!FilePickerAPI.isKeySet()) {
 			Toast.makeText(this, "No Filepicker.io API Key set!",
@@ -567,6 +576,12 @@ public class FilePicker extends Activity {
 			break;
 		}
 
+	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState){//NEW FETCHCODES
+		super.onSaveInstanceState(outState);
+		outState.putString(API_KEY, FilePickerAPI.FPAPIKEY);
 	}
 
 	private void setProgressInvisible() {
