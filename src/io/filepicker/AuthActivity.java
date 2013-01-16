@@ -15,7 +15,8 @@ import android.support.v4.app.NavUtils;
 
 public class AuthActivity extends Activity {
 	private String service;
-
+	private static String TAG = "AuthActivity";
+	
 	@SuppressLint("SetJavaScriptEnabled")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -38,7 +39,7 @@ public class AuthActivity extends Activity {
 					ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar1);
 					progressBar.setVisibility(ProgressBar.INVISIBLE);
 					
-					if (url.startsWith(FilePickerAPI.FPBASEURL + "dialog")) {
+					if (url.startsWith(FilePickerAPI.FPBASEURL + "api/client")) {
 						//load cookies
 						setResult(RESULT_OK);
 						AuthActivity.this.finish();
