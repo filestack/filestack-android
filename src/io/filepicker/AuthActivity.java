@@ -39,7 +39,7 @@ public class AuthActivity extends Activity {
 					ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar1);
 					progressBar.setVisibility(ProgressBar.INVISIBLE);
 					
-					if (url.startsWith(FilePickerAPI.FPBASEURL + "api/client")) {
+					if (url.startsWith(FilePickerAPI.FPBASEURL + "api/client") && url.contains("authCallback/open")) {
 						//load cookies
 						setResult(RESULT_OK);
 						AuthActivity.this.finish();
