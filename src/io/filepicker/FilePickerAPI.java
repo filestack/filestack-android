@@ -66,7 +66,7 @@ public class FilePickerAPI {
 	private static FixedSizeList<PrecacheTask> precacheTaskList = new FixedSizeList<PrecacheTask>(
 			16); // FIXME: arbitrary constant
 	private static String TAG = "FilePickerAPI";
-	private static boolean debug = false;
+	public static final boolean debug = true;
 
 	public static FilePickerAPI getInstance() {
 		if (filepickerapi == null)
@@ -195,8 +195,7 @@ public class FilePickerAPI {
 	}
 
 	private Inode inodeForJSONObject(JSONObject content) throws JSONException {
-		if (debug)
-			Log.d(TAG, "inodeForJSONObject: " + content.toString() );
+		debug("inodeForJSONObject: " + content.toString() );
 		String displayName = content.getString("display_name");
 		String path = content.getString("link_path");
 		boolean is_dir = content.getBoolean("is_dir");
@@ -331,8 +330,7 @@ public class FilePickerAPI {
 	}
 
 	public Folder getPath(String path, String mimetypes) throws AuthError {
-		if (debug)
-			Log.d(FilePickerAPI.class.toString(), "path: " + path);
+		debug("getPath path: " + path);
 		Folder cached = DataCache.getInstance().get(path + mimetypes);
 		if (cached != null)
 			return cached;
@@ -364,8 +362,7 @@ public class FilePickerAPI {
 	}
 
 	private File getTempFileForName(String filename, Context context) {
-		if (debug)
-			Log.d(TAG, "getTempFileForName" );
+		debug("getTempFileForName" );
 		boolean mExternalStorageAvailable = false;
 		boolean mExternalStorageWriteable = false;
 		String state = Environment.getExternalStorageState();
@@ -395,8 +392,7 @@ public class FilePickerAPI {
 	// Download uri and store into a tmp file
 	public String downloadUrl(String URI, String filename, Context context)
 			throws IllegalStateException, IOException {
-		if (debug)
-			Log.d(TAG, "downloadUrl" );
+		debug("downloadUrl" );
 		HttpGet httpget = new HttpGet(URI.replace(" ", "%20"));
 		AndroidHttpClient httpClient = getHttpClient();
 		HttpResponse httpResponse = httpClient.execute(httpget, httpContext);
@@ -404,7 +400,7 @@ public class FilePickerAPI {
 			debug("Http error: " + httpResponse.getStatusLine().getStatusCode());
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
 					httpResponse.getEntity().getContent()));
-			debug(reader.readLine());
+			debug("Readline: " + reader.readLine());
 		} else {
 			try {
 				File f = getTempFileForName(filename, context);
@@ -425,8 +421,7 @@ public class FilePickerAPI {
 
 	public void saveFileAs(String path, Uri contentURI, Context context)
 			throws IOException {
-		if (debug)
-			Log.d(TAG, "saveFileAs" );
+		debug("saveFileAs" );
 		String url = uploadFileToTemp(contentURI, context).getFPUrl();
 		HttpPost httppost = new HttpPost(URI.create(FPBASEURL + "api/path"
 				+ pathUrlEncode(path) + "?js_session="
@@ -454,8 +449,7 @@ public class FilePickerAPI {
 
 	public FPFile uploadFileToTemp(Uri contentURI, Context context)
 			throws IOException {
-		if (debug)
-			Log.d(TAG, "uploadFileToTemp");
+		debug("uploadFileToTemp");
 		String postUrl = FPBASEURL + "api/path/computer/" + "?js_session="
 				+ URLEncoder.encode(getJSSession(), "utf-8");
 		HttpPost httppost = new HttpPost(URI.create(postUrl));
@@ -470,8 +464,7 @@ public class FilePickerAPI {
 		try {
 			JSONObject json = new JSONObject(response);
 			JSONObject data = json.getJSONArray("data").getJSONObject(0);
-			if (debug)
-				Log.d(TAG, "data: " + data.toString() );
+			debug("data: " + data.toString() );
 			String url = data.getString("url");
 			String key = data.getJSONObject("data").getString("key");
 			return new FPFile(contentURI.toString(), url, key);
@@ -483,8 +476,7 @@ public class FilePickerAPI {
 
 	public FPFile getLocalFileForPath(String path, Context context)
 			throws AuthError {
-		if (debug)
-			Log.d(TAG, "getLocalFileForPath" );
+		debug("getLocalFileForPath" );
 		try {
 			String query = getJSSession();
 			HttpGet httpget = new HttpGet(FPBASEURL + "api/path"
@@ -495,8 +487,7 @@ public class FilePickerAPI {
 			JSONObject json;
 			try {
 				json = new JSONObject(response);
-				if (debug)
-					Log.d(TAG, "getLocalFileForPath: " + json.toString() );
+				debug("getLocalFileForPath: " + json.toString() );
 				String url = json.getString("url");
 				String filename = json.getString("filename");
 				String key = null;
@@ -504,7 +495,7 @@ public class FilePickerAPI {
 					key = json.getString("key");
 				}
 				catch(JSONException e){
-					Log.d(TAG, "No key in json");
+					debug("No key in json");
 				}
 				return new FPFile(downloadUrl(url, filename, context), url, key);
 			} catch (JSONException e) {
@@ -605,8 +596,8 @@ public class FilePickerAPI {
 				while ((line = reader.readLine()) != null) {
 					builder.append(line);
 				}
-				if (debug)
-					debug(builder.toString());
+				
+				debug("Builder string: " + builder.toString());
 				httpClient.close();
 				return builder.toString();
 			}
