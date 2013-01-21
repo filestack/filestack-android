@@ -53,8 +53,8 @@ public class FilePickerAPI {
 	public final static String FPHOSTNAME = "www.filepicker.io";
 	public final static String FPBASEURL = "https://" + FPHOSTNAME + "/";
 	public static String FPAPIKEY = "ADkvlBBC4ReOhGkybgqRHz";//"";
-	public static String FILE_GET_JS_SESSION_PART = "{\"app\":{\"apikey\":\""
-			+ FPAPIKEY + "\"}";
+	public static String FILE_GET_JS_SESSION_PART = "{\"apikey\":\""
+			+ FPAPIKEY + "\", \"version\":\"v0\"";
 	public final static int REQUEST_CODE_AUTH = 600;
 	public final static int REQUEST_CODE_GETFILE = 601;
 	public final static int REQUEST_CODE_SAVEFILE = 602;
