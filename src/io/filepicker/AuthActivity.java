@@ -32,6 +32,15 @@ public class AuthActivity extends Activity {
 			webview.setWebViewClient(new WebViewClient() {
 				//keep redirects in our app
 				public boolean shouldOverrideUrlLoading(WebView view, String url) {
+					if (url.startsWith(FilePickerAPI.FPBASEURL + "api/client") && url.contains("authCallback/open")) {
+						//load cookies
+						setResult(RESULT_OK);
+						AuthActivity.this.finish();
+						overridePendingTransition(R.anim.right_slide_out_back,
+								R.anim.right_slide_in_back);
+						assert false : "shouldn't reach this point";
+						return;
+					}
 					return false; //false to handle redirects in the webview
 				}
 				
@@ -39,7 +48,7 @@ public class AuthActivity extends Activity {
 					ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar1);
 					progressBar.setVisibility(ProgressBar.INVISIBLE);
 					
-					if (url.startsWith(FilePickerAPI.FPBASEURL + "api/client") && url.contains("authCallback/open")) {
+					if (url.startsWith(FilePickerAPI.FPBASEURL + "dialog")) {
 						//load cookies
 						setResult(RESULT_OK);
 						AuthActivity.this.finish();
