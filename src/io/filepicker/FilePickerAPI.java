@@ -466,7 +466,10 @@ public class FilePickerAPI {
 			JSONObject data = json.getJSONArray("data").getJSONObject(0);
 			debug("data: " + data.toString() );
 			String url = data.getString("url");
-			String key = data.getJSONObject("data").getString("key");
+			String key = "";
+			if (data.getJSONObject("data").has("key")) {
+				key = data.getJSONObject("data").getString("key");
+			}
 			return new FPFile(contentURI.toString(), url, key);
 		} catch (JSONException e) {
 			e.printStackTrace();
