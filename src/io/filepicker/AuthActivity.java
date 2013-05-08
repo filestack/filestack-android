@@ -38,8 +38,7 @@ public class AuthActivity extends Activity {
 						AuthActivity.this.finish();
 						overridePendingTransition(R.anim.right_slide_out_back,
 								R.anim.right_slide_in_back);
-						assert false : "shouldn't reach this point";
-						return;
+						return true;
 					}
 					return false; //false to handle redirects in the webview
 				}
