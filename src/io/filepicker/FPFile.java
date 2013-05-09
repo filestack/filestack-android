@@ -94,27 +94,27 @@ public class FPFile implements Parcelable {
 	}
 
 	public String getLocalPath() {
-		return localpath;
+		return this.localpath;
 	}
 
 	public String getFPUrl() {
-		return fpurl;
+		return this.fpurl;
 	}
 
 	public long getSize() {
-		return size;
+		return this.size;
 	}
 
 	public String getType() {
-		return type;
+		return this.type;
 	}
 
 	public String getKey() {
-		return key;
+		return this.key;
 	}
 	
 	public String getFilename() {
-		return filename;
+		return this.filename;
 	}
 	
 	@Override
@@ -137,7 +137,7 @@ public class FPFile implements Parcelable {
 	@Override
 	public String toString() {
 		return FPFile.class.getSimpleName() 
-				+ ", filename " + filename
-				+ ", type " + type;
+				+ ", filename: " + filename
+				+ ", type: " + type;
 	}
 }
