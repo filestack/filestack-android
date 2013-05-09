@@ -464,13 +464,7 @@ public class FilePickerAPI {
 		try {
 			JSONObject json = new JSONObject(response);
 			JSONObject data = json.getJSONArray("data").getJSONObject(0);
-			debug("data: " + data.toString() );
-			String url = data.getString("url");
-			String key = "";
-			if (data.getJSONObject("data").has("key")) {
-				key = data.getJSONObject("data").getString("key");
-			}
-			return new FPFile(contentURI.toString(), url, key);
+			return new FPFile(contentURI.toString(), data);
 		} catch (JSONException e) {
 			e.printStackTrace();
 			throw new IOException();
@@ -493,14 +487,7 @@ public class FilePickerAPI {
 				debug("getLocalFileForPath: " + json.toString() );
 				String url = json.getString("url");
 				String filename = json.getString("filename");
-				String key = null;
-				try{
-					key = json.getString("key");
-				}
-				catch(JSONException e){
-					debug("No key in json");
-				}
-				return new FPFile(downloadUrl(url, filename, context), url, key);
+				return new FPFile(downloadUrl(url, filename, context), json);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}

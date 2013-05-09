@@ -290,6 +290,7 @@ public class FilePicker extends Activity {
 			Intent resultIntent = new Intent();
 			resultIntent.setData(Uri.parse("file://" + result.getLocalPath()));
 			resultIntent.putExtra("fpurl", result.getFPUrl());
+			resultIntent.putExtra("fpfile", result);
 			setResult(RESULT_OK, resultIntent);
 			finish();
 		}
