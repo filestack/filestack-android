@@ -1,0 +1,9 @@
+<resources>
+
+    <string name="app_name">FilepickerDroid</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_file_picker">Filepicker</string>
+    <string name="title_activity_file_picker_auth">FilepickerAuthActivity</string>
+    <string name="file_picker_animation_duration">400</string>
+
+</resources>
