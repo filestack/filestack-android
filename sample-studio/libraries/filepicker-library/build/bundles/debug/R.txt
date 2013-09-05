@@ -39,4 +39,4 @@ int string file_picker_animation_duration 0x7f060001
 int string menu_settings 0x7f060002
 int string title_activity_file_picker 0x7f060003
 int string title_activity_file_picker_auth 0x7f060004
-int style AppTheme 0x7f070000
+int style AppThemeFilePicker 0x7f070000

@@ -2,6 +2,6 @@
 <resources>
 
     <!-- From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/libraries/filepicker-library/res/values-v11/styles.xml -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light" />
+    <style name="AppThemeFilePicker" parent="android:Theme.Holo.Light" />
 
 </resources>

@@ -12,6 +12,6 @@
     <string name="title_activity_file_picker">Filepicker</string>
     <string name="title_activity_file_picker_auth">FilepickerAuthActivity</string>
     <!-- From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/libraries/filepicker-library/res/values/styles.xml -->
-    <style name="AppTheme" parent="android:Theme.Light" />
+    <style name="AppThemeFilePicker" parent="android:Theme.Light" />
 
 </resources>

@@ -73,6 +73,6 @@ public final class R {
  From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/libraries/filepicker-library/res/values-v11/styles.xml 
  From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/libraries/filepicker-library/res/values-v14/styles.xml 
          */
-        public static int AppTheme=0x7f070000;
+        public static int AppThemeFilePicker=0x7f070000;
     }
 }
