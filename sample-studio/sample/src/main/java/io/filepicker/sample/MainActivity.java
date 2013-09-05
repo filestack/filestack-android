@@ -6,6 +6,7 @@ import android.view.Menu;
 
 public class MainActivity extends Activity {
 
+    private static final String FILEPICKER_API_KEY = "your_api_key_here";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
