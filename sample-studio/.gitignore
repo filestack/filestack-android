@@ -1,5 +1,6 @@
 # IDE settings files specfic per user
 .idea/
+.gradle/
 .metadata/
 .classpath
 .project
