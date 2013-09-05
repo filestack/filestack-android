@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/sample/src/main/res/values-v14/styles.xml -->
+    <style name="AppBaseTheme" parent="android:Theme.Holo.Light.DarkActionBar">
+        <!-- API 14 theme customizations can go here. -->
+    </style>
+    <!-- From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/sample/build/exploded-bundles/SampleStudioLibrariesFilepickerLibraryUnspecified.aar/res/values-v14/values.xml -->
+    <style name="AppThemeFilePicker" parent="android:Theme.Holo.Light.DarkActionBar" />
+
+</resources>
