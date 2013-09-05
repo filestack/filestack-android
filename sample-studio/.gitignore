@@ -27,7 +27,8 @@ gen/
 */tmp/
 build/
 out/
-
+sample/build
+sample/libraries/filepicker-android/build
 
 # Local configuration file (sdk path, etc)
 local.properties
