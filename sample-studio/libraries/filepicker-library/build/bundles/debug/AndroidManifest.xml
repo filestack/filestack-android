@@ -1,0 +1,26 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="io.filepicker">
+
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="18"/>
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <application android:label="@string/app_name" android:theme="@style/AppTheme">
+
+        <activity android:label="@string/title_activity_file_picker" android:name="io.filepicker.FilePicker">
+            <intent-filter>
+                <action android:name="android.intent.action.GET_CONTENT"/>
+                <action android:name="android.intent.action.PICK"/>
+
+                <category android:name="android.intent.category.OPENABLE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+
+                <data android:mimeType="*/*"/>
+            </intent-filter>
+        </activity>
+        <activity android:label="@string/title_activity_file_picker_auth" android:name="io.filepicker.AuthActivity">
+            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value="FilePicker"/>
+        </activity>
+    </application>
+
+</manifest>
