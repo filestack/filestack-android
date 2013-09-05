@@ -5,5 +5,7 @@
     <style name="AppBaseTheme" parent="android:Theme.Holo.Light">
         <!-- API 11 theme customizations can go here. -->
     </style>
+    <!-- From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/sample/build/exploded-bundles/SampleStudioLibrariesFilepickerLibraryUnspecified.aar/res/values-v11/values.xml -->
+    <style name="AppThemeFilePicker" parent="android:Theme.Holo.Light" />
 
 </resources>

@@ -182,7 +182,7 @@
                 qualifiers="" >
 
                 <style
-                    name="AppTheme"
+                    name="AppThemeFilePicker"
                     parent="android:Theme.Light" />
             </file>
             <file
@@ -200,7 +200,7 @@
                 qualifiers="v11" >
 
                 <style
-                    name="AppTheme"
+                    name="AppThemeFilePicker"
                     parent="android:Theme.Holo.Light" />
             </file>
             <file
@@ -208,7 +208,7 @@
                 qualifiers="v14" >
 
                 <style
-                    name="AppTheme"
+                    name="AppThemeFilePicker"
                     parent="android:Theme.Holo.Light.DarkActionBar" />
             </file>
         </source>
