@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger>
+
+    <dataSet config="SampleStudioLibrariesFilepickerLibraryUnspecified.aar" >
+        <source path="/Users/imranmohammed/Documents/filepicker-android/sample-studio/sample/build/exploded-bundles/SampleStudioLibrariesFilepickerLibraryUnspecified.aar/assets" />
+    </dataSet>
+    <dataSet config="main" >
+        <source path="/Users/imranmohammed/Documents/filepicker-android/sample-studio/sample/src/main/assets" />
+    </dataSet>
+    <dataSet config="debug" >
+        <source path="/Users/imranmohammed/Documents/filepicker-android/sample-studio/sample/src/debug/assets" />
+    </dataSet>
+
+</merger>
