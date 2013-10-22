@@ -68,7 +68,7 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
             return;
     Uri uri = data.getData();
     System.out.println("File path is " + uri.toString());
-    System.out.println("FPUrl: " + data.getExtras().getString("fpurl");
+    System.out.println("FPUrl: " + data.getExtras().getString("fpurl"));
 }
 ```
 
