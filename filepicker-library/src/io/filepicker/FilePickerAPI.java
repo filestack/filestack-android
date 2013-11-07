@@ -456,9 +456,10 @@ public class FilePickerAPI {
 		ByteArrayEntity entity = new ByteArrayEntity(
 				readBinaryInputStream(context.getContentResolver()
 						.openInputStream(contentURI)));
+		entity.setContentType("image/jpg");
 		httppost.setEntity(entity);
 		entity.setChunked(false);
-		httppost.setHeader("X-File-Name", "testfile.file");
+		httppost.setHeader("X-File-Name", "testfile.jpg");
 		httppost.setHeader("Content-Type", "application/octet-stream");
 		String response = getStringFromNetworkRequest(httppost);
 		try {
