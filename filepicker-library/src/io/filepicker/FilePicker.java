@@ -290,6 +290,7 @@ public class FilePicker extends Activity {
 			Intent resultIntent = new Intent();
 			resultIntent.setData(Uri.parse("file://" + result.getLocalPath()));
 			resultIntent.putExtra("fpurl", result.getFPUrl());
+			resultIntent.putExtra("filename", result.getFilename()); //TODO PATCH!!
 			resultIntent.putExtra("fpfile", result);
 			setResult(RESULT_OK, resultIntent);
 			finish();
@@ -311,7 +312,7 @@ public class FilePicker extends Activity {
 			FilePickerAPI fpapi = FilePickerAPI.getInstance();
 			try {
 				return fpapi.uploadFileToTemp(uri, FilePicker.this);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				return null;
 			}
@@ -325,6 +326,7 @@ public class FilePicker extends Activity {
 				resultIntent.putExtra("fpurl", "");
 			} else {
 				resultIntent.putExtra("fpurl", result.getFPUrl());
+				resultIntent.putExtra("filename", result.getFilename()); //TODO PATCH!!
 			}
 			setResult(RESULT_OK, resultIntent);
 			DataCache.getInstance().clearCache();
@@ -397,7 +399,7 @@ public class FilePicker extends Activity {
 			try {
 				FilePickerAPI.getInstance().saveFileAs(path, fileToSave,
 						FilePicker.this);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			return "ERROR";
