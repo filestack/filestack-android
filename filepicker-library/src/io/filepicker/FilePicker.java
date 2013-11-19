@@ -441,6 +441,9 @@ public class FilePicker extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		//TODO Suggested patch
+		FilePickerAPI.setKey(getIntent().getStringExtra("api_key"));
 
 		if (!FilePickerAPI.isKeySet()) {
 			Toast.makeText(this, "No Filepicker.io API Key set!",

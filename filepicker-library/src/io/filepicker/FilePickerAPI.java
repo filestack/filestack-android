@@ -54,7 +54,10 @@ public class FilePickerAPI {
 
 	public final static String FPHOSTNAME = "www.filepicker.io";
 	public final static String FPBASEURL = "https://" + FPHOSTNAME + "/";
-	public static String FPAPIKEY = "ADkvlBBC4ReOhGkybgqRHz";//"";
+	
+	//TODO PATCH Better security changed to protected
+	protected static String FPAPIKEY = "ADkvlBBC4ReOhGkybgqRHz";//"";
+	
 	public static String FILE_GET_JS_SESSION_PART = "{\"apikey\":\""
 			+ FPAPIKEY + "\", \"version\":\"v0\"";
 	public final static int REQUEST_CODE_AUTH = 600;
@@ -452,7 +455,7 @@ public class FilePickerAPI {
 
 		return buffer.toByteArray();
 	}
-
+	
 	public FPFile uploadFileToTemp(Uri contentURI, Context context) {
 		debug("uploadFileToTemp");
 		try {
@@ -475,11 +478,9 @@ public class FilePickerAPI {
 		
 			JSONObject json = new JSONObject(response);
 			JSONObject data = json.getJSONArray("data").getJSONObject(0);
-						
-			//TODO PATCH!
-			String a[] = {contentURI.toString(), pathFilename};
 			
-			return new FPFile(a, data);
+			//TODO PATCH!
+			return new FPFile(contentURI.toString(), pathFilename, data);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
