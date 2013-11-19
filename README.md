@@ -1,4 +1,4 @@
-filepicker-android v1.0
+filepicker-android v1.0.1
 =======================
 
 Android version of filepicker.  Allow your users to pull in their content from Dropbox, Facebook, and more!
@@ -44,16 +44,17 @@ import io.filepicker.FilePicker;
 import io.filepicker.FilePickerAPI;
 ```
 
-###Setting the API Key###
-Before making any filepicker calls, set the api key like so
-```java
-FilePickerAPI.setKey(MY_API_KEY);
-```
+
+###~~Setting the API Key~~###
+~~Before making any filepicker calls, set the api key like so~~
+~~FilePickerAPI.setKey(MY_API_KEY);~~
 
 ###Getting a File###
 Start the activity like this
 ```java
-startActivityForResult(new Intent(this, FilePicker.class), FilePickerAPI.REQUEST_CODE_GETFILE);
+Intent intent = new Intent(this, FilePicker.class);
+intent.putExtra("api_key", "MY_APY_KEY");
+startActivityForResult(intent, FilePickerAPI.REQUEST_CODE_GETFILE);
 ```
 This behaves just like the GET_CONTENT intent.
 
@@ -69,6 +70,7 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     Uri uri = data.getData();
     System.out.println("File path is " + uri.toString());
     System.out.println("FPUrl: " + data.getExtras().getString("fpurl"));
+    System.out.println("File name: " + data.getExtras().getString("filename"));
 }
 ```
 
