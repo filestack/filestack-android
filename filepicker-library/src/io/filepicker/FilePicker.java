@@ -1,10 +1,16 @@
 package io.filepicker;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.app.ActionBar;
+import android.content.*;
+import android.os.Environment;
+import android.view.MenuItem;
 import io.filepicker.R;
 
 import android.net.Uri;
@@ -14,10 +20,6 @@ import android.provider.MediaStore;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff.Mode;
 import android.util.Log;
@@ -41,6 +43,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class FilePicker extends Activity {
+
 	public static final String SAVE_CONTENT = "SAVE_CONTENT";
 
 	public static final String PREFS_NAME = "filepicker";
@@ -59,6 +62,8 @@ public class FilePicker extends Activity {
 	private String displayName = null;
 
 	private static final int CAMERA_REQUEST = 1888;
+
+    private String parent_app_name = "Alcides";
 
 	class ThumbnailLoaderDataHolder {
 		public final String url;
@@ -138,7 +143,7 @@ public class FilePicker extends Activity {
 
 	// Load a new folder
 	class FpapiTask extends AsyncTask<Long, Integer, Folder> {
-		private AuthError authError = null;
+		private AuthError authError = null; //TODO
 
 		@Override
 		protected Folder doInBackground(Long... l) {
@@ -168,6 +173,7 @@ public class FilePicker extends Activity {
 				// Display auth activity
 				Intent intent = new Intent(FilePicker.this, AuthActivity.class);
 				intent.putExtra("service", this.authError.getService());
+                intent.putExtra("parent_app", parent_app_name);
 				startActivityForResult(intent, FilePickerAPI.REQUEST_CODE_AUTH);
 				overridePendingTransition(0, 0);
 			} else if (result == null) {
@@ -215,7 +221,7 @@ public class FilePicker extends Activity {
 										intent,
 										FilePickerAPI.REQUEST_CODE_GETFILE_LOCAL);
 							} else if (inode.getDisplayName().equals("Camera")) {
-								Intent intent = new Intent(
+                                /*Intent intent = new Intent(
 										MediaStore.ACTION_IMAGE_CAPTURE);
 								// intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT,
 								// android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -228,7 +234,63 @@ public class FilePicker extends Activity {
 								}
 								intent.putExtra(MediaStore.EXTRA_OUTPUT,
 										imageUri);
-								startActivityForResult(intent, CAMERA_REQUEST);
+								startActivityForResult(intent, CAMERA_REQUEST);*/
+
+                                //TODO PATCH!!
+                                Intent i;
+                                if (hasImageCaptureBug()) {
+
+                                    Uri newImageUri = null;
+
+                                    File path = new File(Environment.getExternalStorageDirectory().getPath() + "/Images/");
+
+                                    path.mkdirs();
+
+                                    boolean setWritable = false;
+
+                                    setWritable = path.setWritable(true, false);
+
+
+                                    File file = new File(path, "Image_Story_" + System.currentTimeMillis() + ".jpg");
+
+
+                                    newImageUri = Uri.fromFile(file);
+
+
+                                    Log.i("MainActivity", "new image uri to string is " + newImageUri.toString());
+
+                                    Log.i("MainActivity", "new image path is " + newImageUri.getPath());
+
+
+
+                                    i = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+
+                                    i.putExtra(MediaStore.EXTRA_OUTPUT, newImageUri);
+
+                                    //i.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, Uri.fromFile(path)));
+                                } else {
+                                    String fileName = "" + System.currentTimeMillis() + ".jpg";
+
+                                    ContentValues values = new ContentValues();
+
+                                    values.put(MediaStore.Images.Media.TITLE, fileName);
+
+                                    values.put(MediaStore.Images.Media.DESCRIPTION, "Image capture by camera");
+
+                                    values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+
+                                    imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+                                    i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                                    i.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+
+                                    i.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
+
+                                    //i.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                }
+                                startActivityForResult(i, CAMERA_REQUEST);
+
 							} else {
 								Intent intent = new Intent(FilePicker.this,
 										FilePicker.class);
@@ -264,6 +326,22 @@ public class FilePicker extends Activity {
 			}
 		}
 	}
+
+    //TODO PATCH!! Camera Uri bugfix
+    public boolean hasImageCaptureBug() {
+
+        // list of known devices that have the bug
+        ArrayList<String> devices = new ArrayList<String>();
+        devices.add("android-devphone1/dream_devphone/dream");
+        devices.add("generic/sdk/generic");
+        devices.add("vodafone/vfpioneer/sapphire");
+        devices.add("tmobile/kila/dream");
+        devices.add("verizon/voles/sholes");
+        devices.add("google_ion/google_ion/sapphire");
+
+        return devices.contains(android.os.Build.BRAND + "/" + android.os.Build.PRODUCT + "/"
+                + android.os.Build.DEVICE);
+    }
 
 	// File selected
 	class PickFileTask extends AsyncTask<String, Integer, FPFile> {
@@ -441,16 +519,16 @@ public class FilePicker extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		//TODO Suggested patch
-		FilePickerAPI.setKey(getIntent().getStringExtra("api_key"));
 
-		if (!FilePickerAPI.isKeySet()) {
+		//TODO Suggested patch
+		FilePickerAPI.setKey(getIntent().getExtras().getString("api_key"));
+
+		/*if (getIntent().getStringExtra("api_key").length()<1) {
 			Toast.makeText(this, "No Filepicker.io API Key set!",
 					Toast.LENGTH_LONG).show();
 			setResult(RESULT_CANCELED);
 			finish();
-		}
+		}*/
 
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 		String sessionCookie = settings.getString("sessionCookie", "");
@@ -472,14 +550,21 @@ public class FilePicker extends Activity {
 				displayName = myIntent.getExtras().getString("display_name");
 			}
 		}
+
+        //TODO PATCH! Only for app style reasons
+        ActionBar ab = getActionBar();
+        parent_app_name = myIntent.getExtras().getString("parent_app");
+        ab.setTitle(parent_app_name);
+        ab.setDisplayHomeAsUpEnabled(true);
+
 		if (path.equals("/")) {
-			setTitle("Please choose a file");
+            ab.setSubtitle("Please choose a file");
 		} else {
 			String[] splitPath = path.split("/");
 			if (displayName != null) {
-				setTitle(displayName);
+                ab.setSubtitle(displayName);
 			} else {
-				setTitle(splitPath[splitPath.length - 1]);
+                ab.setSubtitle(splitPath[splitPath.length - 1]);
 			}
 		}
 
@@ -529,6 +614,16 @@ public class FilePicker extends Activity {
 		new FpapiTask().execute(5L);
 	}
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                onBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 	@Override
 	public void onBackPressed() {
 		super.onBackPressed();
@@ -564,9 +659,29 @@ public class FilePicker extends Activity {
 				setProgressVisible();
 			}
 			break;
-		case CAMERA_REQUEST:
+		case CAMERA_REQUEST: //TODO PATCH for camera bug
+
+            Log.d("Alcides", "CAMERA_REQUEST");
+
 			if (resultCode == RESULT_OK) {
-				new UploadLocalFileTask().execute(imageUri);
+
+                Uri u = null;
+                if (hasImageCaptureBug()) {
+                    File fi = new File("/sdcard/tmp");
+                    try {
+                        u = Uri.parse(android.provider.MediaStore.Images.Media.insertImage(getContentResolver(), fi.getAbsolutePath(), null, null));
+                        if (!fi.delete()) {
+                            Log.i("logMarker", "Failed to delete " + fi);
+                        }
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    u = imageUri;
+                }
+
+
+				new UploadLocalFileTask().execute(u);
 				setProgressVisible();
 				// enableLoading
 			}

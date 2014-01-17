@@ -111,8 +111,8 @@ public class FPFile implements Parcelable {
 	}
 
 	//TODO Suggested solution
-	public FPFile(String localpath, String pathFilename, JSONObject data) {
-		this.localpath = localpath;
+	public FPFile(String string, String pathFilename, JSONObject data) {
+		this.localpath = string;
 		
 		try {
 			this.fpurl = data.getString("url");

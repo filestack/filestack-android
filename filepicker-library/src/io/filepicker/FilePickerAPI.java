@@ -81,7 +81,7 @@ public class FilePickerAPI {
 	}
 
 	public static void setKey(String key) {
-		FPAPIKEY = key;
+		FPAPIKEY = "YOUR_API_KEY_HERE"; //TODO PATCH!!
 		FILE_GET_JS_SESSION_PART = "{\"app\":{\"apikey\":\""
 				+ FPAPIKEY + "\"}";
 	}
@@ -208,7 +208,7 @@ public class FilePickerAPI {
 		boolean thumb_exists = content.optBoolean("thumb_exists", false);
 		if (content.has("disabled"))
 			inode.setDisabled(content.getBoolean("disabled"));
-		String thumbnail = null;
+		String thumbnail;
 		if (thumb_exists) {
 			thumbnail = content.getString("thumbnail");
 			if (!thumbnail.startsWith("http"))
@@ -225,7 +225,11 @@ public class FilePickerAPI {
 
 	public Folder parseFolder(String folderJSON, String path)
 			throws JSONException, AuthError {
+
+        debug("!!!!!!! "+folderJSON);
+
 		JSONObject folder = new JSONObject(folderJSON);
+
 		if (folder.has("auth")) {
 			if (!folder.getBoolean("auth")) {
 				// need to auth
@@ -348,9 +352,7 @@ public class FilePickerAPI {
 							"utf-8"));
 			String response = getStringFromNetworkRequest(httpget);
 			return parseFolder(response, path);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -473,8 +475,16 @@ public class FilePickerAPI {
 			String response = getStringFromNetworkRequest(httppost);
 			
 			//TODO PATCH! Real filename from URI
-			String pathFilename = getRealPathFromURI(context, contentURI);
-			pathFilename = pathFilename.substring(pathFilename.lastIndexOf("/")+1);
+            String pathFilename = "testfile.jpg";
+            if(contentURI!=null) {
+			    pathFilename = getRealPathFromURI(context, contentURI);
+                if(pathFilename!=null)
+			        pathFilename = pathFilename.substring(pathFilename.lastIndexOf("/")+1);
+                else
+                    pathFilename = contentURI.toString().substring(contentURI.toString().lastIndexOf("/")+1);
+            } else {
+                contentURI = Uri.parse("");
+            }
 		
 			JSONObject json = new JSONObject(response);
 			JSONObject data = json.getJSONArray("data").getJSONObject(0);
@@ -496,7 +506,7 @@ public class FilePickerAPI {
 					+ path + "?format=fpurl&js_session="
 					+ URLEncoder.encode(query, "utf-8"));
 			String response = getStringFromNetworkRequest(httpget);
-			// return parseFolder(builder.toString(), path);
+			//return parseFolder(response, path);
 			JSONObject json;
 			try {
 				json = new JSONObject(response);
@@ -507,11 +517,10 @@ public class FilePickerAPI {
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+		} catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
 	}
 
 	// FUCKING ANDROID
@@ -584,6 +593,9 @@ public class FilePickerAPI {
 		AndroidHttpClient httpClient = getHttpClient();
 		try {
 			workAroundReverseDnsBugInHoneycombAndEarlier(httpClient);
+
+            debug(request.getURI().toString());
+
 			HttpResponse httpResponse = httpClient
 					.execute(request, httpContext);
 			if (httpResponse.getStatusLine().getStatusCode() != 200) {
@@ -615,7 +627,7 @@ public class FilePickerAPI {
 
 	}
 	
-	// To get REAL filename from media file ÂÂ
+	// To get REAL filename from media file ï¿½ï¿½
 	public String getRealPathFromURI(Context context, Uri contentUri) {
 		Cursor cursor = null;
 		try { 
