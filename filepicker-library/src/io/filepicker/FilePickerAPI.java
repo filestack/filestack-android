@@ -2,12 +2,14 @@ package io.filepicker;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -52,7 +54,10 @@ public class FilePickerAPI {
 
 	public final static String FPHOSTNAME = "www.filepicker.io";
 	public final static String FPBASEURL = "https://" + FPHOSTNAME + "/";
-	public static String FPAPIKEY = "ADkvlBBC4ReOhGkybgqRHz";//"";
+	
+	//TODO PATCH Better security changed to protected
+	protected static String FPAPIKEY = "ADkvlBBC4ReOhGkybgqRHz";//"";
+	
 	public static String FILE_GET_JS_SESSION_PART = "{\"apikey\":\""
 			+ FPAPIKEY + "\", \"version\":\"v0\"";
 	public final static int REQUEST_CODE_AUTH = 600;
@@ -76,7 +81,7 @@ public class FilePickerAPI {
 	}
 
 	public static void setKey(String key) {
-		FPAPIKEY = key;
+		FPAPIKEY = "YOUR_API_KEY_HERE"; //TODO PATCH!!
 		FILE_GET_JS_SESSION_PART = "{\"app\":{\"apikey\":\""
 				+ FPAPIKEY + "\"}";
 	}
@@ -203,7 +208,7 @@ public class FilePickerAPI {
 		boolean thumb_exists = content.optBoolean("thumb_exists", false);
 		if (content.has("disabled"))
 			inode.setDisabled(content.getBoolean("disabled"));
-		String thumbnail = null;
+		String thumbnail;
 		if (thumb_exists) {
 			thumbnail = content.getString("thumbnail");
 			if (!thumbnail.startsWith("http"))
@@ -220,7 +225,11 @@ public class FilePickerAPI {
 
 	public Folder parseFolder(String folderJSON, String path)
 			throws JSONException, AuthError {
+
+        debug("!!!!!!! "+folderJSON);
+
 		JSONObject folder = new JSONObject(folderJSON);
+
 		if (folder.has("auth")) {
 			if (!folder.getBoolean("auth")) {
 				// need to auth
@@ -343,9 +352,7 @@ public class FilePickerAPI {
 							"utf-8"));
 			String response = getStringFromNetworkRequest(httpget);
 			return parseFolder(response, path);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -390,7 +397,7 @@ public class FilePickerAPI {
 	}
 
 	// Download uri and store into a tmp file
-	public String downloadUrl(String URI, String filename, Context context)
+	public String[] downloadUrl(String URI, String filename, Context context)
 			throws IllegalStateException, IOException {
 		debug("downloadUrl" );
 		HttpGet httpget = new HttpGet(URI.replace(" ", "%20"));
@@ -410,26 +417,30 @@ public class FilePickerAPI {
 				httpClient.close();
 				fout.flush();
 				fout.close();
-				return filePath;
+				String a[] = {filePath, filename};
+				return a;
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 				httpClient.close();
 			}
 		}
-		return "";
+		return null;
 	}
 
-	public void saveFileAs(String path, Uri contentURI, Context context)
-			throws IOException {
+	public void saveFileAs(String path, Uri contentURI, Context context) {
 		debug("saveFileAs" );
-		String url = uploadFileToTemp(contentURI, context).getFPUrl();
-		HttpPost httppost = new HttpPost(URI.create(FPBASEURL + "api/path"
-				+ pathUrlEncode(path) + "?js_session="
-				+ URLEncoder.encode(getJSSessionWithMimetypes("*/*"), "utf-8")));
-		StringEntity entity = new StringEntity("url=" + Uri.encode(url));
-		httppost.setEntity(entity);
-		httppost.setHeader("Content-Type", "application/x-www-form-urlencoded");
-		String response = getStringFromNetworkRequest(httppost);
+		try {
+			String url = uploadFileToTemp(contentURI, context).getFPUrl();
+			HttpPost httppost = new HttpPost(URI.create(FPBASEURL + "api/path"
+					+ pathUrlEncode(path) + "?js_session="
+					+ URLEncoder.encode(getJSSessionWithMimetypes("*/*"), "utf-8")));
+			StringEntity entity = new StringEntity("url=" + Uri.encode(url));
+			httppost.setEntity(entity);
+			httppost.setHeader("Content-Type", "application/x-www-form-urlencoded");
+			String response = getStringFromNetworkRequest(httppost);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private byte[] readBinaryInputStream(InputStream is) throws IOException {
@@ -446,30 +457,44 @@ public class FilePickerAPI {
 
 		return buffer.toByteArray();
 	}
-
-	public FPFile uploadFileToTemp(Uri contentURI, Context context)
-			throws IOException {
+	
+	public FPFile uploadFileToTemp(Uri contentURI, Context context) {
 		debug("uploadFileToTemp");
-		String postUrl = FPBASEURL + "api/path/computer/" + "?js_session="
-				+ URLEncoder.encode(getJSSession(), "utf-8");
-		HttpPost httppost = new HttpPost(URI.create(postUrl));
-		ByteArrayEntity entity = new ByteArrayEntity(
-				readBinaryInputStream(context.getContentResolver()
-						.openInputStream(contentURI)));
-		entity.setContentType("image/jpg");
-		httppost.setEntity(entity);
-		entity.setChunked(false);
-		httppost.setHeader("X-File-Name", "testfile.jpg");
-		httppost.setHeader("Content-Type", "application/octet-stream");
-		String response = getStringFromNetworkRequest(httppost);
 		try {
+			String postUrl = FPBASEURL + "api/path/computer/" + "?js_session="
+					+ URLEncoder.encode(getJSSession(), "utf-8");
+			HttpPost httppost = new HttpPost(URI.create(postUrl));
+			ByteArrayEntity entity = new ByteArrayEntity(
+					readBinaryInputStream(context.getContentResolver()
+							.openInputStream(contentURI)));
+			entity.setContentType("image/jpg");
+			httppost.setEntity(entity);
+			entity.setChunked(false);
+			httppost.setHeader("X-File-Name", "testfile.jpg");
+			httppost.setHeader("Content-Type", "application/octet-stream");
+			String response = getStringFromNetworkRequest(httppost);
+			
+			//TODO PATCH! Real filename from URI
+            String pathFilename = "testfile.jpg";
+            if(contentURI!=null) {
+			    pathFilename = getRealPathFromURI(context, contentURI);
+                if(pathFilename!=null)
+			        pathFilename = pathFilename.substring(pathFilename.lastIndexOf("/")+1);
+                else
+                    pathFilename = contentURI.toString().substring(contentURI.toString().lastIndexOf("/")+1);
+            } else {
+                contentURI = Uri.parse("");
+            }
+		
 			JSONObject json = new JSONObject(response);
 			JSONObject data = json.getJSONArray("data").getJSONObject(0);
-			return new FPFile(contentURI.toString(), data);
-		} catch (JSONException e) {
+			
+			//TODO PATCH!
+			return new FPFile(contentURI.toString(), pathFilename, data);
+		} catch (Exception e) {
 			e.printStackTrace();
-			throw new IOException();
 		}
+		return null;
 	}
 
 	public FPFile getLocalFileForPath(String path, Context context)
@@ -481,7 +506,7 @@ public class FilePickerAPI {
 					+ path + "?format=fpurl&js_session="
 					+ URLEncoder.encode(query, "utf-8"));
 			String response = getStringFromNetworkRequest(httpget);
-			// return parseFolder(builder.toString(), path);
+			//return parseFolder(response, path);
 			JSONObject json;
 			try {
 				json = new JSONObject(response);
@@ -492,11 +517,10 @@ public class FilePickerAPI {
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+		} catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
 	}
 
 	// FUCKING ANDROID
@@ -569,6 +593,9 @@ public class FilePickerAPI {
 		AndroidHttpClient httpClient = getHttpClient();
 		try {
 			workAroundReverseDnsBugInHoneycombAndEarlier(httpClient);
+
+            debug(request.getURI().toString());
+
 			HttpResponse httpResponse = httpClient
 					.execute(request, httpContext);
 			if (httpResponse.getStatusLine().getStatusCode() != 200) {
@@ -598,6 +625,22 @@ public class FilePickerAPI {
 			throw new IOException();
 		}
 
+	}
+	
+	// To get REAL filename from media file ��
+	public String getRealPathFromURI(Context context, Uri contentUri) {
+		Cursor cursor = null;
+		try { 
+			String[] proj = { MediaStore.Images.Media.DATA };
+		    cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
+		    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+		    cursor.moveToFirst();
+		    return cursor.getString(column_index);
+		} finally {
+			if (cursor != null) {
+				cursor.close();
+			}
+		}
 	}
 
 }
