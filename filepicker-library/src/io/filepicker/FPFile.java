@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 public class FPFile implements Parcelable {
 	
@@ -79,6 +80,22 @@ public class FPFile implements Parcelable {
 	 * @param localpath
 	 * @param data
 	 */
+	public FPFile(String[] archive, JSONObject data) {
+		this.localpath = archive[0];
+		
+		try {
+			this.fpurl = data.getString("url");
+			JSONObject fileData = data.getJSONObject("data");
+			this.size = fileData.getLong("size");
+			this.type = fileData.getString("type");
+			this.key = "AE7oXsxqxQTi5dAOrOwiZz";//fileData.getString("key"); TODO PATCH!!
+			this.filename = archive[1];//fileData.getString("filename");  TODO PATCH!!
+		} catch (JSONException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	//TODO PATCH!! (May deprecated by the next method)
 	public FPFile(String localpath, JSONObject data) {
 		this.localpath = localpath;
 		try {
@@ -86,8 +103,24 @@ public class FPFile implements Parcelable {
 			JSONObject fileData = data.getJSONObject("data");
 			this.size = fileData.getLong("size");
 			this.type = fileData.getString("type");
-			this.key = fileData.getString("key");
+			this.key = FilePickerAPI.FPAPIKEY;//fileData.getString("key"); TODO PATCH!!
 			this.filename = fileData.getString("filename");
+		} catch (JSONException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	//TODO Suggested solution
+	public FPFile(String string, String pathFilename, JSONObject data) {
+		this.localpath = string;
+		
+		try {
+			this.fpurl = data.getString("url");
+			JSONObject fileData = data.getJSONObject("data");
+			this.size = fileData.getLong("size");
+			this.type = fileData.getString("type");
+			this.key = FilePickerAPI.FPAPIKEY;//fileData.getString("key"); TODO PATCH!!
+			this.filename = pathFilename;//fileData.getString("filename");  TODO PATCH!!
 		} catch (JSONException e) {
 			throw new RuntimeException(e);
 		}

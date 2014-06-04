@@ -1,13 +1,11 @@
 package io.filepicker;
 
-import io.filepicker.R;
-
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.MenuItem;
-import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
@@ -19,15 +17,20 @@ public class AuthActivity extends Activity {
 	
 	@SuppressLint("SetJavaScriptEnabled")
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) { //TODO no autentica
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_file_picker_auth);
-		// getActionBar().setDisplayHomeAsUpEnabled(true);
+
 		Intent myIntent = getIntent();
 		if (myIntent.getExtras().containsKey("service")) {
 			service = myIntent.getExtras().getString("service");
 			WebView webview = (WebView) findViewById(R.id.webView1);
-			setTitle("Please Authenticate");
+
+            ActionBar ab = getActionBar();
+            ab.setTitle(myIntent.getExtras().getString("parent_app"));
+            ab.setSubtitle("Please Authenticate");
+            ab.setDisplayHomeAsUpEnabled(true);
+
 			webview.getSettings().setJavaScriptEnabled(true);
 			webview.setWebViewClient(new WebViewClient() {
 				//keep redirects in our app
