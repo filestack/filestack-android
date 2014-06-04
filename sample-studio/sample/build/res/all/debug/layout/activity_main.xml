@@ -12,39 +12,44 @@
 
     <Button
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Go to File Picker"
+        android:layout_height="0dp"
+        android:text="Run File Picker"
         android:id="@+id/button"
-        android:onClick="onClick"
-        android:layout_marginBottom="10dp"/>
+        android:onClick="runFilePicker"
+        android:layout_marginBottom="10dp"
+        android:layout_weight="1" />
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="File path : "
-        android:id="@+id/textView2" />
+        android:id="@+id/textView2"
+        android:layout_weight="1" />
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="-------"
-        android:id="@+id/filePathtextView" />
+        android:id="@+id/filePathtextView"
+        android:layout_weight="1" />
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Ink File Url"
-        android:id="@+id/textView3"/>
+        android:id="@+id/textView3"
+        android:layout_weight="1" />
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="------"
-        android:id="@+id/inkfileUrltextView" />
+        android:id="@+id/inkfileUrltextView"
+        android:layout_weight="1" />
 
 </LinearLayout>
-<!-- From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/sample/src/main/res/layout/activity_main.xml -->
+<!-- From: file:/Users/maciejwitowski/Documents/filepicker-android/sample-studio/sample/src/main/res/layout/activity_main.xml -->

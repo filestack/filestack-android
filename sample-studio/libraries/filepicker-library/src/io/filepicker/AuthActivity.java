@@ -2,6 +2,7 @@ package io.filepicker;
 
 import io.filepicker.R;
 
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -27,7 +28,12 @@ public class AuthActivity extends Activity {
 		if (myIntent.getExtras().containsKey("service")) {
 			service = myIntent.getExtras().getString("service");
 			WebView webview = (WebView) findViewById(R.id.webView1);
-			setTitle("Please Authenticate");
+
+            ActionBar ab = getActionBar();
+            ab.setTitle(myIntent.getExtras().getString("parent_app"));
+            ab.setSubtitle("Please Authenticate");
+            ab.setDisplayHomeAsUpEnabled(true);
+
 			webview.getSettings().setJavaScriptEnabled(true);
 			webview.setWebViewClient(new WebViewClient() {
 				//keep redirects in our app

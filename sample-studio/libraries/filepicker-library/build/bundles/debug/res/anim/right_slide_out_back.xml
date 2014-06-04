@@ -5,4 +5,4 @@
         android:toXDelta="0"
         android:duration="@string/file_picker_animation_duration"
     />
-</set><!-- From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/libraries/filepicker-library/res/anim/right_slide_out_back.xml -->
+</set><!-- From: file:/Users/maciejwitowski/Documents/filepicker-android/sample-studio/libraries/filepicker-library/res/anim/right_slide_out_back.xml -->

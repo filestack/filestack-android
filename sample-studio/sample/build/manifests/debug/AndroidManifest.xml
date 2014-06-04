@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="io.filepicker.sample">
+<!-- From: file:/Users/maciejwitowski/Documents/filepicker-android/sample-studio/sample/src/main/AndroidManifest.xml --><manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="io.filepicker.sample">
 
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="18"/>
 
@@ -11,6 +11,7 @@
             </intent-filter>
         </activity>
 
+        <!-- From: file:/Users/maciejwitowski/Documents/filepicker-android/sample-studio/sample/build/exploded-aar/sample-studio.libraries/filepicker-library/unspecified/AndroidManifest.xml -->
         <activity android:label="@string/title_activity_file_picker" android:name="io.filepicker.FilePicker">
             <intent-filter>
                 <action android:name="android.intent.action.GET_CONTENT"/>
@@ -25,9 +26,14 @@
         <activity android:label="@string/title_activity_file_picker_auth" android:name="io.filepicker.AuthActivity">
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value="FilePicker"/>
         </activity>
+        <!-- From: file:/Users/maciejwitowski/Documents/filepicker-android/sample-studio/sample/src/main/AndroidManifest.xml -->
+        
     </application>
 
+    <!-- From: file:/Users/maciejwitowski/Documents/filepicker-android/sample-studio/sample/build/exploded-aar/sample-studio.libraries/filepicker-library/unspecified/AndroidManifest.xml -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <!-- From: file:/Users/maciejwitowski/Documents/filepicker-android/sample-studio/sample/src/main/AndroidManifest.xml -->
+    
 
 </manifest>

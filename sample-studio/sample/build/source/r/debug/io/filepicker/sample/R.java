@@ -17,14 +17,8 @@ public final class R {
     public static final class attr {
     }
     public static final class dimen {
-        /**  From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/sample/src/main/res/values/dimens.xml 
- From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/sample/src/main/res/values-sw720dp-land/dimens.xml 
-         */
         public static final int activity_horizontal_margin=0x7f050000;
         public static final int activity_vertical_margin=0x7f050001;
-        /**  From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/sample/build/exploded-bundles/SampleStudioLibrariesFilepickerLibraryUnspecified.aar/res/values/values.xml 
- From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/sample/build/exploded-bundles/SampleStudioLibrariesFilepickerLibraryUnspecified.aar/res/values-large/values.xml 
-         */
         public static final int padding_large=0x7f050002;
         public static final int padding_medium=0x7f050003;
         public static final int padding_small=0x7f050004;
@@ -75,42 +69,27 @@ public final class R {
         public static final int main=0x7f080000;
     }
     public static final class string {
-        /**  From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/sample/src/main/res/values/strings.xml 
-         */
         public static final int action_settings=0x7f060000;
         public static final int app_name=0x7f060001;
-        /**  From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/sample/build/exploded-bundles/SampleStudioLibrariesFilepickerLibraryUnspecified.aar/res/values/values.xml 
-         */
         public static final int file_picker_animation_duration=0x7f060002;
-        /**  From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/sample/src/main/res/values/strings.xml 
-         */
         public static final int hello_world=0x7f060003;
-        /**  From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/sample/build/exploded-bundles/SampleStudioLibrariesFilepickerLibraryUnspecified.aar/res/values/values.xml 
-         */
         public static final int menu_settings=0x7f060004;
         public static final int title_activity_file_picker=0x7f060005;
         public static final int title_activity_file_picker_auth=0x7f060006;
     }
     public static final class style {
-        /**  From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/sample/src/main/res/values/styles.xml 
-
+        /** 
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
             backward-compatibility can go here.
         
- From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/sample/src/main/res/values-v11/styles.xml 
  API 11 theme customizations can go here. 
- From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/sample/src/main/res/values-v14/styles.xml 
  API 14 theme customizations can go here. 
          */
         public static final int AppBaseTheme=0x7f070000;
         /**  All customizations that are NOT specific to a particular API-level can go here. 
          */
         public static final int AppTheme=0x7f070001;
-        /**  From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/sample/build/exploded-bundles/SampleStudioLibrariesFilepickerLibraryUnspecified.aar/res/values/values.xml 
- From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/sample/build/exploded-bundles/SampleStudioLibrariesFilepickerLibraryUnspecified.aar/res/values-v11/values.xml 
- From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/sample/build/exploded-bundles/SampleStudioLibrariesFilepickerLibraryUnspecified.aar/res/values-v14/values.xml 
-         */
         public static final int AppThemeFilePicker=0x7f070002;
     }
 }

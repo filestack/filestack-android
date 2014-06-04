@@ -17,9 +17,6 @@ public final class R {
     public static final class attr {
     }
     public static final class dimen {
-        /**  From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/libraries/filepicker-library/res/values/dimens.xml 
- From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/libraries/filepicker-library/res/values-large/dimens.xml 
-         */
         public static int padding_large=0x7f050000;
         public static int padding_medium=0x7f050001;
         public static int padding_small=0x7f050002;
@@ -60,8 +57,6 @@ public final class R {
         public static int activity_file_picker_saveas=0x7f030002;
     }
     public static final class string {
-        /**  From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/libraries/filepicker-library/res/values/strings.xml 
-         */
         public static int app_name=0x7f060000;
         public static int file_picker_animation_duration=0x7f060001;
         public static int menu_settings=0x7f060002;
@@ -69,10 +64,6 @@ public final class R {
         public static int title_activity_file_picker_auth=0x7f060004;
     }
     public static final class style {
-        /**  From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/libraries/filepicker-library/res/values/styles.xml 
- From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/libraries/filepicker-library/res/values-v11/styles.xml 
- From: file:/Users/imranmohammed/Documents/filepicker-android/sample-studio/libraries/filepicker-library/res/values-v14/styles.xml 
-         */
         public static int AppThemeFilePicker=0x7f070000;
     }
 }
