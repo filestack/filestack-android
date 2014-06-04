@@ -6,6 +6,9 @@ import org.json.JSONObject;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 public class FPFile implements Parcelable {
 	
 	private final String localpath;
@@ -79,27 +82,64 @@ public class FPFile implements Parcelable {
 	 * @param localpath
 	 * @param data
 	 */
+
+    /* The methods below come from pull request
+
+     */
+    public FPFile(String[] archive, JSONObject data) {
+        this.localpath = archive[0];
+
+        try {
+            this.fpurl = data.getString("url");
+            JSONObject fileData = data.getJSONObject("data");
+            this.size = fileData.getLong("size");
+            this.type = fileData.getString("type");
+            this.key = FilePickerAPI.FPAPIKEY;
+            this.filename = archive[1];
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+            }
+    }
+
+    public FPFile(String string, String pathFilename, JSONObject data) {
+        this.localpath = string;
+
+        try {
+            this.fpurl = data.getString("url");
+            JSONObject fileData = data.getJSONObject("data");
+            this.size = fileData.getLong("size");
+            this.type = fileData.getString("type");
+            this.key = FilePickerAPI.FPAPIKEY;//fileData.getString("key"); TODO PATCH!!
+            this.filename = pathFilename;//fileData.getString("filename");  TODO PATCH!!
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /*
+        End of pull request
+     */
 	public FPFile(String localpath, JSONObject data) {
 		this.localpath = localpath;
 		try {
-			this.fpurl = data.getString("url");
+            this.fpurl = data.getString("url");
 			JSONObject fileData = data.getJSONObject("data");
 			this.size = fileData.getLong("size");
 			this.type = fileData.getString("type");
-			this.key = fileData.getString("key");
+            this.key = FilePickerAPI.FPAPIKEY;
 			this.filename = fileData.getString("filename");
 		} catch (JSONException e) {
 			throw new RuntimeException(e);
 		}
-	}
+    }
 
 	public String getLocalPath() {
 		return this.localpath;
 	}
 
 	public String getFPUrl() {
-		return this.fpurl;
-	}
+        return this.fpurl;
+    }
 
 	public long getSize() {
 		return this.size;
