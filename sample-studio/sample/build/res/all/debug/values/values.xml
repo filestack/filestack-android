@@ -45,5 +45,9 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
+    <!-- From: file:/Users/maciejwitowski/Documents/filepicker-android/sample-studio/sample/build/exploded-aar/sample-studio.libraries/filepicker-library/unspecified/res/values/values.xml -->
+    <eat-comment />
+
+    <style name="AppThemeFilePicker" parent="android:Theme.Light" />
 
 </resources>

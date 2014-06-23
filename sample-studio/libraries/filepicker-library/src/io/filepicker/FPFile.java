@@ -91,10 +91,10 @@ public class FPFile implements Parcelable {
 
         try {
             this.fpurl = data.getString("url");
-            JSONObject fileData = data.getJSONObject("data");
-            this.size = fileData.getLong("size");
-            this.type = fileData.getString("type");
-            this.key = FilePickerAPI.FPAPIKEY;
+            this.size = data.getLong("size");
+            this.type = data.getString("type");
+            String[] urlBits = this.fpurl.split("/");
+            this.key = urlBits[urlBits.length-1];//FilePickerAPI.FPAPIKEY;
             this.filename = archive[1];
         } catch (JSONException e) {
             throw new RuntimeException(e);
