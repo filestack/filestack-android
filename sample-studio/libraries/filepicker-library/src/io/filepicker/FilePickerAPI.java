@@ -56,7 +56,7 @@ public class FilePickerAPI {
 	public final static String FPBASEURL = "https://" + FPHOSTNAME + "/";
 
     //TODO PATCH Better security changed to protected
-    protected static String FPAPIKEY = "ADkvlBBC4ReOhGkybgqRHz";//"";
+    protected static String FPAPIKEY;
 
 	public static String FILE_GET_JS_SESSION_PART = "{\"apikey\":\""
 			+ FPAPIKEY + "\", \"version\":\"v0\"";
@@ -81,8 +81,10 @@ public class FilePickerAPI {
 	}
 
 	public static void setKey(String key) {
-		FPAPIKEY = key;
-		FILE_GET_JS_SESSION_PART = "{\"app\":{\"apikey\":\""
+        if(key != null) {
+            FPAPIKEY = key;
+        }
+        FILE_GET_JS_SESSION_PART = "{\"app\":{\"apikey\":\""
 				+ FPAPIKEY + "\"}";
 	}
 
@@ -123,11 +125,11 @@ public class FilePickerAPI {
 	public ArrayList<Service> getProviders() {
 		ArrayList<Service> services = new ArrayList<Service>();
 		services.add(new Service("Gallery", "/Gallery/",
-				new String[] { "image/*" }, R.drawable.glyphicons_008_film,
-				false, ""));
+                new String[]{"image/*"}, R.drawable.glyphicons_008_film,
+                false, ""));
 		services.add(new Service("Camera", "/Camera/",
-				new String[] { "image/jpg" }, R.drawable.glyphicons_011_camera,
-				false, ""));
+                new String[]{"image/jpg"}, R.drawable.glyphicons_011_camera,
+                false, ""));
 		services.add(new Service("Dropbox", "/Dropbox/",
 				new String[] { "*/*" }, R.drawable.glyphicons_361_dropbox,
 				true, "dropbox"));
