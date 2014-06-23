@@ -161,25 +161,26 @@
 
                 <string name="file_picker_animation_duration" >400
                 </string>
-                <string name="title_activity_file_picker_auth" >FilepickerAuthActivity
-                </string>
                 <string name="app_name" >FilepickerDroid
+                </string>
+                <string name="title_activity_file_picker_auth" >FilepickerAuthActivity
                 </string>
 
                 <dimen name="padding_small" >8dp
                 </dimen>
 
-                <style
-                    name="AppThemeFilePicker"
-                    parent="android:Theme.Light" />
-
                 <string name="menu_settings" >Settings
-                </string>
-                <string name="title_activity_file_picker" >Filepicker
                 </string>
 
                 <dimen name="padding_large" >16dp
                 </dimen>
+
+                <string name="title_activity_file_picker" >Filepicker
+                </string>
+
+                <style
+                    name="AppTheme"
+                    parent="android:Theme.Light" />
             </file>
             <file
                 path="/Users/maciejwitowski/Documents/filepicker-android/sample-studio/sample/build/exploded-aar/sample-studio.libraries/filepicker-library/unspecified/res/values-large/values.xml"
@@ -196,7 +197,7 @@
                 qualifiers="v11" >
 
                 <style
-                    name="AppThemeFilePicker"
+                    name="AppTheme"
                     parent="android:Theme.Holo.Light" />
             </file>
             <file
@@ -204,7 +205,7 @@
                 qualifiers="v14" >
 
                 <style
-                    name="AppThemeFilePicker"
+                    name="AppTheme"
                     parent="android:Theme.Holo.Light.DarkActionBar" />
             </file>
         </source>
