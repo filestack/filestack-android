@@ -23,7 +23,8 @@
                 <data android:mimeType="*/*"/>
             </intent-filter>
         </activity>
-        <activity android:label="@string/title_activity_file_picker_auth" android:name="io.filepicker.AuthActivity">
+        <activity android:label="@string/title_activity_file_picker_auth" android:name="io.filepicker.AuthActivity" android:parentActivityName="io.filepicker.FilePicker">
+            <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value="FilePicker"/>
         </activity>
         <!-- From: file:/Users/maciejwitowski/Documents/filepicker-android/sample-studio/sample/src/main/AndroidManifest.xml -->
