@@ -67,7 +67,11 @@ public class FilePicker extends Activity {
 
 	private static final int CAMERA_REQUEST = 1888;
 
-	class ThumbnailLoaderDataHolder {
+    public static void setParentAppName(String parentAppName) {
+        parentAppName = parentAppName;
+    }
+
+    class ThumbnailLoaderDataHolder {
 		public final String url;
 		public final ImageView imgv;
 
