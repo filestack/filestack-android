@@ -52,7 +52,7 @@ import org.json.JSONObject;
 
 public class FilePickerAPI {
 
-	public final static String FPHOSTNAME = "www.filepicker.io";
+	public final static String FPHOSTNAME = "dialog.filepicker.io";
 	public final static String FPBASEURL = "https://" + FPHOSTNAME + "/";
 
     //TODO PATCH Better security changed to protected
