@@ -1,4 +1,4 @@
-filepicker-android v1.0.1
+filepicker-android v1.1.0
 =======================
 
 Android version of filepicker.  Allow your users to pull in their content from Dropbox, Facebook, and more!
