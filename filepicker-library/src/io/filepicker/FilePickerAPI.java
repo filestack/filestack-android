@@ -52,595 +52,596 @@ import org.json.JSONObject;
 
 public class FilePickerAPI {
 
-	public final static String FPHOSTNAME = "www.filepicker.io";
-	public final static String FPBASEURL = "https://" + FPHOSTNAME + "/";
-	
-	//TODO PATCH Better security changed to protected
-	protected static String FPAPIKEY = "ADkvlBBC4ReOhGkybgqRHz";//"";
-	
-	public static String FILE_GET_JS_SESSION_PART = "{\"apikey\":\""
-			+ FPAPIKEY + "\", \"version\":\"v0\"";
-	public final static int REQUEST_CODE_AUTH = 600;
-	public final static int REQUEST_CODE_GETFILE = 601;
-	public final static int REQUEST_CODE_SAVEFILE = 602;
-	public final static int REQUEST_CODE_GETFILE_LOCAL = 603;
+    public final static String FPHOSTNAME = "dialog.filepicker.io";
+    public final static String FPBASEURL = "https://" + FPHOSTNAME + "/";
 
-	private static FilePickerAPI filepickerapi = null;
-	private final HttpContext httpContext;
-	private final CookieStore cookieStore;
-	private static FixedSizeList<PrecacheTask> precacheTaskList = new FixedSizeList<PrecacheTask>(
-			16); // FIXME: arbitrary constant
-	private static String TAG = "FilePickerAPI";
-	public static final boolean debug = true;
+    //TODO PATCH Better security changed to protected
+    protected static String FPAPIKEY;
 
-	public static FilePickerAPI getInstance() {
-		if (filepickerapi == null)
-			return filepickerapi = new FilePickerAPI();
-		else
-			return filepickerapi;
-	}
+    public static String FILE_GET_JS_SESSION_PART = "{\"apikey\":\""
+            + FPAPIKEY + "\", \"version\":\"v0\"";
+    public final static int REQUEST_CODE_AUTH = 600;
+    public final static int REQUEST_CODE_GETFILE = 601;
+    public final static int REQUEST_CODE_SAVEFILE = 602;
+    public final static int REQUEST_CODE_GETFILE_LOCAL = 603;
 
-	public static void setKey(String key) {
-		FPAPIKEY = "YOUR_API_KEY_HERE"; //TODO PATCH!!
-		FILE_GET_JS_SESSION_PART = "{\"app\":{\"apikey\":\""
-				+ FPAPIKEY + "\"}";
-	}
+    private static FilePickerAPI filepickerapi = null;
+    private final HttpContext httpContext;
+    private final CookieStore cookieStore;
+    private static FixedSizeList<PrecacheTask> precacheTaskList = new FixedSizeList<PrecacheTask>(
+            16); // FIXME: arbitrary constant
+    private static String TAG = "FilePickerAPI";
+    public static final boolean debug = true;
 
-	protected static boolean isKeySet() {
-		return FPAPIKEY.length() > 0;
-	}
+    public static FilePickerAPI getInstance() {
+        if (filepickerapi == null)
+            return filepickerapi = new FilePickerAPI();
+        else
+            return filepickerapi;
+    }
 
-	protected static void debug(String msg) {
-		if (debug)
-			Log.d(TAG, msg);
-	}
+    public static void setKey(String key) {
+        if(key != null) {
+            FPAPIKEY = key;
+        }
+        FILE_GET_JS_SESSION_PART = "{\"app\":{\"apikey\":\""
+                + FPAPIKEY + "\"}";
+    }
 
-	private String getJSSession() {
-		return FILE_GET_JS_SESSION_PART + "}";
-	}
+    protected static boolean isKeySet() {
+        return FPAPIKEY.length() > 0;
+    }
 
-	private String getJSSessionWithOption(String s) {
-		return FILE_GET_JS_SESSION_PART + "," + s + "}";
-	}
+    protected static void debug(String msg) {
+        if (debug)
+            Log.d(TAG, msg);
+    }
 
-	private String getJSSessionWithMimetypes(String mimetype) {
-		return getJSSessionWithOption("\"mimetypes\": [\"" + mimetype + "\"]");
-	}
+    private String getJSSession() {
+        return FILE_GET_JS_SESSION_PART + "}";
+    }
 
-	private FilePickerAPI() {
-		cookieStore = new BasicCookieStore();
-		httpContext = new BasicHttpContext();
-		httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
-	}
+    private String getJSSessionWithOption(String s) {
+        return FILE_GET_JS_SESSION_PART + "," + s + "}";
+    }
 
-	public void setSessionCookie(String sessionCookie) {
-		BasicClientCookie cookie = new BasicClientCookie("session",
-				sessionCookie);
-		cookie.setDomain(FilePickerAPI.FPHOSTNAME);
-		cookieStore.addCookie(cookie);
-	}
+    private String getJSSessionWithMimetypes(String mimetype) {
+        return getJSSessionWithOption("\"mimetypes\": [\"" + mimetype + "\"]");
+    }
 
-	public ArrayList<Service> getProviders() {
-		ArrayList<Service> services = new ArrayList<Service>();
-		services.add(new Service("Gallery", "/Gallery/",
-				new String[] { "image/*" }, R.drawable.glyphicons_008_film,
-				false, ""));
-		services.add(new Service("Camera", "/Camera/",
-				new String[] { "image/jpg" }, R.drawable.glyphicons_011_camera,
-				false, ""));
-		services.add(new Service("Dropbox", "/Dropbox/",
-				new String[] { "*/*" }, R.drawable.glyphicons_361_dropbox,
-				true, "dropbox"));
-		services.add(new Service("Facebook", "/Facebook/",
-				new String[] { "image/*" }, R.drawable.glyphicons_390_facebook,
-				true, "facebook"));
-		services.add(new Service("Instagram", "/Instagram/",
-				new String[] { "image/*" }, R.drawable.instagram,
-				true, "instagram"));
-		services.add(new Service("Flickr", "/Flickr/",
-				new String[] { "image/*" }, R.drawable.glyphicons_395_flickr,
-				true, "flickr"));
-		services.add(new Service("Picasa", "/Picasa/",
-				new String[] { "image/*" }, R.drawable.glyphicons_366_picasa,
-				true, "picasa"));
-		services.add(new Service("Box", "/Box/", new String[] { "*/*" },
-				R.drawable.glyphicons_154_show_big_thumbnails, true, "box"));
-		services.add(new Service("Gmail", "/Gmail/", new String[] { "*/*" },
-				R.drawable.glyphicons_399_email, false, "gmail"));
-		services.add(new Service("Github", "/Github/", new String[] { "*/*" },
-				R.drawable.glyphicons_381_github, false, "github"));
-		services.add(new Service("Google Drive", "/GDrive/",
-				new String[] { "*/*" }, R.drawable.gdrive, false, "github"));
-		return services;
-	}
+    private FilePickerAPI() {
+        cookieStore = new BasicCookieStore();
+        httpContext = new BasicHttpContext();
+        httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+    }
 
-	private boolean isInstanceOf(String child, String parent) {
-		child = child.toLowerCase();
-		parent = parent.toLowerCase();
-		if (parent.equals("*/*"))
-			return true;
-		try {
-			String p_base = parent.split("/")[0];
-			if (parent.contains("*"))
-				return child.startsWith(p_base);
-			else
-				return child.equals(parent);
-		} catch (ArrayIndexOutOfBoundsException e) {
-		}
-		return false;
+    public void setSessionCookie(String sessionCookie) {
+        BasicClientCookie cookie = new BasicClientCookie("session",
+                sessionCookie);
+        cookie.setDomain(FilePickerAPI.FPHOSTNAME);
+        cookieStore.addCookie(cookie);
+    }
 
-	}
+    public ArrayList<Service> getProviders() {
+        ArrayList<Service> services = new ArrayList<Service>();
+        services.add(new Service("Gallery", "/Gallery/",
+                new String[]{"image/*"}, R.drawable.glyphicons_008_film,
+                false, ""));
+        services.add(new Service("Camera", "/Camera/",
+                new String[]{"image/jpg"}, R.drawable.glyphicons_011_camera,
+                false, ""));
+        services.add(new Service("Dropbox", "/Dropbox/",
+                new String[] { "*/*" }, R.drawable.glyphicons_361_dropbox,
+                true, "dropbox"));
+        services.add(new Service("Facebook", "/Facebook/",
+                new String[] { "image/*" }, R.drawable.glyphicons_390_facebook,
+                true, "facebook"));
+        services.add(new Service("Instagram", "/Instagram/",
+                new String[] { "image/*" }, R.drawable.instagram,
+                true, "instagram"));
+        services.add(new Service("Flickr", "/Flickr/",
+                new String[] { "image/*" }, R.drawable.glyphicons_395_flickr,
+                true, "flickr"));
+        services.add(new Service("Picasa", "/Picasa/",
+                new String[] { "image/*" }, R.drawable.glyphicons_366_picasa,
+                true, "picasa"));
+        services.add(new Service("Box", "/Box/", new String[] { "*/*" },
+                R.drawable.glyphicons_154_show_big_thumbnails, true, "box"));
+        services.add(new Service("Gmail", "/Gmail/", new String[] { "*/*" },
+                R.drawable.glyphicons_399_email, false, "gmail"));
+        services.add(new Service("Github", "/Github/", new String[] { "*/*" },
+                R.drawable.glyphicons_381_github, false, "github"));
+        services.add(new Service("Google Drive", "/GDrive/",
+                new String[] { "*/*" }, R.drawable.gdrive, false, "gdrive"));
+        return services;
+    }
 
-	public Service[] getProvidersForMimetype(String mimetype, boolean save) {
-		ArrayList<Service> services = new ArrayList<Service>();
-		for (Service s : getProviders()) {
-			for (String m : s.getMimetypes()) {
-				if (isInstanceOf(mimetype, m) || isInstanceOf(m, mimetype)) {
-					if (!(save && !s.isSaveSupported())) {
-						services.add(s);
-						break;
-					}
-				}
-			}
-		}
-		return services.toArray(new Service[services.size()]);
-	}
+    private boolean isInstanceOf(String child, String parent) {
+        child = child.toLowerCase();
+        parent = parent.toLowerCase();
+        if (parent.equals("*/*"))
+            return true;
+        try {
+            String p_base = parent.split("/")[0];
+            if (parent.contains("*"))
+                return child.startsWith(p_base);
+            else
+                return child.equals(parent);
+        } catch (ArrayIndexOutOfBoundsException e) {
+        }
+        return false;
 
-	public Inode[] getProvidersForServiceArray(String[] selectedServices) {
-		ArrayList<Service> services = new ArrayList<Service>();
-		for (Service s : getProviders()) {
-			for (String selectedService : selectedServices) {
-				if (s.getDisplayName().equals(selectedService)) {
-					services.add(s);
-					break;
-				}
-			}
-		}
-		return services.toArray(new Service[services.size()]);
-	}
+    }
 
-	private Inode inodeForJSONObject(JSONObject content) throws JSONException {
-		debug("inodeForJSONObject: " + content.toString() );
-		String displayName = content.getString("display_name");
-		String path = content.getString("link_path");
-		boolean is_dir = content.getBoolean("is_dir");
-		Inode inode = new Inode(displayName, path, is_dir);
-		boolean thumb_exists = content.optBoolean("thumb_exists", false);
-		if (content.has("disabled"))
-			inode.setDisabled(content.getBoolean("disabled"));
-		String thumbnail;
-		if (thumb_exists) {
-			thumbnail = content.getString("thumbnail");
-			if (!thumbnail.startsWith("http"))
-				thumbnail = FPBASEURL + thumbnail; // pathUrlEncode(thumbnail).replace("%3F",
-			// "?").replace(
-			// "%3D", "=");
-			inode.setThumb_exists(thumb_exists); // true
-			inode.setThumbnail(thumbnail);
-		} else if (is_dir) {
-			// special case?
-		}
-		return inode;
-	}
+    public Service[] getProvidersForMimetype(String mimetype, boolean save) {
+        ArrayList<Service> services = new ArrayList<Service>();
+        for (Service s : getProviders()) {
+            for (String m : s.getMimetypes()) {
+                if (isInstanceOf(mimetype, m) || isInstanceOf(m, mimetype)) {
+                    if (!(save && !s.isSaveSupported())) {
+                        services.add(s);
+                        break;
+                    }
+                }
+            }
+        }
+        return services.toArray(new Service[services.size()]);
+    }
 
-	public Folder parseFolder(String folderJSON, String path)
-			throws JSONException, AuthError {
+    // Takes a list of desired services as strings and returns array of them as Service class objects
+    public Inode[] getProvidersForServiceArray(String[] selectedServices) {
+        ArrayList<Service> services = new ArrayList<Service>();
+        for (Service s : getProviders()) {
+            for (String selectedService : selectedServices) {
+                if (s.getDisplayName().equals(selectedService)) {
+                    services.add(s);
+                    break;
+                }
+            }
+        }
+        return services.toArray(new Service[services.size()]);
+    }
 
-        debug("!!!!!!! "+folderJSON);
+    private Inode inodeForJSONObject(JSONObject content) throws JSONException {
+        debug("inodeForJSONObject: " + content.toString() );
+        String displayName = content.getString("display_name");
+        String path = content.getString("link_path");
+        boolean is_dir = content.getBoolean("is_dir");
+        Inode inode = new Inode(displayName, path, is_dir);
+        boolean thumb_exists = content.optBoolean("thumb_exists", false);
+        if (content.has("disabled"))
+            inode.setDisabled(content.getBoolean("disabled"));
+        String thumbnail;
+        if (thumb_exists) {
+            thumbnail = content.getString("thumbnail");
+            if (!thumbnail.startsWith("http"))
+                thumbnail = FPBASEURL + thumbnail; // pathUrlEncode(thumbnail).replace("%3F",
+            // "?").replace(
+            // "%3D", "=");
+            inode.setThumb_exists(thumb_exists); // true
+            inode.setThumbnail(thumbnail);
+        } else if (is_dir) {
+            // special case?
+        }
+        return inode;
+    }
 
-		JSONObject folder = new JSONObject(folderJSON);
+    public Folder parseFolder(String folderJSON, String path)
+            throws JSONException, AuthError {
+        JSONObject folder = new JSONObject(folderJSON);
+        if (folder.has("auth")) {
+            if (!folder.getBoolean("auth")) {
+                // need to auth
+                String service = folder.getString("client");
+                throw new AuthError(path, service);
+            }
+        }
+        if (folder.has("contents")) {
+            JSONArray contents = folder.getJSONArray("contents");
+            Inode[] inodes = new Inode[contents.length()];
+            for (int i = 0; i < contents.length(); i++) {
+                JSONObject content = contents.optJSONObject(i);
+                inodes[i] = inodeForJSONObject(content);
+            }
 
-		if (folder.has("auth")) {
-			if (!folder.getBoolean("auth")) {
-				// need to auth
-				String service = folder.getString("client");
-				throw new AuthError(path, service);
-			}
-		}
-		if (folder.has("contents")) {
-			JSONArray contents = folder.getJSONArray("contents");
-			Inode[] inodes = new Inode[contents.length()];
-			for (int i = 0; i < contents.length(); i++) {
-				JSONObject content = contents.optJSONObject(i);
-				inodes[i] = inodeForJSONObject(content);
-			}
+            String view;
+            if (folder.has("view"))
+                view = folder.getString("view");
+            else
+                view = "list";
 
-			String view;
-			if (folder.has("view"))
-				view = folder.getString("view");
-			else
-				view = "list";
+            String filename = path;
+            if (folder.has("filename"))
+                filename = folder.getString("filename");
 
-			String filename = path;
-			if (folder.has("filename"))
-				filename = folder.getString("filename");
+            return new Folder(inodes, view, filename);
+        } else {
+            return null;
+        }
+    }
 
-			return new Folder(inodes, view, filename);
-		} else {
-			return null;
-		}
-	}
+    public Bitmap getThumbnail(String url) {
+        try {
+            HttpGet httpget = new HttpGet(url);
+            AndroidHttpClient httpClient = getHttpClient();
+            workAroundReverseDnsBugInHoneycombAndEarlier(httpClient);
+            HttpResponse httpResponse;
+            httpResponse = httpClient.execute(httpget, httpContext);
+            if (httpResponse.getStatusLine().getStatusCode() != 200) {
+                debug("Http error: "
+                        + httpResponse.getStatusLine().getStatusCode());
+                httpClient.close();
+            } else {
+                Bitmap bitmap = BitmapFactory.decodeStream(httpResponse
+                        .getEntity().getContent());
+                httpClient.close();
+                return bitmap;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-	public Bitmap getThumbnail(String url) {
-		try {
-			HttpGet httpget = new HttpGet(url);
-			AndroidHttpClient httpClient = getHttpClient();
-			workAroundReverseDnsBugInHoneycombAndEarlier(httpClient);
-			HttpResponse httpResponse;
-			httpResponse = httpClient.execute(httpget, httpContext);
-			if (httpResponse.getStatusLine().getStatusCode() != 200) {
-				debug("Http error: "
-						+ httpResponse.getStatusLine().getStatusCode());
-				httpClient.close();
-			} else {
-				Bitmap bitmap = BitmapFactory.decodeStream(httpResponse
-						.getEntity().getContent());
-				httpClient.close();
-				return bitmap;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (IllegalStateException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+    public String pathUrlEncode(String path) {
+        try {
+            return URLEncoder.encode(path, "utf-8").replace("+", "%20")
+                    .replace("%2F", "/");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return path;
+    }
 
-	public String pathUrlEncode(String path) {
-		try {
-			return URLEncoder.encode(path, "utf-8").replace("+", "%20")
-					.replace("%2F", "/");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		return path;
-	}
+    class PrecacheTask extends AsyncTask<String, Integer, Folder> {
 
-	class PrecacheTask extends AsyncTask<String, Integer, Folder> {
+        @Override
+        protected Folder doInBackground(String... args) {
+            if (args.length != 2) {
+                debug("Invalid arguments to precachetask");
+                return null;
+            }
+            try {
+                Folder folder = getPath(args[0], args[1]);
+                if (folder == null)
+                    return null;
+                DataCache.getInstance().put(args[0] + args[1], folder);
+                return folder;
+            } catch (AuthError e) {
+                debug("Auth error: not caching");
+                return null;
+            }
+        }
+    }
 
-		@Override
-		protected Folder doInBackground(String... args) {
-			if (args.length != 2) {
-				debug("Invalid arguments to precachetask");
-				return null;
-			}
-			try {
-				Folder folder = getPath(args[0], args[1]);
-				if (folder == null)
-					return null;
-				DataCache.getInstance().put(args[0] + args[1], folder);
-				return folder;
-			} catch (AuthError e) {
-				debug("Auth error: not caching");
-				return null;
-			}
-		}
-	}
+    @SuppressLint("NewApi")
+    public PrecacheTask precache(String path, String mimetypes) {
+        if (DataCache.getInstance().get(path + mimetypes) != null)
+            return null;
+        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+        PrecacheTask task = new PrecacheTask();
+        if (SDK_INT >= 12)
+            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, path,
+                    mimetypes);
+        else
+            task.execute(path, mimetypes);
+        PrecacheTask oldTask = precacheTaskList.add(task);
+        if (oldTask != null) {
+            if (oldTask.getStatus() != AsyncTask.Status.FINISHED) {
+                // oldTask.cancel(true);
+                oldTask.cancel(false);
+            }
+        }
+        return task;
+    }
 
-	@SuppressLint("NewApi")
-	public PrecacheTask precache(String path, String mimetypes) {
-		if (DataCache.getInstance().get(path + mimetypes) != null)
-			return null;
-		int SDK_INT = android.os.Build.VERSION.SDK_INT;
-		PrecacheTask task = new PrecacheTask();
-		if (SDK_INT >= 12)
-			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, path,
-					mimetypes);
-		else
-			task.execute(path, mimetypes);
-		PrecacheTask oldTask = precacheTaskList.add(task);
-		if (oldTask != null) {
-			if (oldTask.getStatus() != AsyncTask.Status.FINISHED) {
-				// oldTask.cancel(true);
-				oldTask.cancel(false);
-			}
-		}
-		return task;
-	}
-
-	public Folder getPath(String path, String mimetypes) throws AuthError {
-		debug("getPath path: " + path);
-		Folder cached = DataCache.getInstance().get(path + mimetypes);
-		if (cached != null)
-			return cached;
-		try {
-			HttpGet httpget = new HttpGet(FPBASEURL
-					+ "api/path"
-					+ pathUrlEncode(path)
-					+ "?format=info&js_session="
-					+ URLEncoder.encode(getJSSessionWithMimetypes(mimetypes),
-							"utf-8"));
-			String response = getStringFromNetworkRequest(httpget);
-			return parseFolder(response, path);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+    // Get cached data from path
+    public Folder getPath(String path, String mimetypes) throws AuthError {
+        debug("getPath path: " + path);
+        Folder cached = DataCache.getInstance().get(path + mimetypes);
+        if (cached != null)
+            return cached;
+        try {
+            HttpGet httpget = new HttpGet(FPBASEURL
+                    + "api/path"
+                    + pathUrlEncode(path)
+                    + "?format=info&js_session="
+                    + URLEncoder.encode(getJSSessionWithMimetypes(mimetypes),
+                    "utf-8"));
+            String response = getStringFromNetworkRequest(httpget);
+            return parseFolder(response, path);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 
-	public void unauth(Service service) {
-		HttpGet httpget = new HttpGet(FPBASEURL + "api/client/" + service.getServiceId() + "/unauth/");
-		try {
-			getStringFromNetworkRequest(httpget);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    public void unauth(Service service) {
+        HttpGet httpget = new HttpGet(FPBASEURL + "api/client/" + service.getServiceId() + "/unauth/");
+        try {
+            getStringFromNetworkRequest(httpget);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-	private File getTempFileForName(String filename, Context context) {
-		debug("getTempFileForName" );
-		boolean mExternalStorageAvailable = false;
-		boolean mExternalStorageWriteable = false;
-		String state = Environment.getExternalStorageState();
+    private File getTempFileForName(String filename, Context context) {
+        debug("getTempFileForName" );
+        boolean mExternalStorageAvailable = false;
+        boolean mExternalStorageWriteable = false;
+        String state = Environment.getExternalStorageState();
 
-		if (Environment.MEDIA_MOUNTED.equals(state)) {
-			// We can read and write the media
-			mExternalStorageAvailable = mExternalStorageWriteable = true;
-		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-			// We can only read the media
-			mExternalStorageAvailable = true;
-			mExternalStorageWriteable = false;
-		} else {
-			// Something else is wrong. It may be one of many other states, but all we need
-			//  to know is we can neither read nor write
-			mExternalStorageAvailable = mExternalStorageWriteable = false;
-		}
-		File dir = null;
-		if (mExternalStorageWriteable) {
-			dir = context.getExternalCacheDir();
-		} else {
-			dir = context.getCacheDir();
-		}
-		File tempFile = new File(dir, filename);
-		return tempFile;
-	}
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            // We can read and write the media
+            mExternalStorageAvailable = mExternalStorageWriteable = true;
+        } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            // We can only read the media
+            mExternalStorageAvailable = true;
+            mExternalStorageWriteable = false;
+        } else {
+            // Something else is wrong. It may be one of many other states, but all we need
+            //  to know is we can neither read nor write
+            mExternalStorageAvailable = mExternalStorageWriteable = false;
+        }
+        File dir = null;
+        if (mExternalStorageWriteable) {
+            dir = context.getExternalCacheDir();
+        } else {
+            dir = context.getCacheDir();
+        }
+        File tempFile = new File(dir, filename);
+        return tempFile;
+    }
 
-	// Download uri and store into a tmp file
-	public String[] downloadUrl(String URI, String filename, Context context)
-			throws IllegalStateException, IOException {
-		debug("downloadUrl" );
-		HttpGet httpget = new HttpGet(URI.replace(" ", "%20"));
-		AndroidHttpClient httpClient = getHttpClient();
-		HttpResponse httpResponse = httpClient.execute(httpget, httpContext);
-		if (httpResponse.getStatusLine().getStatusCode() != 200) {
-			debug("Http error: " + httpResponse.getStatusLine().getStatusCode());
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					httpResponse.getEntity().getContent()));
-			debug("Readline: " + reader.readLine());
-		} else {
-			try {
-				File f = getTempFileForName(filename, context);
-				String filePath = f.getPath();
-				FileOutputStream fout = new FileOutputStream(f);
-				httpResponse.getEntity().writeTo(fout);
-				httpClient.close();
-				fout.flush();
-				fout.close();
-				String a[] = {filePath, filename};
-				return a;
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-				httpClient.close();
-			}
-		}
-		return null;
-	}
+    // Download uri and store into a tmp file
+    public String[] downloadUrl(String URI, String filename, Context context)
+            throws IllegalStateException, IOException {
+        debug("downloadUrl" );
+        HttpGet httpget = new HttpGet(URI.replace(" ", "%20"));
+        AndroidHttpClient httpClient = getHttpClient();
+        HttpResponse httpResponse = httpClient.execute(httpget, httpContext);
+        if (httpResponse.getStatusLine().getStatusCode() != 200) {
+            debug("Http error: " + httpResponse.getStatusLine().getStatusCode());
+            BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    httpResponse.getEntity().getContent()));
+            debug("Readline: " + reader.readLine());
+        } else {
+            try {
+                File f = getTempFileForName(filename, context);
+                String filePath = f.getPath();
+                FileOutputStream fout = new FileOutputStream(f);
+                httpResponse.getEntity().writeTo(fout);
+                httpClient.close();
+                fout.flush();
+                fout.close();
+                String a[] = {filePath, filename};
+                return a;
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                httpClient.close();
+            }
+        }
+        return null;
+    }
 
-	public void saveFileAs(String path, Uri contentURI, Context context) {
-		debug("saveFileAs" );
-		try {
-			String url = uploadFileToTemp(contentURI, context).getFPUrl();
-			HttpPost httppost = new HttpPost(URI.create(FPBASEURL + "api/path"
-					+ pathUrlEncode(path) + "?js_session="
-					+ URLEncoder.encode(getJSSessionWithMimetypes("*/*"), "utf-8")));
-			StringEntity entity = new StringEntity("url=" + Uri.encode(url));
-			httppost.setEntity(entity);
-			httppost.setHeader("Content-Type", "application/x-www-form-urlencoded");
-			String response = getStringFromNetworkRequest(httppost);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    public void saveFileAs(String path, Uri contentURI, Context context) {
+        debug("saveFileAs" );
+        try {
+            String url = uploadFileToTemp(contentURI, context).getFPUrl();
+            HttpPost httppost = new HttpPost(URI.create(FPBASEURL + "api/path"
+                    + pathUrlEncode(path) + "?js_session="
+                    + URLEncoder.encode(getJSSessionWithMimetypes("*/*"), "utf-8")));
+            StringEntity entity = new StringEntity("url=" + Uri.encode(url));
+            httppost.setEntity(entity);
+            httppost.setHeader("Content-Type", "application/x-www-form-urlencoded");
+            String response = getStringFromNetworkRequest(httppost);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	private byte[] readBinaryInputStream(InputStream is) throws IOException {
-		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    private byte[] readBinaryInputStream(InputStream is) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
-		int nRead;
-		byte[] data = new byte[16384];
+        int nRead;
+        byte[] data = new byte[16384];
 
-		while ((nRead = is.read(data, 0, data.length)) != -1) {
-			buffer.write(data, 0, nRead);
-		}
+        while ((nRead = is.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
 
-		buffer.flush();
+        buffer.flush();
 
-		return buffer.toByteArray();
-	}
-	
-	public FPFile uploadFileToTemp(Uri contentURI, Context context) {
-		debug("uploadFileToTemp");
-		try {
-			String postUrl = FPBASEURL + "api/path/computer/" + "?js_session="
-					+ URLEncoder.encode(getJSSession(), "utf-8");
-			HttpPost httppost = new HttpPost(URI.create(postUrl));
-			ByteArrayEntity entity = new ByteArrayEntity(
-					readBinaryInputStream(context.getContentResolver()
-							.openInputStream(contentURI)));
-			entity.setContentType("image/jpg");
-			httppost.setEntity(entity);
-			entity.setChunked(false);
-			httppost.setHeader("X-File-Name", "testfile.jpg");
-			httppost.setHeader("Content-Type", "application/octet-stream");
-			String response = getStringFromNetworkRequest(httppost);
-			
-			//TODO PATCH! Real filename from URI
+        return buffer.toByteArray();
+    }
+
+    public FPFile uploadFileToTemp(Uri contentURI, Context context){
+        debug("uploadFileToTemp");
+        try{
+            String postUrl = FPBASEURL + "api/path/computer/" + "?js_session="
+                    + URLEncoder.encode(getJSSession(), "utf-8");
+            HttpPost httppost = new HttpPost(URI.create(postUrl));
+            ByteArrayEntity entity = new ByteArrayEntity(
+                    readBinaryInputStream(context.getContentResolver()
+                            .openInputStream(contentURI)));
+            entity.setContentType("image/jpg");
+            httppost.setEntity(entity);
+            entity.setChunked(false);
+            httppost.setHeader("X-File-Name", "file" + "testfile.jpg");
+            httppost.setHeader("Content-Type",  "application/octet-stream");
+            String response = getStringFromNetworkRequest(httppost);
+
+            //TODO PATCH! Real filename from URI
             String pathFilename = "testfile.jpg";
             if(contentURI!=null) {
-			    pathFilename = getRealPathFromURI(context, contentURI);
-                if(pathFilename!=null)
-			        pathFilename = pathFilename.substring(pathFilename.lastIndexOf("/")+1);
+                pathFilename = getRealPathFromURI(context, contentURI);
+                if(pathFilename != null)
+                    pathFilename = pathFilename.substring(pathFilename.lastIndexOf("/")+1);
                 else
                     pathFilename = contentURI.toString().substring(contentURI.toString().lastIndexOf("/")+1);
             } else {
                 contentURI = Uri.parse("");
             }
-		
-			JSONObject json = new JSONObject(response);
-			JSONObject data = json.getJSONArray("data").getJSONObject(0);
-			
-			//TODO PATCH!
-			return new FPFile(contentURI.toString(), pathFilename, data);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+            JSONObject json = new JSONObject(response);
+            JSONObject data = json.getJSONArray("data").getJSONObject(0);
 
-	public FPFile getLocalFileForPath(String path, Context context)
-			throws AuthError {
-		debug("getLocalFileForPath" );
-		try {
-			String query = getJSSession();
-			HttpGet httpget = new HttpGet(FPBASEURL + "api/path"
-					+ path + "?format=fpurl&js_session="
-					+ URLEncoder.encode(query, "utf-8"));
-			String response = getStringFromNetworkRequest(httpget);
-			//return parseFolder(response, path);
-			JSONObject json;
-			try {
-				json = new JSONObject(response);
-				debug("getLocalFileForPath: " + json.toString() );
-				String url = json.getString("url");
-				String filename = json.getString("filename");
-				return new FPFile(downloadUrl(url, filename, context), json);
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-		} catch (Exception e) {
+            //TODO PATCH!
+            return new FPFile(contentURI.toString(), pathFilename, data);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
-	}
+    }
 
-	// FUCKING ANDROID
-	private void workAroundReverseDnsBugInHoneycombAndEarlier(HttpClient client) {
-		int SDK_INT = android.os.Build.VERSION.SDK_INT;
-		if (SDK_INT >= 14) // working on ICS and greater
-			return;
-		// Android had a bug where HTTPS made reverse DNS lookups (fixed in Ice
-		// Cream Sandwich)
-		// http://code.google.com/p/android/issues/detail?id=13117
-		SocketFactory socketFactory = new LayeredSocketFactory() {
-			SSLSocketFactory delegate = SSLSocketFactory.getSocketFactory();
+    public FPFile getLocalFileForPath(String path, Context context)
+            throws AuthError {
+        debug("getLocalFileForPath" );
+        try {
+            String query = getJSSession();
+            HttpGet httpget = new HttpGet(FPBASEURL + "api/path"
+                    + path + "?format=fpurl&js_session="
+                    + URLEncoder.encode(query, "utf-8"));
+            String response = getStringFromNetworkRequest(httpget);
+            // return parseFolder(response, path);
+            JSONObject json;
+            try {
+                json = new JSONObject(response);
+                debug("getLocalFileForPath: " + json.toString() );
+                String url = json.getString("url");
+                String filename = json.getString("filename");
+                return new FPFile(downloadUrl(url, filename, context), json);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
-			// @Override
-			@Override
-			public Socket createSocket() throws IOException {
-				System.out.println("CREATE SOCKET");
-				return delegate.createSocket();
-			}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-			// @Override
-			@Override
-			public Socket connectSocket(Socket sock, String host, int port,
-					InetAddress localAddress, int localPort, HttpParams params)
-							throws IOException {
-				return delegate.connectSocket(sock, host, port, localAddress,
-						localPort, params);
-			}
+    // FUCKING ANDROID
+    private void workAroundReverseDnsBugInHoneycombAndEarlier(HttpClient client) {
+        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+        if (SDK_INT >= 14) // working on ICS and greater
+            return;
+        // Android had a bug where HTTPS made reverse DNS lookups (fixed in Ice
+        // Cream Sandwich)
+        // http://code.google.com/p/android/issues/detail?id=13117
+        SocketFactory socketFactory = new LayeredSocketFactory() {
+            SSLSocketFactory delegate = SSLSocketFactory.getSocketFactory();
 
-			// @Override
-			@Override
-			public boolean isSecure(Socket sock)
-					throws IllegalArgumentException {
-				return delegate.isSecure(sock);
-			}
+            // @Override
+            @Override
+            public Socket createSocket() throws IOException {
+                System.out.println("CREATE SOCKET");
+                return delegate.createSocket();
+            }
 
-			// @Override
-			@Override
-			public Socket createSocket(Socket socket, String host, int port,
-					boolean autoClose) throws IOException {
-				injectHostname(socket, host);
-				return delegate.createSocket(socket, host, port, autoClose);
-			}
+            // @Override
+            @Override
+            public Socket connectSocket(Socket sock, String host, int port,
+                                        InetAddress localAddress, int localPort, HttpParams params)
+                    throws IOException {
+                return delegate.connectSocket(sock, host, port, localAddress,
+                        localPort, params);
+            }
 
-			private void injectHostname(Socket socket, String host) {
-				try {
-					Field field = InetAddress.class
-							.getDeclaredField("hostName");
-					field.setAccessible(true);
-					field.set(socket.getInetAddress(), host);
-				} catch (Exception ignored) {
-				}
-			}
-		};
-		client.getConnectionManager().getSchemeRegistry()
-		.register(new Scheme("https", socketFactory, 443));
-	}
+            // @Override
+            @Override
+            public boolean isSecure(Socket sock)
+                    throws IllegalArgumentException {
+                return delegate.isSecure(sock);
+            }
 
-	private AndroidHttpClient getHttpClient() {
-		AndroidHttpClient httpClient = AndroidHttpClient.newInstance("");
-		workAroundReverseDnsBugInHoneycombAndEarlier(httpClient);
-		// ConnManagerParams.setMaxTotalConnections(params, 20);
-		return httpClient;
-	}
+            // @Override
+            @Override
+            public Socket createSocket(Socket socket, String host, int port,
+                                       boolean autoClose) throws IOException {
+                injectHostname(socket, host);
+                return delegate.createSocket(socket, host, port, autoClose);
+            }
+
+            private void injectHostname(Socket socket, String host) {
+                try {
+                    Field field = InetAddress.class
+                            .getDeclaredField("hostName");
+                    field.setAccessible(true);
+                    field.set(socket.getInetAddress(), host);
+                } catch (Exception ignored) {
+                }
+            }
+        };
+        client.getConnectionManager().getSchemeRegistry()
+                .register(new Scheme("https", socketFactory, 443));
+    }
+
+    private AndroidHttpClient getHttpClient() {
+        AndroidHttpClient httpClient = AndroidHttpClient.newInstance("");
+        workAroundReverseDnsBugInHoneycombAndEarlier(httpClient);
+        // ConnManagerParams.setMaxTotalConnections(params, 20);
+        return httpClient;
+    }
 
 
-	private String getStringFromNetworkRequest(HttpUriRequest request)
-			throws IOException {
-		AndroidHttpClient.modifyRequestToAcceptGzipResponse(request);
-		AndroidHttpClient httpClient = getHttpClient();
-		try {
-			workAroundReverseDnsBugInHoneycombAndEarlier(httpClient);
-
+    private String getStringFromNetworkRequest(HttpUriRequest request)
+            throws IOException {
+        AndroidHttpClient.modifyRequestToAcceptGzipResponse(request);
+        AndroidHttpClient httpClient = getHttpClient();
+        try {
+            workAroundReverseDnsBugInHoneycombAndEarlier(httpClient);
             debug(request.getURI().toString());
+            HttpResponse httpResponse = httpClient
+                    .execute(request, httpContext);
+            if (httpResponse.getStatusLine().getStatusCode() != 200) {
+                debug("Http error: "
+                        + httpResponse.getStatusLine().getStatusCode());
+                throw new IOException();
+            } else {
+                // success
+                HttpEntity responseEntity = httpResponse.getEntity();
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(
+                                AndroidHttpClient
+                                        .getUngzippedContent(responseEntity)));
+                StringBuilder builder = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    builder.append(line);
+                }
 
-			HttpResponse httpResponse = httpClient
-					.execute(request, httpContext);
-			if (httpResponse.getStatusLine().getStatusCode() != 200) {
-				debug("Http error: "
-						+ httpResponse.getStatusLine().getStatusCode());
-				throw new IOException();
-			} else {
-				// success
-				HttpEntity responseEntity = httpResponse.getEntity();
-				BufferedReader reader = new BufferedReader(
-						new InputStreamReader(
-								AndroidHttpClient
-								.getUngzippedContent(responseEntity)));
-				StringBuilder builder = new StringBuilder();
-				String line;
-				while ((line = reader.readLine()) != null) {
-					builder.append(line);
-				}
-				
-				debug("Builder string: " + builder.toString());
-				httpClient.close();
-				return builder.toString();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			httpClient.close();
-			throw new IOException();
-		}
+                debug("Builder string: " + builder.toString());
+                httpClient.close();
+                return builder.toString();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            httpClient.close();
+            throw new IOException();
+        }
 
-	}
-	
-	// To get REAL filename from media file ��
-	public String getRealPathFromURI(Context context, Uri contentUri) {
-		Cursor cursor = null;
-		try { 
-			String[] proj = { MediaStore.Images.Media.DATA };
-		    cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
-		    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-		    cursor.moveToFirst();
-		    return cursor.getString(column_index);
-		} finally {
-			if (cursor != null) {
-				cursor.close();
-			}
-		}
-	}
+    }
+
+    // To get REAL filename from media file ��
+    public String getRealPathFromURI(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = { MediaStore.Images.Media.DATA };
+            cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
 
 }
