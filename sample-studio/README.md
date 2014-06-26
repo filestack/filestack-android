@@ -1,24 +1,23 @@
 This is sample File Picker Application for Android Studio.
 
-1. Add folder libraries/ in the top level folder. (In the same level as settings.gradle).
+This app is already configured to work with filepicker-library.
 
-2. Add project to include in settings.gradle.
+To run:
+1. Download filepicker-library and sample-studio to the same folder.
+
+You can check that the needed dependencies are added in:
+
+a) settings.gradle
 
 ```java
-':libraries:filepicker-library'
+include ':filepicker-library'
+project(':filepicker-library').projectDir = new File(rootProject.projectDir, '../filepicker-library')
 ```
 
-3. Compile project in build.gradle. Add this line in the dependencies.
+b) build.gradle (in dependencies section)
 
 ```java
-compile project(':libraries:filepicker-library')
+compile project(':filepicker-library')
 ```
 
-4. No activities are to added in the manifest. Just the permissions.
-
-```xml
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-```
-
-5. Set your_api_key in the MainActivity.
+2. Set your FILEPICKER_API_KEY and PARENT_APP in MainActivity
