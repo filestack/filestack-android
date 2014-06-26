@@ -21,4 +21,6 @@ This app is already configured to work with filepicker-library.
   compile project(':filepicker-library')
   ```
 
-2. Set your FILEPICKER_API_KEY and PARENT_APP in MainActivity
+2. Set your FILEPICKER_API_KEY and PARENT_APP in MainActivity.
+
+3. Enjoy using FilePicker!
