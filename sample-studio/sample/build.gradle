@@ -14,15 +14,17 @@ repositories {
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.0.3"
-
+    buildToolsVersion '19.0.3'
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion 18
+    }
+    productFlavors {
     }
 }
 
 dependencies {
     compile 'com.android.support:support-v4:19.0.1'
-    compile project(':libraries:filepicker-library')
+    compile project(':filepicker-library')
+    compile 'com.squareup.picasso:picasso:2.3.1'
 }
