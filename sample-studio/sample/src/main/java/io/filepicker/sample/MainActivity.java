@@ -18,8 +18,8 @@ import io.filepicker.FilePickerAPI;
 public class MainActivity extends Activity {
 
     //TODO : Enter your API key here.
-    private static final String FILEPICKER_API_KEY = "A0Cz2me9eTsy3YNsgc5VQz";
-    private static final String PARENT_APP = "I love FilePicker!";
+    private static final String FILEPICKER_API_KEY = "THIS IS A PLACE FOR YOUR API KEY";
+    private static final String PARENT_APP = "THIS IS A PLACE FOR YOUR APP'S NAME";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
