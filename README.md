@@ -45,15 +45,14 @@ import io.filepicker.FilePickerAPI;
 ```
 
 
-###~~Setting the API Key~~###
-~~Before making any filepicker calls, set the api key like so~~
-~~FilePickerAPI.setKey(MY_API_KEY);~~
+###Setting the API Key###
+Before making any filepicker calls, set the api key like so
+FilePickerAPI.setKey(MY_API_KEY);
 
 ###Getting a File###
 Start the activity like this
 ```java
 Intent intent = new Intent(this, FilePicker.class);
-intent.putExtra("api_key", "MY_APY_KEY");
 startActivityForResult(intent, FilePickerAPI.REQUEST_CODE_GETFILE);
 ```
 This behaves just like the GET_CONTENT intent.
