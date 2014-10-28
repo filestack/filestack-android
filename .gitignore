@@ -35,4 +35,8 @@ out*
 # Android Lint Tool configuration file
 lint.xml
 
+# Gradle
+build
+.gradle
+
 
