@@ -16,6 +16,7 @@
 
         <activity
             android:name=".FilePicker"
+            android:launchMode="singleTop"
             android:label="@string/title_activity_file_picker" >
             <intent-filter>
                 <action android:name="android.intent.action.GET_CONTENT" />
@@ -32,7 +33,7 @@
             android:label="@string/title_activity_file_picker_auth" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="FilePicker" />
+                android:value="io.filepicker.FilePicker" />
         </activity>
     </application>
 
