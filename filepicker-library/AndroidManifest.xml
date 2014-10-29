@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="io.filepicker"
     android:versionCode="1"
@@ -13,27 +14,32 @@
     <application
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-
         <activity
-            android:name=".FilePicker"
+            android:name=".old.FilePicker"
             android:label="@string/title_activity_file_picker" >
-            <intent-filter>
-                <action android:name="android.intent.action.GET_CONTENT" />
-                <action android:name="android.intent.action.PICK" />
-
-                <category android:name="android.intent.category.OPENABLE" />
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="*/*" />
-            </intent-filter>
         </activity>
         <activity
-            android:name=".AuthActivity"
+            android:name=".old.AuthActivity"
             android:label="@string/title_activity_file_picker_auth" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="FilePicker" />
         </activity>
+
+        <!-- NEW LIBRARY -->
+        <activity
+            android:name=".Filepicker"
+            android:label="@string/title_activity_content"
+            android:parentActivityName=".Filepicker" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="io.filepicker.Filepicker" />
+        </activity>
+
+        <service
+            android:name=".services.ContentService"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>

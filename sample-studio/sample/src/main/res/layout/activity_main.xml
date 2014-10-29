@@ -19,11 +19,24 @@
         android:onClick="runFilePicker"
         android:layout_marginBottom="10dp" />
 
+    <Button
+        android:layout_width="173dp"
+        android:layout_height="wrap_content"
+        android:text="Run NEW FILE PICKER!!"
+        android:id="@+id/buttonNew"
+        android:onClick="runNewFilePicker"
+        android:layout_marginBottom="10dp" />
+
     <ImageView
         android:layout_width="274dp"
         android:layout_height="wrap_content"
         android:id="@+id/imageResult"
         android:layout_weight="0.61"
         android:focusableInTouchMode="false" />
+
+    <TextView
+        android:id="@+id/tvUrl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>

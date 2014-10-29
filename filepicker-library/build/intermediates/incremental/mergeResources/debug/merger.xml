@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="2" >
+
+    <dataSet config="21.0.0" >
+        <source path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.0/res" />
+    </dataSet>
+    <dataSet config="main" >
+        <source path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res" >
+            <file
+                name="right_slide_in"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/anim/right_slide_in.xml"
+                qualifiers=""
+                type="anim" />
+            <file
+                name="right_slide_in_back"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/anim/right_slide_in_back.xml"
+                qualifiers=""
+                type="anim" />
+            <file
+                name="right_slide_out"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/anim/right_slide_out.xml"
+                qualifiers=""
+                type="anim" />
+            <file
+                name="right_slide_out_back"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/anim/right_slide_out_back.xml"
+                qualifiers=""
+                type="anim" />
+            <file
+                name="footer"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable/footer.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="gdrive"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable/gdrive.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="glyphicons_008_film"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable/glyphicons_008_film.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="glyphicons_011_camera"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable/glyphicons_011_camera.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="glyphicons_036_file"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable/glyphicons_036_file.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="glyphicons_144_folder_open"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable/glyphicons_144_folder_open.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="glyphicons_154_show_big_thumbnails"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable/glyphicons_154_show_big_thumbnails.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="glyphicons_361_dropbox"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable/glyphicons_361_dropbox.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="glyphicons_366_picasa"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable/glyphicons_366_picasa.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="glyphicons_381_github"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable/glyphicons_381_github.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="glyphicons_390_facebook"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable/glyphicons_390_facebook.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="glyphicons_395_flickr"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable/glyphicons_395_flickr.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="glyphicons_399_email"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable/glyphicons_399_email.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="instagram"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable/instagram.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="select"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable/select.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="spinner"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable/spinner.gif"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="ic_action_search"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable-hdpi/ic_action_search.png"
+                qualifiers="hdpi-v4"
+                type="drawable" />
+            <file
+                name="ic_launcher"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable-hdpi/ic_launcher.png"
+                qualifiers="hdpi-v4"
+                type="drawable" />
+            <file
+                name="ic_launcher"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable-ldpi/ic_launcher.png"
+                qualifiers="ldpi-v4"
+                type="drawable" />
+            <file
+                name="ic_action_search"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable-mdpi/ic_action_search.png"
+                qualifiers="mdpi-v4"
+                type="drawable" />
+            <file
+                name="ic_launcher"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable-mdpi/ic_launcher.png"
+                qualifiers="mdpi-v4"
+                type="drawable" />
+            <file
+                name="ic_action_search"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable-xhdpi/ic_action_search.png"
+                qualifiers="xhdpi-v4"
+                type="drawable" />
+            <file
+                name="ic_launcher"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable-xhdpi/ic_launcher.png"
+                qualifiers="xhdpi-v4"
+                type="drawable" />
+            <file
+                name="activity_content"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/layout/activity_content.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="activity_file_picker"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/layout/activity_file_picker.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="activity_file_picker_auth"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/layout/activity_file_picker_auth.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="activity_file_picker_saveas"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/layout/activity_file_picker_saveas.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="fragment_auth"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/layout/fragment_auth.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="fragment_nodes"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/layout/fragment_nodes.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="list_item_node"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/layout/list_item_node.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="thumbnail_item_node"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/layout/thumbnail_item_node.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/values/colors.xml"
+                qualifiers="" >
+                <color name="background_dark" >#2f3840
+                </color>
+            </file>
+            <file
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/values/dimens.xml"
+                qualifiers="" >
+                <dimen name="padding_provider_icon" >6dp
+                </dimen>
+                <dimen name="padding_medium" >8dp
+                </dimen>
+                <dimen name="text_size_provider_name" >16dp
+                </dimen>
+                <dimen name="activity_horizontal_margin" >16dp
+                </dimen>
+                <dimen name="padding_small" >8dp
+                </dimen>
+                <dimen name="activity_vertical_margin" >16dp
+                </dimen>
+                <dimen name="padding_providers_list" >16dp
+                </dimen>
+                <dimen name="padding_large" >16dp
+                </dimen>
+            </file>
+            <file
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/values/strings.xml"
+                qualifiers="" >
+                <string name="action_settings" >Settings
+                </string>
+                <string name="file_picker_animation_duration" >400
+                </string>
+                <string name="uploading_image" >Uploading image...
+                </string>
+                <string name="apikey_missing" >API Key is missing
+                </string>
+                <string name="action_logout" >Logout
+                </string>
+                <string name="title_activity_file_picker_auth" >FilepickerAuthActivity
+                </string>
+                <string name="app_name" >Filepicker
+                </string>
+                <string name="title_activity_content" >Filepicker
+                </string>
+                <string name="title_activity_auth" >AuthActivity
+                </string>
+                <string name="no_internet" >Unexpected error occured. Are you connected to internet?
+                </string>
+                <string name="hello_world" >Hello world!
+                </string>
+                <string name="empty_list_text" >This folder is empty.
+                </string>
+                <string name="title_activity_file_picker" >Filepicker
+                </string>
+            </file>
+            <file
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/values/styles.xml"
+                qualifiers="" >
+
+                <style
+                    name="AppTheme"
+                    parent="android:Theme.Light" />
+            </file>
+            <file
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/values-large/dimens.xml"
+                qualifiers="large-v4" >
+                <dimen name="padding_medium" >16dp
+                </dimen>
+                <dimen name="padding_small" >8dp
+                </dimen>
+                <dimen name="padding_large" >16dp
+                </dimen>
+            </file>
+            <file
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/values-v11/styles.xml"
+                qualifiers="v11" >
+
+                <style
+                    name="AppTheme"
+                    parent="android:Theme.Holo.Light" />
+            </file>
+            <file
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/values-v14/styles.xml"
+                qualifiers="v14" >
+
+                <style
+                    name="AppTheme"
+                    parent="android:Theme.Holo.Light.DarkActionBar" />
+            </file>
+            <file
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/values-w820dp/dimens.xml"
+                qualifiers="w820dp-v13" >
+                <dimen name="activity_horizontal_margin" >64dp
+                </dimen>
+            </file>
+            <file
+                name="filepicker"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/menu/filepicker.xml"
+                qualifiers=""
+                type="menu" />
+        </source>
+        <source path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/build/generated/res/rs/debug" />
+        <source path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/build/generated/res/generated/debug" />
+    </dataSet>
+    <dataSet config="debug" >
+        <source path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/src/debug/res" />
+    </dataSet>
+
+</merger>
