@@ -1,5 +1,6 @@
 package io.filepicker;
 
+import android.content.res.Resources;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -83,20 +84,17 @@ public class FilePicker extends Activity {
 
     class FPInodeView extends LinearLayout {
         public FPInodeView(Context context, Inode inode, boolean thumbnail) {
-            super(FilePicker.this);
-            setMinimumHeight(96);
+            super(context);
             setOrientation(LinearLayout.HORIZONTAL);
             setGravity(Gravity.CENTER_VERTICAL);
 
-            TextView textView = new TextView(FilePicker.this);
-            textView.setTextSize(18.0f);
+            View row = inflate(context, R.layout.row_fpi_node_view, this);
 
+            TextView textView = (TextView) row.findViewById(R.id.nodeTextView);
             textView.setText(inode.getDisplayName());
 
-            ImageView icon = new ImageView(FilePicker.this);
+            ImageView icon = (ImageView) row.findViewById(R.id.nodeImageView);
             icon.setImageResource(inode.getImageResource());
-            icon.setPadding(14, 18, 12, 16);
-            addView(icon);
 
             if (inode.isDisabled())
                 textView.setTextColor(Color.GRAY);
@@ -104,8 +102,6 @@ public class FilePicker extends Activity {
                 textView.setTextColor(Color.WHITE);
                 icon.setColorFilter(0xffffffff, Mode.XOR);
             }
-
-            addView(textView);
 
             if (inode.getIsDir()) {
                 FilePickerAPI.getInstance()
