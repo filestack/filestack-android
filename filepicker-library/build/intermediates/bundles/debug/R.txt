@@ -29,7 +29,8 @@ int drawable ic_launcher 0x7f02000e
 int drawable instagram 0x7f02000f
 int drawable select 0x7f020010
 int drawable spinner 0x7f020011
-int id action_logout 0x7f0a0014
+int id action_logout 0x7f0a0017
+int id btnUploadFiles 0x7f0a0011
 int id button1 0x7f0a0009
 int id container 0x7f0a0000
 int id editText1 0x7f0a0007
@@ -37,7 +38,8 @@ int id emptylistView 0x7f0a000e
 int id fpProgressBar 0x7f0a0001
 int id gridView 0x7f0a000d
 int id gridView1 0x7f0a0003
-int id imageNode 0x7f0a0011
+int id imageFolder 0x7f0a0014
+int id imageNode 0x7f0a0012
 int id linearLayout1 0x7f0a0006
 int id listView 0x7f0a000c
 int id listView1 0x7f0a0002
@@ -46,8 +48,9 @@ int id progressBarAuth 0x7f0a000b
 int id progressBarNode 0x7f0a0010
 int id textView 0x7f0a000f
 int id textView1 0x7f0a0008
-int id thumbNode 0x7f0a0013
-int id tvNodeName 0x7f0a0012
+int id thumbNode 0x7f0a0016
+int id tvFolderName 0x7f0a0015
+int id tvNodeName 0x7f0a0013
 int id webView1 0x7f0a0005
 int id webViewAuth 0x7f0a000a
 int layout activity_content 0x7f030000
@@ -57,7 +60,8 @@ int layout activity_file_picker_saveas 0x7f030003
 int layout fragment_auth 0x7f030004
 int layout fragment_nodes 0x7f030005
 int layout list_item_node 0x7f030006
-int layout thumbnail_item_node 0x7f030007
+int layout thumbnail_item_folder 0x7f030007
+int layout thumbnail_item_node 0x7f030008
 int menu filepicker 0x7f090000
 int string action_logout 0x7f070000
 int string action_settings 0x7f070001

@@ -6,8 +6,7 @@
     android:padding="@dimen/padding_providers_list"
     android:gravity="center_vertical">
 
-
-    <ImageView
+    <io.filepicker.views.SquareImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/imageNode"

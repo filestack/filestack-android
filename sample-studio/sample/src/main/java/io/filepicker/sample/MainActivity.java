@@ -15,9 +15,6 @@ import java.util.ArrayList;
 
 import io.filepicker.Filepicker;
 import io.filepicker.models.FPFile;
-import io.filepicker.old.FilePicker;
-import io.filepicker.old.FilePickerAPI;
-
 
 public class MainActivity extends Activity {
 
@@ -31,10 +28,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
-        FilePickerAPI.setKey(FILEPICKER_API_KEY);
-        FilePicker.setParentAppName(PARENT_APP);
     }
 
     @Override
@@ -42,11 +35,6 @@ public class MainActivity extends Activity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
-    }
-
-    public void runFilePicker(View view) {
-        Intent intent = new Intent(this, FilePicker.class);
-        startActivityForResult(intent, FilePickerAPI.REQUEST_CODE_GETFILE);
     }
 
     public void runNewFilePicker(View view) {
@@ -66,7 +54,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode,
                                     int resultCode, Intent data) {
-        if (requestCode == FilePickerAPI.REQUEST_CODE_GETFILE) {
+        if (requestCode == Filepicker.REQUEST_CODE_GETFILE) {
             if (resultCode != RESULT_OK)
                 //Result was cancelled by the user or there was an error
                 return;

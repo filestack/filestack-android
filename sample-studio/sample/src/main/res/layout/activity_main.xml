@@ -11,19 +11,14 @@
     android:gravity="center_horizontal"
     android:weightSum="1">
 
-    <Button
-        android:layout_width="173dp"
-        android:layout_height="wrap_content"
-        android:text="Run File Picker"
-        android:id="@+id/button"
-        android:onClick="runFilePicker"
-        android:layout_marginBottom="10dp" />
 
     <Button
         android:layout_width="173dp"
         android:layout_height="wrap_content"
-        android:text="Run NEW FILE PICKER!!"
+        android:text="Run File Picker"
         android:id="@+id/buttonNew"
+        android:textColor="#ffffff"
+        android:background="#0099CC"
         android:onClick="runNewFilePicker"
         android:layout_marginBottom="10dp" />
 

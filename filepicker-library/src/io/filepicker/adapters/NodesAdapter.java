@@ -14,11 +14,13 @@ import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
 import io.filepicker.models.Node;
 import io.filepicker.R;
+import io.filepicker.models.PickedFile;
 import io.filepicker.utils.ImageLoader;
 import io.filepicker.utils.PreferencesUtils;
 import io.filepicker.utils.Utils;
@@ -30,13 +32,16 @@ public class NodesAdapter<T> extends ArrayAdapter<T> {
 
     boolean thumbnail = false;
 
+    ArrayList<PickedFile> pickedFiles;
+
     private Activity context;
     private ArrayList<T> nodes;
 
-    public NodesAdapter(Activity context, ArrayList<T> nodes) {
+    public NodesAdapter(Activity context, ArrayList<T> nodes, ArrayList<PickedFile> pickedFiles) {
         super(context, R.layout.list_item_node, nodes);
         this.context = context;
         this.nodes = nodes;
+        this.pickedFiles = pickedFiles;
     }
 
     static class ViewHolder {
@@ -46,7 +51,7 @@ public class NodesAdapter<T> extends ArrayAdapter<T> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         Node node = (Node) nodes.get(position);
         ViewHolder viewHolder;
 
@@ -93,8 +98,23 @@ public class NodesAdapter<T> extends ArrayAdapter<T> {
                 viewHolder.icon.setImageResource(node.getImageResource());
             }
             viewHolder.name.setText(node.getDisplayName());
-
         }
+
+        if(PickedFile.containsPosition(pickedFiles, position)) {
+            convertView.setAlpha(0.2f);
+        } else {
+            convertView.setAlpha(1);
+        }
+
+//        if(clickedElements.contains(new Integer(position))) {
+//            convertView.setAlpha(0.2f);
+//        } else {
+//            convertView.setAlpha(1);
+//        }
+//
+//        if(PreferencesUtils.newInstance(context).getMultiple() && !node.isDir()) {
+//            convertView.setOnClickListener(new HighlightOnClickListener(position));
+//        }
 
         return convertView;
     }
@@ -117,6 +137,28 @@ public class NodesAdapter<T> extends ArrayAdapter<T> {
 
         return layoutId;
     }
+
+//    private class HighlightOnClickListener implements View.OnClickListener {
+//
+//        int position;
+//
+//        public HighlightOnClickListener(int position) {
+//            this.position = position;
+//        }
+//
+//        @Override
+//        public void onClick(View view) {
+//            if (clickedElements.contains(position)) {
+//                clickedElements.remove(new Integer(position));
+//                view.setAlpha(1);
+//            } else {
+//                clickedElements.add(new Integer(position));
+//                view.setAlpha(0.2f);
+//            }
+//        }
+//    }
+
+
 
 
 
