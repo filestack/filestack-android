@@ -101,7 +101,9 @@ public class Filepicker extends FragmentActivity
         } else {
             showProgressBar();
             node = getIntent().getParcelableExtra(NODE_EXTRA);
-            getActionBar().setTitle(node.getDisplayName());
+
+            if(getActionBar() != null)
+                getActionBar().setTitle(node.getDisplayName());
 
             getContent();
         }

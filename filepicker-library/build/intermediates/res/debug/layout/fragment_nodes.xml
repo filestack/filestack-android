@@ -55,8 +55,12 @@
         android:textColor="#ffffff"
         android:background="#0099CC"
         android:id="@+id/btnUploadFiles"
+        android:padding="5dp"
         android:layout_margin="10dp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentRight="true" />
 
 </RelativeLayout>
 <!-- From: file:/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/layout/fragment_nodes.xml -->

@@ -47,7 +47,7 @@ public class MainActivity extends Activity {
 //        String[] services = {"FACEBOOK", "CAMERA", "GMAIL"};
 //        intent.putExtra("services", services);
 
-        intent.putExtra("multiple", true);
+//        intent.putExtra("multiple", true);
         startActivityForResult(intent, Filepicker.REQUEST_CODE_GETFILE);
     }
 
