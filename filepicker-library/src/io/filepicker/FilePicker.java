@@ -203,7 +203,6 @@ public class Filepicker extends FragmentActivity
     }
 
 
-
     private void displayContent(Folder folder) {
         if (getSupportFragmentManager().findFragmentById(android.R.id.content) == null) {
             getSupportFragmentManager().beginTransaction().add(android.R.id.content,

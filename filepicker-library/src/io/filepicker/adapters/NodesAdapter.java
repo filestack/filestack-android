@@ -106,16 +106,6 @@ public class NodesAdapter<T> extends ArrayAdapter<T> {
             convertView.setAlpha(1);
         }
 
-//        if(clickedElements.contains(new Integer(position))) {
-//            convertView.setAlpha(0.2f);
-//        } else {
-//            convertView.setAlpha(1);
-//        }
-//
-//        if(PreferencesUtils.newInstance(context).getMultiple() && !node.isDir()) {
-//            convertView.setOnClickListener(new HighlightOnClickListener(position));
-//        }
-
         return convertView;
     }
 
@@ -137,30 +127,4 @@ public class NodesAdapter<T> extends ArrayAdapter<T> {
 
         return layoutId;
     }
-
-//    private class HighlightOnClickListener implements View.OnClickListener {
-//
-//        int position;
-//
-//        public HighlightOnClickListener(int position) {
-//            this.position = position;
-//        }
-//
-//        @Override
-//        public void onClick(View view) {
-//            if (clickedElements.contains(position)) {
-//                clickedElements.remove(new Integer(position));
-//                view.setAlpha(1);
-//            } else {
-//                clickedElements.add(new Integer(position));
-//                view.setAlpha(0.2f);
-//            }
-//        }
-//    }
-
-
-
-
-
-
 }
