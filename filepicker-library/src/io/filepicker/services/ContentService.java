@@ -7,24 +7,20 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
 import io.filepicker.Filepicker;
+import io.filepicker.api.FpApiClient;
 import io.filepicker.events.ApiErrorEvent;
 import io.filepicker.events.FpFilesReceivedEvent;
 import io.filepicker.events.GetContentEvent;
 import io.filepicker.events.SignedOutEvent;
 import io.filepicker.models.FPFile;
-import io.filepicker.models.Node;
-import io.filepicker.api.FpApiClient;
 import io.filepicker.models.Folder;
+import io.filepicker.models.Node;
 import io.filepicker.models.UploadLocalFileResponse;
 import io.filepicker.utils.Utils;
 import retrofit.Callback;
@@ -51,9 +47,6 @@ public class ContentService extends IntentService {
 
     // Used for upload file action and uri looks like content://<path to local file>
     public static final String EXTRA_FILE_URI = "io.filepicker.services.extra.file_uri";
-
-    // Used for pick file action and path looks like <name of service>/<path to file>
-//    public static final String EXTRA_FILE_PATH = "io.filepicker.services.extra.file_path";
 
     public ContentService() {
         super("ContentService");
@@ -112,18 +105,18 @@ public class ContentService extends IntentService {
         Log.d(LOG_TAG, "handleActionGetContent for path " + node.getLinkPath());
         FpApiClient.getFpApiClient(this)
                 .getFolder(node.getLinkPath(), "info",
-                        FpApiClient.buildJsSession(Filepicker.getApiKey(), ""),
-                        new Callback<Folder>() {
-                            @Override
-                            public void success(Folder folder, retrofit.client.Response response) {
-                                EventBus.getDefault().post(new GetContentEvent(folder));
-                            }
+                    FpApiClient.buildJsSession(Filepicker.getApiKey(), ""),
+                    new Callback<Folder>() {
+                        @Override
+                        public void success(Folder folder, retrofit.client.Response response) {
+                            EventBus.getDefault().post(new GetContentEvent(folder));
+                        }
 
-                            @Override
-                            public void failure(RetrofitError error) {
-                                handleError(error);
-                            }
-                        });
+                        @Override
+                        public void failure(RetrofitError error) {
+                            handleError(error);
+                        }
+                    });
     }
 
     private void handleActionPickFiles(ArrayList<Node> nodes) {
@@ -142,38 +135,38 @@ public class ContentService extends IntentService {
     private void handleActionUploadFile(Uri uri) {
         FpApiClient.getFpApiClient(this)
                 .uploadFile(FpApiClient.buildJsSession(Filepicker.getApiKey(), ""),
-                        getTypedFileFromUri(uri),
-                        new Callback<UploadLocalFileResponse>() {
-                            @Override
-                            public void success(UploadLocalFileResponse object, retrofit.client.Response response) {
-                                ArrayList<FPFile> fpFiles = new ArrayList<FPFile>();
-                                fpFiles.add(object.parseToFpFile());
+                    getTypedFileFromUri(uri),
+                    new Callback<UploadLocalFileResponse>() {
+                        @Override
+                        public void success(UploadLocalFileResponse object, retrofit.client.Response response) {
+                            ArrayList<FPFile> fpFiles = new ArrayList<FPFile>();
+                            fpFiles.add(object.parseToFpFile());
 
-                                EventBus.getDefault().post(new FpFilesReceivedEvent(fpFiles));
-                            }
+                            EventBus.getDefault().post(new FpFilesReceivedEvent(fpFiles));
+                        }
 
-                            @Override
-                            public void failure(RetrofitError error) {
-                                handleError(error);
-                            }
-                        });
+                        @Override
+                        public void failure(RetrofitError error) {
+                            handleError(error);
+                        }
+                    });
     }
 
     private void handleActionLogout (Node node) {
         FpApiClient.getFpApiClient(this)
                 .logout(node.getDisplayName().toLowerCase(),
-                        FpApiClient.buildJsSession(Filepicker.getApiKey(), ""),
-                        new Callback<Object>() {
-                            @Override
-                            public void success(Object fpFile, Response response) {
-                                EventBus.getDefault().post(new SignedOutEvent());
-                            }
+                    FpApiClient.buildJsSession(Filepicker.getApiKey(), ""),
+                    new Callback<Object>() {
+                        @Override
+                        public void success(Object fpFile, Response response) {
+                            EventBus.getDefault().post(new SignedOutEvent());
+                        }
 
-                            @Override
-                            public void failure(RetrofitError error) {
-                                handleError(error);
-                            }
-                        });
+                        @Override
+                        public void failure(RetrofitError error) {
+                            handleError(error);
+                        }
+                    });
     }
 
     private TypedFile getTypedFileFromUri(Uri uri) {
@@ -185,21 +178,6 @@ public class ContentService extends IntentService {
 
     private void handleError(RetrofitError error) {
         EventBus.getDefault().post(new ApiErrorEvent(error));
-    }
-
-    private byte[] readBinaryInputStream(InputStream is) throws IOException {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-
-        int nRead;
-        byte[] data = new byte[16384];
-
-        while ((nRead = is.read(data, 0, data.length)) != -1) {
-            buffer.write(data, 0, nRead);
-        }
-
-        buffer.flush();
-
-        return buffer.toByteArray();
     }
 
     public String getRealPathFromURI(Uri contentUri) {

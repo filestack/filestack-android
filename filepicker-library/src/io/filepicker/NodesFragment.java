@@ -139,25 +139,10 @@ public class NodesFragment extends Fragment {
                     PickedFile pickedFile = new PickedFile(node, position);
 
                     if(canPickMultiple()) {
-                        if (PickedFile.containsPosition(pickedFiles, pickedFile.getPosition())){
-                            PickedFile.removeAtPosition(pickedFiles, position);
-                            view.setAlpha(1);
-
-                        } else {
-                            pickedFiles.add(pickedFile);
-                            view.setAlpha(0.2f);
-
-                        }
-
-
+                        updatePickedList(view, pickedFile);
                         setUploadButton();
-
-
-
                     } else {
-                        showProgressBar();
-                        pickedFiles.add(pickedFile);
-                        getContract().pickFiles(PickedFile.getNodes(pickedFiles));
+                        uploadSingleFile(pickedFile);
                     }
                 }
             }
@@ -235,32 +220,19 @@ public class NodesFragment extends Fragment {
         }
     }
 
-    private void proceedFile(PickedFile file) {
-        // Check if node exists. If so then remove it. If not then add it.
-        if(pickedFiles.contains(file)) {
-            pickedFiles.remove(file);
-        } else {
-            pickedFiles.add(file);
-        }
-
-        // Show/hide upload files button
-        if(canPickMultiple()) {
-            if(pickedFiles.size() > 0) {
-                mUploadFilesButton.setVisibility(View.VISIBLE);
-            } else {
-                mUploadFilesButton.setVisibility(View.GONE);
-            }
-        } else {
-            showProgressBar();
-            getContract().pickFiles(PickedFile.getNodes(pickedFiles));
-        }
+    private void uploadSingleFile(PickedFile pickedFile) {
+        showProgressBar();
+        pickedFiles.add(pickedFile);
+        getContract().pickFiles(PickedFile.getNodes(pickedFiles));
     }
 
-    private void highlightNode(View view) {
-        if (view.getAlpha() == 1) {
-            view.setAlpha(0.2f);
-        } else {
+    private void updatePickedList(View view, PickedFile pickedFile) {
+        if (PickedFile.containsPosition(pickedFiles, pickedFile.getPosition())){
+            PickedFile.removeAtPosition(pickedFiles, pickedFile.getPosition());
             view.setAlpha(1);
+        } else {
+            pickedFiles.add(pickedFile);
+            view.setAlpha(0.2f);
         }
     }
 
