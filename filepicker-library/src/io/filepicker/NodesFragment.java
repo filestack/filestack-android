@@ -1,9 +1,6 @@
 package io.filepicker;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -16,15 +13,14 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import io.filepicker.adapters.NodesAdapter;
 import io.filepicker.models.Node;
+import io.filepicker.models.PickedFile;
 import io.filepicker.utils.PreferencesUtils;
 import io.filepicker.utils.Utils;
 
@@ -54,11 +50,12 @@ public class NodesFragment extends Fragment {
     Node parentNode;
 
     // Used when user can pick many files at once
-    ArrayList<Node> pickedFiles = new ArrayList<Node>();
+    ArrayList<PickedFile> pickedFiles = new ArrayList<PickedFile>();
 
     AbsListView currentView;
     ProgressBar mProgressBar;
     Button mUploadFilesButton;
+    NodesAdapter<Node> nodesAdapter;
 
     public static NodesFragment newInstance(Node parentNode, Node[] nodes, String viewType) {
         NodesFragment frag = new NodesFragment();
@@ -120,8 +117,7 @@ public class NodesFragment extends Fragment {
         if(currentView == null)
             return;
 
-        NodesAdapter<Node> nodesAdapter =
-                new NodesAdapter(getActivity(), nodes);
+        nodesAdapter = new NodesAdapter(getActivity(), nodes, pickedFiles);
 
         if(viewType.equals(THUMBNAILS_VIEW))
             nodesAdapter.setThumbnail(true);
@@ -131,15 +127,38 @@ public class NodesFragment extends Fragment {
         currentView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                view.setEnabled(false);
 
+                // Clicked node object
                 Node node = (Node) parent.getAdapter().getItem(position);
 
-                if(node.isDir()) {
-                    onFolderClicked(node);
+                // If node is dir then open it
+                if (node.isDir()) {
+                    openDir(node);
                 } else {
-                    toggleHighlight(view);
-                    onFileClicked(node);
+                    // Proceed single file
+                    PickedFile pickedFile = new PickedFile(node, position);
+
+                    if(canPickMultiple()) {
+                        if (PickedFile.containsPosition(pickedFiles, pickedFile.getPosition())){
+                            PickedFile.removeAtPosition(pickedFiles, position);
+                            view.setAlpha(1);
+
+                        } else {
+                            pickedFiles.add(pickedFile);
+                            view.setAlpha(0.2f);
+
+                        }
+
+
+                        setUploadButton();
+
+
+
+                    } else {
+                        showProgressBar();
+                        pickedFiles.add(pickedFile);
+                        getContract().pickFiles(PickedFile.getNodes(pickedFiles));
+                    }
                 }
             }
         });
@@ -151,7 +170,7 @@ public class NodesFragment extends Fragment {
             public void onClick(View v) {
                 if(pickedFiles.size() > 0) {
                     showProgressBar();
-                    getContract().pickFiles(pickedFiles);
+                    getContract().pickFiles(PickedFile.getNodes(pickedFiles));
                 }
             }
         });
@@ -159,6 +178,31 @@ public class NodesFragment extends Fragment {
 
     private void showProgressBar() {
         mProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void setUploadButton() {
+        if (pickedFiles.size() > 0) {
+            mUploadFilesButton.setVisibility(View.VISIBLE);
+
+            String btnText;
+            if(pickedFiles.size() == 1) {
+                btnText = "Upload 1 file";
+            } else {
+                btnText = "Upload " + pickedFiles.size() + " files";
+            }
+
+            mUploadFilesButton.setText(btnText);
+        } else {
+            mUploadFilesButton.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        pickedFiles.clear();
+        mUploadFilesButton.setVisibility(View.GONE);
+
+        super.onPause();
     }
 
     @Override
@@ -181,7 +225,7 @@ public class NodesFragment extends Fragment {
         view.findViewById(R.id.emptylistView).setVisibility(View.VISIBLE);
     }
 
-    private void onFolderClicked(Node node) {
+    private void openDir(Node node) {
         if(node.isGallery()){
             getContract().openGallery();
         } else if (node.isCamera()) {
@@ -191,12 +235,12 @@ public class NodesFragment extends Fragment {
         }
     }
 
-    private void onFileClicked(Node node) {
+    private void proceedFile(PickedFile file) {
         // Check if node exists. If so then remove it. If not then add it.
-        if(pickedFiles.contains(node)) {
-            pickedFiles.remove(node);
+        if(pickedFiles.contains(file)) {
+            pickedFiles.remove(file);
         } else {
-            pickedFiles.add(node);
+            pickedFiles.add(file);
         }
 
         // Show/hide upload files button
@@ -208,7 +252,15 @@ public class NodesFragment extends Fragment {
             }
         } else {
             showProgressBar();
-            getContract().pickFiles(pickedFiles);
+            getContract().pickFiles(PickedFile.getNodes(pickedFiles));
+        }
+    }
+
+    private void highlightNode(View view) {
+        if (view.getAlpha() == 1) {
+            view.setAlpha(0.2f);
+        } else {
+            view.setAlpha(1);
         }
     }
 
@@ -216,15 +268,8 @@ public class NodesFragment extends Fragment {
         return PreferencesUtils.newInstance(getActivity()).getMultiple();
     }
 
-    private void toggleHighlight(View view) {
-        if(view.getAlpha() == 1) {
-            view.setAlpha(0.2f);
-        } else {
-            view.setAlpha(1);
-        }
-    }
-
     public Contract getContract() {
         return (Contract) getActivity();
     }
+
 }

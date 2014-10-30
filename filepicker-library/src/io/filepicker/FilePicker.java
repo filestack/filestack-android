@@ -82,7 +82,7 @@ public class Filepicker extends FragmentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_content);
+        setContentView(R.layout.activity_filepicker);
 
         // Restore api key if it was stored
         if(savedInstanceState != null) {
@@ -201,6 +201,8 @@ public class Filepicker extends FragmentActivity
     public void onEvent(SignedOutEvent event) {
         finish();
     }
+
+
 
     private void displayContent(Folder folder) {
         if (getSupportFragmentManager().findFragmentById(android.R.id.content) == null) {

@@ -48,6 +48,15 @@
         android:layout_centerInParent="true"
         android:visibility="gone" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Upload"
+        android:textColor="#ffffff"
+        android:background="#0099CC"
+        android:id="@+id/btnUploadFiles"
+        android:layout_margin="10dp"
+        android:visibility="gone" />
 
 </RelativeLayout>
 <!-- From: file:/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/layout/fragment_nodes.xml -->

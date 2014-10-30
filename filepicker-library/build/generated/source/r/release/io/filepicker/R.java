@@ -30,61 +30,48 @@ public final class R {
         public static int text_size_provider_name=0x7f060007;
     }
     public static final class drawable {
-        public static int footer=0x7f020000;
-        public static int gdrive=0x7f020001;
-        public static int glyphicons_008_film=0x7f020002;
-        public static int glyphicons_011_camera=0x7f020003;
-        public static int glyphicons_036_file=0x7f020004;
-        public static int glyphicons_144_folder_open=0x7f020005;
-        public static int glyphicons_154_show_big_thumbnails=0x7f020006;
-        public static int glyphicons_361_dropbox=0x7f020007;
-        public static int glyphicons_366_picasa=0x7f020008;
-        public static int glyphicons_381_github=0x7f020009;
-        public static int glyphicons_390_facebook=0x7f02000a;
-        public static int glyphicons_395_flickr=0x7f02000b;
-        public static int glyphicons_399_email=0x7f02000c;
-        public static int ic_action_search=0x7f02000d;
-        public static int ic_launcher=0x7f02000e;
-        public static int instagram=0x7f02000f;
-        public static int select=0x7f020010;
-        public static int spinner=0x7f020011;
+        public static int gdrive=0x7f020000;
+        public static int glyphicons_008_film=0x7f020001;
+        public static int glyphicons_011_camera=0x7f020002;
+        public static int glyphicons_036_file=0x7f020003;
+        public static int glyphicons_144_folder_open=0x7f020004;
+        public static int glyphicons_154_show_big_thumbnails=0x7f020005;
+        public static int glyphicons_361_dropbox=0x7f020006;
+        public static int glyphicons_366_picasa=0x7f020007;
+        public static int glyphicons_381_github=0x7f020008;
+        public static int glyphicons_390_facebook=0x7f020009;
+        public static int glyphicons_395_flickr=0x7f02000a;
+        public static int glyphicons_399_email=0x7f02000b;
+        public static int ic_action_search=0x7f02000c;
+        public static int ic_launcher=0x7f02000d;
+        public static int instagram=0x7f02000e;
+        public static int select=0x7f02000f;
     }
     public static final class id {
-        public static int action_logout=0x7f0a0017;
-        public static int btnUploadFiles=0x7f0a0011;
-        public static int button1=0x7f0a0009;
+        public static int action_logout=0x7f0a000f;
+        public static int btnUploadFiles=0x7f0a0009;
         public static int container=0x7f0a0000;
-        public static int editText1=0x7f0a0007;
-        public static int emptylistView=0x7f0a000e;
+        public static int emptylistView=0x7f0a0006;
         public static int fpProgressBar=0x7f0a0001;
-        public static int gridView=0x7f0a000d;
-        public static int gridView1=0x7f0a0003;
-        public static int imageFolder=0x7f0a0014;
-        public static int imageNode=0x7f0a0012;
-        public static int linearLayout1=0x7f0a0006;
-        public static int listView=0x7f0a000c;
-        public static int listView1=0x7f0a0002;
-        public static int progressBar1=0x7f0a0004;
-        public static int progressBarAuth=0x7f0a000b;
-        public static int progressBarNode=0x7f0a0010;
-        public static int textView=0x7f0a000f;
-        public static int textView1=0x7f0a0008;
-        public static int thumbNode=0x7f0a0016;
-        public static int tvFolderName=0x7f0a0015;
-        public static int tvNodeName=0x7f0a0013;
-        public static int webView1=0x7f0a0005;
-        public static int webViewAuth=0x7f0a000a;
+        public static int gridView=0x7f0a0005;
+        public static int imageFolder=0x7f0a000c;
+        public static int imageNode=0x7f0a000a;
+        public static int listView=0x7f0a0004;
+        public static int progressBarAuth=0x7f0a0003;
+        public static int progressBarNode=0x7f0a0008;
+        public static int textView=0x7f0a0007;
+        public static int thumbNode=0x7f0a000e;
+        public static int tvFolderName=0x7f0a000d;
+        public static int tvNodeName=0x7f0a000b;
+        public static int webViewAuth=0x7f0a0002;
     }
     public static final class layout {
-        public static int activity_content=0x7f030000;
-        public static int activity_file_picker=0x7f030001;
-        public static int activity_file_picker_auth=0x7f030002;
-        public static int activity_file_picker_saveas=0x7f030003;
-        public static int fragment_auth=0x7f030004;
-        public static int fragment_nodes=0x7f030005;
-        public static int list_item_node=0x7f030006;
-        public static int thumbnail_item_folder=0x7f030007;
-        public static int thumbnail_item_node=0x7f030008;
+        public static int activity_filepicker=0x7f030000;
+        public static int fragment_auth=0x7f030001;
+        public static int fragment_nodes=0x7f030002;
+        public static int list_item_node=0x7f030003;
+        public static int thumbnail_item_folder=0x7f030004;
+        public static int thumbnail_item_node=0x7f030005;
     }
     public static final class menu {
         public static int filepicker=0x7f090000;

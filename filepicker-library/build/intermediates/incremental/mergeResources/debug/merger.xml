@@ -250,9 +250,9 @@
                 qualifiers="large-v4" >
                 <dimen name="padding_medium" >16dp
                 </dimen>
-                <dimen name="padding_small" >8dp
-                </dimen>
                 <dimen name="padding_large" >16dp
+                </dimen>
+                <dimen name="padding_small" >8dp
                 </dimen>
             </file>
             <file
@@ -282,6 +282,11 @@
                 path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/menu/filepicker.xml"
                 qualifiers=""
                 type="menu" />
+            <file
+                name="thumbnail_item_folder"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/layout/thumbnail_item_folder.xml"
+                qualifiers=""
+                type="layout" />
         </source>
         <source path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/build/generated/res/rs/debug" />
         <source path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/build/generated/res/generated/debug" />

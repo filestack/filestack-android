@@ -73,4 +73,5 @@ public class PreferencesUtils {
     public boolean getMultiple() {
         return getBooleanValue(KEY_MULTIPLE);
     }
+
 }

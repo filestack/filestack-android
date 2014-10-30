@@ -24,11 +24,6 @@
                 qualifiers=""
                 type="anim" />
             <file
-                name="footer"
-                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable/footer.png"
-                qualifiers=""
-                type="drawable" />
-            <file
                 name="gdrive"
                 path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable/gdrive.png"
                 qualifiers=""
@@ -98,66 +93,6 @@
                 path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable/select.png"
                 qualifiers=""
                 type="drawable" />
-            <file
-                name="spinner"
-                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable/spinner.gif"
-                qualifiers=""
-                type="drawable" />
-            <file
-                name="ic_action_search"
-                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable-hdpi/ic_action_search.png"
-                qualifiers="hdpi-v4"
-                type="drawable" />
-            <file
-                name="ic_launcher"
-                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable-hdpi/ic_launcher.png"
-                qualifiers="hdpi-v4"
-                type="drawable" />
-            <file
-                name="ic_launcher"
-                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable-ldpi/ic_launcher.png"
-                qualifiers="ldpi-v4"
-                type="drawable" />
-            <file
-                name="ic_action_search"
-                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable-mdpi/ic_action_search.png"
-                qualifiers="mdpi-v4"
-                type="drawable" />
-            <file
-                name="ic_launcher"
-                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable-mdpi/ic_launcher.png"
-                qualifiers="mdpi-v4"
-                type="drawable" />
-            <file
-                name="ic_action_search"
-                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable-xhdpi/ic_action_search.png"
-                qualifiers="xhdpi-v4"
-                type="drawable" />
-            <file
-                name="ic_launcher"
-                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/drawable-xhdpi/ic_launcher.png"
-                qualifiers="xhdpi-v4"
-                type="drawable" />
-            <file
-                name="activity_content"
-                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/layout/activity_content.xml"
-                qualifiers=""
-                type="layout" />
-            <file
-                name="activity_file_picker"
-                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/layout/activity_file_picker.xml"
-                qualifiers=""
-                type="layout" />
-            <file
-                name="activity_file_picker_auth"
-                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/layout/activity_file_picker_auth.xml"
-                qualifiers=""
-                type="layout" />
-            <file
-                name="activity_file_picker_saveas"
-                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/layout/activity_file_picker_saveas.xml"
-                qualifiers=""
-                type="layout" />
             <file
                 name="fragment_auth"
                 path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/layout/fragment_auth.xml"
@@ -282,6 +217,11 @@
             <file
                 name="thumbnail_item_folder"
                 path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/layout/thumbnail_item_folder.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="activity_filepicker"
+                path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/layout/activity_filepicker.xml"
                 qualifiers=""
                 type="layout" />
         </source>
