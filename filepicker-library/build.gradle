@@ -41,4 +41,49 @@ android {
     }
 }
 
+apply plugin: 'maven'
 
+version = "1.0.0"
+group = "io.filepicker"
+
+configurations {
+    archives {
+        extendsFrom configurations.default
+    }
+}
+
+uploadArchives {
+    configuration = configurations.archives
+    repositories.mavenDeployer {
+        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+        pom.project {
+            name 'Filepicker Android Library'
+            packaging 'aar'
+            description 'Android Library for Filepicker'
+            url 'https://github.com/Ink/filepicker-android'
+
+            scm {
+                url 'scm:git@github.com:Ink/filepicker-android.git'
+                connection 'scm:git@github.com:Ink/filepicker-android.git'
+                developerConnection 'scm:git@github.com:Ink/filepicker-android.git'
+            }
+
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+
+            developers {
+                developer {
+                    id 'maciejwitowski'
+                    name 'Maciej Witowski'
+                    email 'witowski.maciej@gmail.com'
+                }
+            }
+        }
+    }
+}
