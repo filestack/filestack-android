@@ -19,7 +19,7 @@
         android:id="@+id/buttonNew"
         android:textColor="#ffffff"
         android:background="#0099CC"
-        android:onClick="runNewFilePicker"
+        android:onClick="runFilepicker"
         android:layout_marginBottom="10dp" />
 
     <ImageView

@@ -18,9 +18,12 @@ import io.filepicker.models.FPFile;
 
 public class MainActivity extends Activity {
 
-    //TODO : Enter your API key here.
-    private static final String FILEPICKER_API_KEY = "AcD6WqSDZTuumV0HMhYUez";
-    private static final String PARENT_APP = "whatever";
+
+    // REQUIRED FIELD
+    private static final String FILEPICKER_API_KEY = "PUT YOUR API KEY HERE";
+
+    // OPTIONAL FIELD
+    private static final String PARENT_APP = "PUT YOUR APP NAME HERE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,17 +40,22 @@ public class MainActivity extends Activity {
         return true;
     }
 
-    public void runNewFilePicker(View view) {
+    public void runFilepicker(View view) {
+
+        // MANDATORY
         Filepicker.setKey(FILEPICKER_API_KEY);
         Filepicker.setAppName(PARENT_APP);
 
         Intent intent = new Intent(this, Filepicker.class);
 
-        // This way user can choose services
-//        String[] services = {"FACEBOOK", "CAMERA", "GMAIL"};
-//        intent.putExtra("services", services);
 
-//        intent.putExtra("multiple", true);
+        // Use lines below to choose services
+        //      String[] services = {"FACEBOOK", "CAMERA", "GMAIL"};
+        //      intent.putExtra("services", services);
+
+        // Use line below to set multiple option
+        //      intent.putExtra("multiple", true);
+
         startActivityForResult(intent, Filepicker.REQUEST_CODE_GETFILE);
     }
 
@@ -59,17 +67,15 @@ public class MainActivity extends Activity {
                 //Result was cancelled by the user or there was an error
                 return;
 
+            // Filepicker always returns array of FPFile objects
             ArrayList<FPFile> fpFiles = data.getParcelableArrayListExtra(Filepicker.FPFILES_EXTRA);
 
-            for(FPFile fpFile : fpFiles) {
-                Log.d("RECEIVED ", fpFile.getFilename());
-            }
+            // Get first object (use if multiple option is not set)
             FPFile file = fpFiles.get(0);
 
+            // Load image using Picasso library
             ImageView imageView = (ImageView) findViewById(R.id.imageResult);
             Picasso.with(getBaseContext()).load(file.getUrl()).into(imageView);
-
-            ((TextView)findViewById(R.id.tvUrl)).setText(file.getUrl());
         }
     }
 }
