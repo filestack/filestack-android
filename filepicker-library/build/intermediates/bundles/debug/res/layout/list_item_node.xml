@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/padding_providers_list"
+    android:gravity="center_vertical">
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageNode"
+        android:padding="@dimen/padding_provider_icon"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/tvNodeName"
+        android:textSize="@dimen/text_size_provider_name"/>
+</LinearLayout><!-- From: file:/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/layout/list_item_node.xml -->
