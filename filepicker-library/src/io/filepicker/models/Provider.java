@@ -14,14 +14,16 @@ import android.os.Parcelable;
 public class Provider extends Node {
 
     String mimetypes;
-    boolean saveSupported;
+
+    // Whether files can be saved to this provider or not
+    boolean exportSupported;
     String code;
 
     public Provider(String displayName, String path, String mimetypes,
                    int drawable, boolean saveSupported, String code) {
         super(displayName, path, true, drawable);
         this.mimetypes = mimetypes;
-        this.saveSupported = saveSupported;
+        this.exportSupported = saveSupported;
         this.code = code;
     }
 
@@ -31,5 +33,9 @@ public class Provider extends Node {
 
     public String getCode() {
         return code;
+    }
+
+    public boolean isExportSupported() {
+        return exportSupported;
     }
 }

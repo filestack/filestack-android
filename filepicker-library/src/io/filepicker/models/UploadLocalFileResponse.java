@@ -15,7 +15,6 @@ public class UploadLocalFileResponse {
     public FPFile parseToFpFile() {
         Data data = getFirstData();
 
-
         String url = data.url;
 
         FpFileData fpFileData = data.getFpFileData();
@@ -30,7 +29,7 @@ public class UploadLocalFileResponse {
     }
 
     // Help classes for parsing response
-    class Data {
+    static class Data {
         String url;
         FpFileData data;
 
@@ -39,7 +38,7 @@ public class UploadLocalFileResponse {
         }
     }
 
-    class FpFileData {
+    static class FpFileData {
         String container;
         long size;
         String type;

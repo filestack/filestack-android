@@ -1,11 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merger version="2" >
-
-    <dataSet config="main" >
-        <source path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/assets" />
-    </dataSet>
-    <dataSet config="debug" >
-        <source path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/src/debug/assets" />
-    </dataSet>
-
-</merger>
+<merger version="3"><dataSet config="main"><source path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/assets"/></dataSet><dataSet config="debug"><source path="/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/src/debug/assets"/></dataSet></merger>

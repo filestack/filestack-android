@@ -4,8 +4,12 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Objects;
 
+import io.filepicker.Filepicker;
 import io.filepicker.models.FPFile;
 import io.filepicker.models.Folder;
 import io.filepicker.models.UploadLocalFileResponse;
@@ -14,7 +18,9 @@ import retrofit.Callback;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.http.Body;
+import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
+import retrofit.http.Header;
 import retrofit.http.Headers;
 import retrofit.http.Multipart;
 import retrofit.http.POST;
@@ -79,9 +85,6 @@ public class FpApiClient {
     }
 
     public interface FpApiInterface {
-
-        // TODO when working check if / is needed
-
         @Headers("User-Agent: Mobile-Android")
         @GET(API_PATH_URL + "{provider}")
         void getFolder(
@@ -101,11 +104,11 @@ public class FpApiClient {
 
         @Headers({
                 "User-Agent: Mobile-Android",
-                "X-File-Name:tempfile.jpg",
                 "Content-Type:application/octet-stream"
         })
         @POST(API_PATH_COMPUTER_URL)
         void uploadFile(
+                @Header("X-File-Name") String filename,
                 @Query("js_session") String jsSession,
                 @Body TypedFile file,
                 Callback<UploadLocalFileResponse> response
@@ -119,36 +122,53 @@ public class FpApiClient {
                 Callback<Object> fpFile
         );
 
-        @GET(API_PATH_URL)
-        void getImage();
+        @Headers({
+                "User-Agent: Mobile-Android",
+                "Content-Type:application/octet-stream"
+        })
+        @POST(API_PATH_URL + "{path}")
+        void exportFile(@Path("path") String path,
+                        @Query("js_session") String jsSession,
+                        @Body TypedFile file,
+                        Callback<FPFile> response);
+    }
 
+    public static String getJsSession(Context context) {
+        return buildJsSession(Filepicker.getApiKey(),
+                PreferencesUtils.newInstance(context).getMimetypes());
     }
 
     /** JsSession query param  */
-    public static String buildJsSession(String apikey, String mimetypes) {
+    public static String buildJsSession(String apikey, String[] mimetypes) {
         Gson gson = new Gson();
-        JsSession jsSession = new JsSession( new AppQuery(apikey, mimetypes));
 
-        return gson.toJson(jsSession);
+        if(mimetypes == null) {
+            return gson.toJson(new JsSession(apikey));
+        } else {
+            return gson.toJson(new MimetypeSession(apikey, mimetypes));
+        }
     }
 
     /** JsSession query param class */
     static class JsSession {
-        AppQuery app;
+        HashMap<String, String> app;
+        String mimetypes;
 
-        public JsSession(AppQuery app){
-            this.app = app;
+        JsSession(String apikey) {
+            this.app = new HashMap<String, String>();
+            this.app.put("apikey", apikey);
+            this.mimetypes = "";
         }
     }
 
-    /** AppQuery query param class */
-    static class AppQuery {
-        String apikey;
+    static class MimetypeSession  {
+        HashMap<String, String> app;
         String[] mimetypes;
 
-        public AppQuery(String apikey, String mimetypes) {
-            this.apikey = apikey;
-            this.mimetypes = new String[]{mimetypes};
+        MimetypeSession(String apikey, String[] mimetypes) {
+            this.app = new HashMap<String, String>();
+            this.app.put("apikey", apikey);
+            this.mimetypes = mimetypes;
         }
     }
 }

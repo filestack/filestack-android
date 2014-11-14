@@ -2,5 +2,8 @@
 <resources>
 
     <color name="background_dark">#2f3840</color>
+    <color name="blue">#0099CC</color>
+    <color name="white">#ffffff</color>
+    <color name="yellow">#FFBB33</color>
 
 </resources>

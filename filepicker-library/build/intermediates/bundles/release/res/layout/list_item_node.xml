@@ -17,5 +17,5 @@
         android:layout_height="wrap_content"
         android:text="New Text"
         android:id="@+id/tvNodeName"
-        android:textSize="@dimen/text_size_provider_name"/>
+        android:textSize="@dimen/text_size_normal"/>
 </LinearLayout><!-- From: file:/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/layout/list_item_node.xml -->

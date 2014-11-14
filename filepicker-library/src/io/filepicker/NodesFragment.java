@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import io.filepicker.adapters.NodesAdapter;
 import io.filepicker.models.Node;
 import io.filepicker.models.PickedFile;
+import io.filepicker.utils.Constants;
 import io.filepicker.utils.PreferencesUtils;
 import io.filepicker.utils.Utils;
 
@@ -41,9 +42,6 @@ public class NodesFragment extends Fragment {
     static final String KEY_NODES = "nodes";
     static final String KEY_PARENT_NODE = "parent_node";
     static final String KEY_VIEW_TYPE = "viewType";
-
-    public static final String LIST_VIEW   = "list";
-    public static final String THUMBNAILS_VIEW  = "thumbnails";
 
     String viewType;
     ArrayList<Node> nodes;
@@ -98,9 +96,9 @@ public class NodesFragment extends Fragment {
         mProgressBar = (ProgressBar) view.findViewById(R.id.progressBarNode);
         mUploadFilesButton = (Button) view.findViewById(R.id.btnUploadFiles);
 
-        if(viewType.equals(LIST_VIEW)) {
+        if(viewType.equals(Constants.LIST_VIEW)) {
             currentView = (ListView) view.findViewById(R.id.listView);
-        } else if(viewType.equals(THUMBNAILS_VIEW)) {
+        } else if(viewType.equals(Constants.THUMBNAILS_VIEW)) {
             currentView = (GridView) view.findViewById(R.id.gridView);
         } else {
             showEmptyView(view);
@@ -119,7 +117,7 @@ public class NodesFragment extends Fragment {
 
         nodesAdapter = new NodesAdapter(getActivity(), nodes, pickedFiles);
 
-        if(viewType.equals(THUMBNAILS_VIEW))
+        if(viewType.equals(Constants.THUMBNAILS_VIEW))
             nodesAdapter.setThumbnail(true);
 
         currentView.setAdapter(nodesAdapter);

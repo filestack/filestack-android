@@ -1,11 +1,14 @@
 package io.filepicker.sample;
 
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -49,12 +52,16 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(this, Filepicker.class);
 
 
-        // Use lines below to choose services
-        //      String[] services = {"FACEBOOK", "CAMERA", "GMAIL"};
-        //      intent.putExtra("services", services);
+        // Choose services
+        //   String[] services = {"FACEBOOK", "CAMERA", "GMAIL"};
+        //   intent.putExtra("services", services);
 
-        // Use line below to set multiple option
-        //      intent.putExtra("multiple", true);
+        // Allow getting multiple files
+        //   intent.putExtra("multiple", true);
+
+        // Choose mimetypes
+        //   String[] mimetypes = {"image/*"};
+        //   intent.putExtra("mimetype", mimetypes);
 
         startActivityForResult(intent, Filepicker.REQUEST_CODE_GETFILE);
     }

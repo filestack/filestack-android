@@ -1,7 +1,12 @@
 package io.filepicker.models;
 
 
+import android.provider.ContactsContract;
+
 import com.google.gson.annotations.SerializedName;
+
+import java.io.File;
+import java.io.FilenameFilter;
 
 /**
  * Created by maciejwitowski on 10/24/14.

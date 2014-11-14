@@ -12,6 +12,7 @@ public class PreferencesUtils {
 
     private static final String KEY_SESSION_COOKIE = "sessionCookie";
     private static final String KEY_MULTIPLE = "multiple";
+    private static final String KEY_MIMETYPES = "mimetypes";
 
     private Context context;
 
@@ -72,6 +73,27 @@ public class PreferencesUtils {
 
     public boolean getMultiple() {
         return getBooleanValue(KEY_MULTIPLE);
+    }
+
+    // Gets array of mimetypes and saves it as String
+    public void setMimetypes(String[] mimetypes) {
+        StringBuilder mimetypesString = new StringBuilder();
+        for(String mimetype : mimetypes) {
+            mimetypesString.append(mimetype).append(",");
+        }
+
+        setStringValue(KEY_MIMETYPES, mimetypesString.toString());
+    }
+
+    // Returns array of mimetypes Strings
+    public String[] getMimetypes() {
+        String[] mimetypes = null;
+
+        if(getStringValue(KEY_MIMETYPES) != null) {
+            mimetypes = getStringValue(KEY_MIMETYPES).split(",");
+        }
+
+        return mimetypes;
     }
 
 }
