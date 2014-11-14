@@ -38,10 +38,18 @@ Usage
 ###Setting api key###
 
 Api key must be set before making any calls to Filepicker. 
-To set api key use Filepicker.setKey(MY_API_KEY).
+To set api key use 
+
+```java
+Filepicker.setKey(MY_API_KEY).
+```
 
 ###Setting application name###
-If you want your application’s name to be visible at the top of Filepicker view, set it with Filepicker.setAppName(MY_APP_NAME)
+If you want your application’s name to be visible at the top of Filepicker view, set it with 
+
+```java
+Filepicker.setAppName(MY_APP_NAME)
+```
 
 ###Getting a file###
 
@@ -73,6 +81,7 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
     }
 }
+```
 
 FpFile object contains following fields:
 
@@ -141,4 +150,4 @@ startActivityForResult(intent, Filepicker.REQUEST_CODE_EXPORT_FILE);
 ```
 
 
-[1]: https://www.filepicker.io/api/file/gcgTSBdUQQecZUAi8fpK
+[1]: https://raw.github.com/Ink/filepicker-android/master/sample-studio/sample_screen.png
