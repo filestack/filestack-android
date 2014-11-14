@@ -1,4 +1,1 @@
-include ':filepicker-library'
-project(':filepicker-library').projectDir = new File(rootProject.projectDir, '../filepicker-library')
-
 include ':sample'

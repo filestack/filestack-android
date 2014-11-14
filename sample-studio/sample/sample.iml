@@ -10,7 +10,7 @@
       <configuration>
         <option name="SELECTED_BUILD_VARIANT" value="debug" />
         <option name="ASSEMBLE_TASK_NAME" value="assembleDebug" />
-        <option name="COMPILE_JAVA_TASK_NAME" value="compileDebugJava" />
+        <option name="COMPILE_JAVA_TASK_NAME" value="compileDebugSources" />
         <option name="ASSEMBLE_TEST_TASK_NAME" value="assembleDebugTest" />
         <option name="SOURCE_GEN_TASK_NAME" value="generateDebugSources" />
         <option name="ALLOW_USER_CONFIGURATION" value="false" />
@@ -76,9 +76,11 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/rs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/symbols" />
       <excludeFolder url="file://$MODULE_DIR$/build/outputs" />
+      <excludeFolder url="file://$MODULE_DIR$/build/tmp" />
     </content>
     <orderEntry type="jdk" jdkName="Android API 21 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" exported="" name="filepicker-android-3" level="project" />
     <orderEntry type="library" exported="" name="eventbus-2.2.1" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-21.0.0" level="project" />
     <orderEntry type="library" exported="" name="picasso-2.3.4" level="project" />
@@ -88,7 +90,6 @@
     <orderEntry type="library" exported="" name="okio-1.0.0" level="project" />
     <orderEntry type="library" exported="" name="okhttp-2.0.0-RC2" level="project" />
     <orderEntry type="library" exported="" name="okhttp-urlconnection-2.0.0-RC2" level="project" />
-    <orderEntry type="module" module-name="filepicker-library" exported="" />
   </component>
 </module>
 

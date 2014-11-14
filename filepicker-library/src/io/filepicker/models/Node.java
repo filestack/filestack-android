@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+
 import io.filepicker.R;
 
 /**
@@ -110,5 +112,19 @@ public class Node implements Parcelable {
     public Node(Parcel pc) {
         displayName = pc.readString();
         linkPath    = pc.readString();
+    }
+
+    public static boolean nameExists(ArrayList<Node> nodes, String value) {
+        boolean exists = false;
+        for(Node node : nodes) {
+            if(!node.isDir()) {
+                if(node.getDisplayName().equals(value)) {
+                    exists = true;
+                    break;
+                }
+            }
+        }
+
+        return exists;
     }
 }
