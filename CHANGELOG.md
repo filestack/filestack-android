@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-Version 3.2 *(2014-11-14)*
+Versions 3.0-3.2 *(2014-11-14)*
 ----------------------------
   * New: Add option to get multiple files.
   * New: Simplify the way project can be included in other projects for Maven and Gradle users.
