@@ -1,116 +1,144 @@
-filepicker-android v1.1.0
-=======================
 
-Android version of filepicker.  Allow your users to pull in their content from Dropbox, Facebook, and more!
+filepicker-android
+==================
+
+Android version of Filepicker.  Allow your users to pull in their content from Dropbox, Facebook, and more!
 
 For more info see https://www.filepicker.io
 
 The library provides an activity that your app can spawn that allows the user to open and save files.
 
+![Sample Screenshots][1]
+
+
 
 Including In Your Project
 =========================
 
-1. Include filepicker-android in your project as a library in eclipse.
+This library is distributed as Android library project so it can be included by referencing it as a library project
 
-   First import the filepicker-android folder into your eclipse workspace by going to File->Import and then selecting Android->Import Existing Android Code.
-   
-   Then right click on your project and go to Properties->Android and then press Add under the library group.
+If you use Maven, you can include this library as a dependency:
 
-2. Make sure to have the following permission lines in your AndroidManifest.xml
-```xml
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-```
+	<dependency>
+    	  <groupId>io.filepicker</groupId>
+    	  <artifactId>filepicker-android</artifactId>
+    	  <version>3.2</version>
+	</dependency>
+	
+For Gradle users:
 
-3. Add the following lines to AndroidManifest.xml
-```xml
-<activity
-    android:name="io.filepicker.FilePicker"
-    android:label="@string/title_activity_file_picker" >
-</activity>
-<activity
-    android:name="io.filepicker.AuthActivity"
-    android:label="@string/title_activity_file_picker_auth" >
-</activity>
-```
+	compile 'io.filepicker:filepicker-android:3.2’
 
-Java
-====
 
-###Imports###
+Usage
+=====
+
+*For a working implementation of this project see the `sample-studio/` folder.*
+
+###Setting api key###
+
+Api key must be set before making any calls to Filepicker. 
+To set api key use Filepicker.setKey(MY_API_KEY).
+
+###Setting application name###
+If you want your application’s name to be visible at the top of Filepicker view, set it with Filepicker.setAppName(MY_APP_NAME)
+
+###Getting a file###
+
+To get a file, start Filepicker activity for result.
+
 ```java
-import io.filepicker.FilePicker;
-import io.filepicker.FilePickerAPI;
+Intent intent = new Intent(this, Filepicker.class);
+startActivityForResult(intent, Filepicker.REQUEST_CODE_GETFILE);
 ```
 
+Then, receive the Filepicker object on activity result.
 
-###Setting the API Key###
-Before making any filepicker calls, set the api key like so
-FilePickerAPI.setKey(MY_API_KEY);
-
-###Getting a File###
-Start the activity like this
-```java
-Intent intent = new Intent(this, FilePicker.class);
-startActivityForResult(intent, FilePickerAPI.REQUEST_CODE_GETFILE);
-```
-This behaves just like the GET_CONTENT intent.
-
-The data of the returned intent is a uri to the local file.
-The extra fpurl is a path to the file on Filepicker.io's servers.
-
-Get the result like this
 ```java
 @Override
 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (resultCode != RESULT_OK)
-            return;
-    Uri uri = data.getData();
-    System.out.println("File path is " + uri.toString());
-    System.out.println("FPUrl: " + data.getExtras().getString("fpurl"));
-    System.out.println("File name: " + data.getExtras().getString("filename"));
+    if (requestCode == Filepicker.REQUEST_CODE_GETFILE) {
+      if(resultCode == RESULT_OK) {
+
+        // Filepicker always returns array of FPFile objects
+        ArrayList<FPFile> fpFiles = data.getParcelableArrayListExtra(Filepicker.FPFILES_EXTRA);
+
+        // Option multiple was not set so only 1 object is expected
+        FPFile file = fpFiles.get(0);
+
+        // Do something cool with the result
+      } else {
+        // Handle errors here
+      }
+
+    }
 }
-```
 
-`intent.getData()` is a content uri to the file
+FpFile object contains following fields:
 
-`intent.getExtras().getString("fpurl")` is an http url to the file
+  * container - container in S3 where the file was stored (if it was stored)
+  * url - file link to uploaded file
+  * filename - name of file
+  * key - unique key
+  * type - mimetype
+  * size - size in bytes
+  
+All fields’ values can be retrieved using conventional java getters (i.e for field “size”, getter method “getSize()” is used).
 
-###Saving a File###
-Start the activity like this
+###Getting multiple files###
+
 ```java
-Uri uri  = Uri.fromFile("/tmp/android.txt"); //a uri to the content to save
-Intent intent = new Intent(FilePicker.SAVE_CONTENT, uri, this, FilePicker.class);
-intent.putExtra("extension", ".txt"); //optional, add an extension
-startActivityForResult(intent, FilePickerAPI.REQUEST_CODE_SAVEFILE);
+Intent intent = new Intent(this, Filepicker.class);
+intent.putExtra(“multiple”, true);
 ```
 
-###Options###
-1. Service specifications
-    ```java
-    intent.putExtra("services", new String[]{FPService.DROPBOX, FPService.GALLERY, FPService.FACEBOOK});
-    ```
+###Choosing services###
 
-    Other services:
-    1. DROPBOX
-    2. CAMERA
-    3. GALLERY
-    4. FACEBOOK
-    5. BOX
-    6. GITHUB
-    7. GMAIL
-    8. GDRIVE
+By default the following services are available (meaning of keys in brackets is described below):
 
-2. Mimetype filtering
+  * Gallery (GALLERY)
+  * Camera (CAMERA)
+  * Facebook (FACEBOOK)
+  * Amazon Cloud Drive (CLOUDDRIVE)
+  * Dropbox (DROPBOX)
+  * Box (BOX)
+  * Gmail (GMAIL)
+  * Instagram (INSTAGRAM)
+  * Flickr (FLICKR)
+  * Picasa (PICASA)
+  * Github (GITHUB)
+  * Google Drive (GOOGLE_DRIVE)
 
-   Only allow the user to choose a file of the specified mimetype.
-    ```java
-    intent.setType("image/*");
-    ```
-    or
-    ```java
-    intent.setType("text/plain");
-    ```
+To use only selected services:
 
-For more reading on intents check out http://developer.android.com/guide/components/intents-filters.html
+```java
+Intent intent = new Intent(this, Filepicker.class);
+String[] services = {"FACEBOOK", "CAMERA", "GMAIL"};
+intent.putExtra("services", services);
+```
+
+###Choosing mimetypes###
+To see only content files with specific mimetypes within services user:
+
+```java
+Intent intent = new Intent(this, Filepicker.class);
+String[] mimetypes = {"image/*”, “application/pdf”};
+intent.putExtra("mimetype", mimetypes);
+```
+
+###Exporting file###
+
+The library offer also a way to export files. It can be used to easily save a taken picture in cloud services.
+
+```java
+Intent intent = new Intent()
+                    .setAction(Filepicker.ACTION_EXPORT_FILE)
+                    .setClass(this, Filepicker.class)
+                    .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    .setData(MY_FILE_URI);
+
+startActivityForResult(intent, Filepicker.REQUEST_CODE_EXPORT_FILE);
+```
+
+
+[1]: https://www.filepicker.io/api/file/gcgTSBdUQQecZUAi8fpK
