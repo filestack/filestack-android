@@ -15,20 +15,23 @@ The library provides an activity that your app can spawn that allows the user to
 Including In Your Project
 =========================
 
-This library is distributed as Android library project so it can be included by referencing it as a library project
+This library is distributed as Android library project so it can be included by referencing it as a library project.
 
 If you use Maven, you can include this library as a dependency:
 
-	<dependency>
-    	  <groupId>io.filepicker</groupId>
-    	  <artifactId>filepicker-android</artifactId>
-    	  <version>3.2</version>
-	</dependency>
+```xml
+<dependency>
+  <groupId>io.filepicker</groupId>
+  <artifactId>filepicker-android</artifactId>
+  <version>3.2</version>
+</dependency>
+```
 	
 For Gradle users:
 
-	compile 'io.filepicker:filepicker-android:3.2’
-
+```xml
+compile 'io.filepicker:filepicker-android:3.2’
+```
 
 Usage
 =====
