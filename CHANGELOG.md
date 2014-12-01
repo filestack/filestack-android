@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-Version 3.3 *(2014-11-14)*
+Version 3.3 *(2014-12-01)*
 ----------------------------
   * New: Add progress bar during an uploading of a local file.
   * New: Add localPath property to FPFile pointing to the file’s path on the device
