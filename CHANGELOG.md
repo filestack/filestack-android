@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 3.3 *(2014-11-14)*
+----------------------------
+  * New: Add progress bar during an uploading of a local file.
+  * New: Add localPath property to FPFile pointing to the file’s path on the device
+  * Fix: Changed library theme to FilepickerTheme so the so the probability of name conflict is lower.
+
+
 Versions 3.0-3.2 *(2014-11-14)*
 ----------------------------
   * New: Add option to get multiple files.

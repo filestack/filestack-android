@@ -166,7 +166,7 @@ public class ContentService extends IntentService {
         EventBus.getDefault().post(new FpFilesReceivedEvent(results));
     }
 
-    private void handleActionUploadFile(Uri uri) {
+    private void handleActionUploadFile(final Uri uri) {
         FpApiClient.getFpApiClient(this)
                 .uploadFile(Utils.getImageName(),
                         FpApiClient.getJsSession(this),
@@ -175,7 +175,11 @@ public class ContentService extends IntentService {
                             @Override
                             public void success(UploadLocalFileResponse object, retrofit.client.Response response) {
                                 ArrayList<FPFile> fpFiles = new ArrayList<FPFile>();
-                                fpFiles.add(object.parseToFpFile());
+
+                                FPFile fpFile = object.parseToFpFile();
+                                fpFile.setLocalPath(uri.toString());
+                                fpFiles.add(fpFile);
+
                                 EventBus.getDefault().post(new FpFilesReceivedEvent(fpFiles));
                             }
 

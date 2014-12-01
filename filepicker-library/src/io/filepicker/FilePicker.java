@@ -383,6 +383,7 @@ public class Filepicker extends FragmentActivity
     }
 
     private void uploadLocalFile(Uri uri) {
+        showProgressBar();
         ContentService.uploadFile(this, uri);
     }
 
