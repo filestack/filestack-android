@@ -1,5 +1,6 @@
 package io.filepicker.models;
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -13,6 +14,7 @@ public class FPFile implements Parcelable {
     String filename;
     String key;
     String type;
+    String localPath;
     long size;
 
     public FPFile(String container, String url, String filename, String key, String type, long size) {
@@ -48,6 +50,13 @@ public class FPFile implements Parcelable {
         return container;
     }
 
+    public void setLocalPath(String localPath) {
+        this.localPath = localPath;
+    }
+
+    public String getLocalPath() {
+        return localPath;
+    }
 
     /**
      * Parcelable factory
@@ -75,6 +84,7 @@ public class FPFile implements Parcelable {
         this.key = in.readString();
         this.type = in.readString();
         this.size = in.readLong();
+        this.localPath = in.readString();
     }
 
     @Override
@@ -92,5 +102,6 @@ public class FPFile implements Parcelable {
         out.writeString(key);
         out.writeString(type);
         out.writeLong(size);
+        out.writeString(localPath);
     }
 }
