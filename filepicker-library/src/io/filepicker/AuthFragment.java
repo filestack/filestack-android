@@ -69,7 +69,7 @@ public class AuthFragment extends Fragment {
 
         String url = buildServiceAuthUrl();
         webViewAuth.loadUrl(url);
-        mProgressBar.setVisibility(View.GONE);
+        hideProgressBar();
     }
 
     private String buildServiceAuthUrl() {
@@ -116,5 +116,10 @@ public class AuthFragment extends Fragment {
                 return false;
             }
         }
+    }
+
+    private void hideProgressBar() {
+        if(mProgressBar != null)
+            mProgressBar.setVisibility(View.GONE);
     }
 }
