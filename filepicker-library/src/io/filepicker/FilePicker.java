@@ -52,6 +52,7 @@ public class Filepicker extends FragmentActivity
     public static final String CONTENT_EXTRA = "content";
 
     private static String API_KEY_STATE = "apiKeyState";
+    private static String IMAGE_URI_STATE = "imageUriState";
 
     private static String API_KEY = "";
     private static String APP_NAME = "";
@@ -92,12 +93,9 @@ public class Filepicker extends FragmentActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filepicker);
-        mProgressBar = (ProgressBar) findViewById(R.id.fpProgressBar);
+        initSavedState(savedInstanceState);
 
-        // Restore api key if it was stored
-        if(savedInstanceState != null) {
-            setKey(savedInstanceState.getString(API_KEY_STATE));
-        }
+        mProgressBar = (ProgressBar) findViewById(R.id.fpProgressBar);
 
         validateApiKey();
         initOptions();
@@ -107,6 +105,15 @@ public class Filepicker extends FragmentActivity
             showProvidersContent();
         else
             showProvidersList();
+    }
+
+    private void initSavedState(Bundle savedInstanceState) {
+        if(savedInstanceState != null) {
+            setKey(savedInstanceState.getString(API_KEY_STATE));
+
+            if(savedInstanceState.getString(IMAGE_URI_STATE) != null)
+                imageUri = Uri.parse(savedInstanceState.getString(IMAGE_URI_STATE));
+        }
     }
 
     private void initOptions() {
@@ -140,6 +147,10 @@ public class Filepicker extends FragmentActivity
     protected void onSaveInstanceState(Bundle outState) {
         // Save api key in case the activity was destroyed
         outState.putString(API_KEY_STATE, getApiKey());
+
+        if(imageUri != null)
+            outState.putString(IMAGE_URI_STATE, imageUri.toString());
+
         super.onSaveInstanceState(outState);
     }
 
