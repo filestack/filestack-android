@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+Version 3.4 *(2014-12-04)*
+----------------------------
+  * Fix: Fixes bug when user rotates the phone while camera is used
+
 Version 3.3 *(2014-12-01)*
 ----------------------------
   * New: Add progress bar during an uploading of a local file.
