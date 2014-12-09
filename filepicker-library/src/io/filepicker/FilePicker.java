@@ -47,6 +47,10 @@ public class Filepicker extends FragmentActivity
     public static final String SELECTED_PROVIDERS_EXTRA = "services";
     public static final String MULTIPLE_EXTRA = "multiple";
     public static final String MIMETYPE_EXTRA = "mimetype";
+    public static final String LOCATION_EXTRA = "location";
+    public static final String PATH_EXTRA = "path";
+    public static final String CONTAINER_EXTRA = "container";
+    public static final String ACCESS_EXTRA = "access";
 
     // This key is use when the activity shows content, not providers list
     public static final String CONTENT_EXTRA = "content";
@@ -119,18 +123,40 @@ public class Filepicker extends FragmentActivity
     private void initOptions() {
         Intent intent = getIntent();
 
+        PreferencesUtils prefs = PreferencesUtils.newInstance(this);
+
         // Init Multiple option
         if (intent.hasExtra(MULTIPLE_EXTRA) && intent.getBooleanExtra(MULTIPLE_EXTRA, false))
-            PreferencesUtils.newInstance(this).setMultiple();
+            prefs.setMultiple();
 
         // Init choosing mimetypes
         if (intent.hasExtra(MIMETYPE_EXTRA)){
             String[] mimetypes = intent.getStringArrayExtra(MIMETYPE_EXTRA);
 
             if(mimetypes != null) {
-                PreferencesUtils.newInstance(this).setMimetypes(mimetypes);
+                prefs.setMimetypes(mimetypes);
             }
         }
+
+        // Init location
+        String location = intent.getStringExtra(LOCATION_EXTRA);
+        if(location != null)
+            prefs.setLocation(location);
+
+        // Init path
+        String path = intent.getStringExtra(PATH_EXTRA);
+        if(path != null)
+            prefs.setPath(path);
+
+        // Init container
+        String container = intent.getStringExtra(CONTAINER_EXTRA);
+        if(container != null)
+            prefs.setContainer(container);
+
+        // Init access
+        String access = intent.getStringExtra(ACCESS_EXTRA);
+        if(access != null)
+            prefs.setAccess(access);
 
         // Init export
         if (isValidExportRequest()) {

@@ -134,40 +134,56 @@ public class FpApiClient {
     }
 
     public static String getJsSession(Context context) {
-        return buildJsSession(Filepicker.getApiKey(),
-                PreferencesUtils.newInstance(context).getMimetypes());
+        return buildJsSession(Filepicker.getApiKey(), context);
     }
 
     /** JsSession query param  */
-    public static String buildJsSession(String apikey, String[] mimetypes) {
+    public static String buildJsSession(String apikey, Context context) {
         Gson gson = new Gson();
 
+        String[] mimetypes = PreferencesUtils.newInstance(context).getMimetypes();
         if(mimetypes == null) {
-            return gson.toJson(new JsSession(apikey));
+            return gson.toJson(new JsSession(apikey, context));
         } else {
-            return gson.toJson(new MimetypeSession(apikey, mimetypes));
+            return gson.toJson(new MimetypeSession(apikey, mimetypes, context));
         }
     }
 
     /** JsSession query param class */
-    static class JsSession {
+    static class JsBaseSession {
         HashMap<String, String> app;
-        String mimetypes;
+        String storeLocation;
+        String storePath;
+        String storeContainer;
+        String storeAccess;
 
-        JsSession(String apikey) {
+        JsBaseSession(String apikey, Context context) {
             this.app = new HashMap<String, String>();
             this.app.put("apikey", apikey);
+
+            PreferencesUtils prefs = PreferencesUtils.newInstance(context);
+
+            this.storeLocation = prefs.getLocation();
+            this.storePath = prefs.getPath();
+            this.storeContainer = prefs.getContainer();
+            this.storeAccess = prefs.getAccess();
+        }
+    }
+
+    static class JsSession extends JsBaseSession {
+        String mimetypes;
+
+        JsSession(String apikey, Context context) {
+            super(apikey, context);
             this.mimetypes = "";
         }
     }
 
-    static class MimetypeSession  {
-        HashMap<String, String> app;
+    static class MimetypeSession extends JsBaseSession{
         String[] mimetypes;
 
-        MimetypeSession(String apikey, String[] mimetypes) {
-            this.app = new HashMap<String, String>();
-            this.app.put("apikey", apikey);
+        MimetypeSession(String apikey, String[] mimetypes, Context context) {
+            super(apikey, context);
             this.mimetypes = mimetypes;
         }
     }

@@ -8,10 +8,12 @@ import io.filepicker.models.Provider;
  */
 public class Constants {
 
+    private Constants(){}
+
     public static final String MIMETYPE_IMAGE = "image/*";
     private static final String MIMETYPE_ALL = "*/*";
 
-    public static Provider[] providersList = new Provider[]{
+    public final static Provider[] providersList = new Provider[]{
             new Provider("Gallery",       "Gallery",      MIMETYPE_IMAGE ,    R.drawable.glyphicons_008_film, false, "GALLERY"),
             new Provider("Camera",        "Camera",       MIMETYPE_IMAGE,     R.drawable.glyphicons_011_camera, false, "CAMERA"),
             new Provider("Facebook",      "Facebook",     MIMETYPE_IMAGE,     R.drawable.glyphicons_390_facebook, true, "FACEBOOK"),

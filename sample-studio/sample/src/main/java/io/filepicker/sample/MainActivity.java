@@ -30,8 +30,8 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
     }
@@ -51,6 +51,11 @@ public class MainActivity extends Activity {
 
         Intent intent = new Intent(this, Filepicker.class);
 
+        // Store options
+        //   intent.putExtra("location", "S3");
+        //   intent.putExtra("path", "/example/123.png");
+        //   intent.putExtra("container", "example_bucket");
+        //   intent.putExtra("access", "public");
 
         // Choose services
         //   String[] services = {"FACEBOOK", "CAMERA", "GMAIL"};

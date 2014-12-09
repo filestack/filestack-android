@@ -104,6 +104,15 @@ Intent intent = new Intent(this, Filepicker.class);
 intent.putExtra(“multiple”, true);
 ```
 
+###Store options###
+
+```java
+Intent intent = new Intent(this, Filepicker.class);
+intent.putExtra("location", "S3");
+intent.putExtra("path", "/example/123.png");
+intent.putExtra("container", "example_bucket");
+intent.putExtra("access", "public");
+
 ###Choosing services###
 
 By default the following services are available (meaning of keys in brackets is described below):
