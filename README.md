@@ -112,6 +112,7 @@ intent.putExtra("location", "S3");
 intent.putExtra("path", "/example/123.png");
 intent.putExtra("container", "example_bucket");
 intent.putExtra("access", "public");
+```
 
 ###Choosing services###
 
