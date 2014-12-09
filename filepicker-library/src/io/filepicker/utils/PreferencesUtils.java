@@ -13,6 +13,10 @@ public class PreferencesUtils {
     private static final String KEY_SESSION_COOKIE = "sessionCookie";
     private static final String KEY_MULTIPLE = "multiple";
     private static final String KEY_MIMETYPES = "mimetypes";
+    private static final String KEY_LOCATION = "storeLocation";
+    private static final String KEY_PATH = "storePath";
+    private static final String KEY_CONTAINER = "storeContainer";
+    private static final String KEY_ACCESS = "storeAccess";
 
     private Context context;
 
@@ -96,4 +100,35 @@ public class PreferencesUtils {
         return mimetypes;
     }
 
+    public void setLocation(String location) {
+        setStringValue(KEY_LOCATION, location);
+    }
+
+    public String getLocation() {
+        return getStringValue(KEY_LOCATION);
+    }
+
+    public void setPath(String path) {
+        setStringValue(KEY_PATH, path);
+    }
+
+    public String getPath() {
+        return getStringValue(KEY_PATH);
+    }
+
+    public void setContainer(String container) {
+        setStringValue(KEY_CONTAINER, container);
+    }
+
+    public String getContainer() {
+        return getStringValue(KEY_CONTAINER);
+    }
+
+    public void setAccess(String access) {
+        setStringValue(KEY_ACCESS, access);
+    }
+
+    public String getAccess() {
+        return getStringValue(KEY_ACCESS);
+    }
 }

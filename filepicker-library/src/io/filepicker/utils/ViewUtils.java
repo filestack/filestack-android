@@ -11,3 +11,4 @@ public class ViewUtils {
         view.setVisibility(View.VISIBLE);
     }
 }
+
