@@ -20,16 +20,13 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Upload"
+            android:text="@string/upload"
             android:textColor="@color/white"
             android:background="@color/blue"
             android:id="@+id/btnUploadFiles"
             android:padding="5dp"
             android:layout_margin="10dp"
-            android:visibility="gone"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="false"
-            android:layout_alignParentRight="true" />
+            android:visibility="gone" />
 
     </LinearLayout>
 

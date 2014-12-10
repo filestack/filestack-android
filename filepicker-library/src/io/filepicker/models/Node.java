@@ -15,39 +15,28 @@ import io.filepicker.R;
 public class Node implements Parcelable {
 
     @SerializedName(value="display_name")
-    String displayName;
+    public String displayName;
 
     @SerializedName(value="link_path")
-    String linkPath;
+    public String linkPath;
 
     @SerializedName(value="is_dir")
-    boolean isDir;
+    public boolean isDir;
 
     @SerializedName(value="thumb_exists")
-    boolean thumbExists = false;
+    public boolean thumbExists = false;
 
     @SerializedName(value="thumbnail")
-    String thumbnailUrl;
-    int imageResource;
+    public String thumbnailUrl;
+    public int imageResource;
 
-    public Node() {
-
-    }
+    public Node() {}
 
     public Node(String displayName, String linkPath, boolean isDir, int imageResource) {
         this.displayName = displayName;
         this.linkPath = linkPath;
         this.isDir = isDir;
         this.imageResource = imageResource;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-
-    }
-
-    public String getLinkPath() {
-        return linkPath;
     }
 
     public int getImageResource() {
@@ -61,10 +50,6 @@ public class Node implements Parcelable {
                 return R.drawable.glyphicons_036_file;
             }
         }
-    }
-
-    public boolean isDir() {
-        return isDir;
     }
 
     public boolean isCamera() {
@@ -117,8 +102,8 @@ public class Node implements Parcelable {
     public static boolean nameExists(ArrayList<Node> nodes, String value) {
         boolean exists = false;
         for(Node node : nodes) {
-            if(!node.isDir()) {
-                if(node.getDisplayName().equals(value)) {
+            if(!node.isDir) {
+                if(node.displayName.equals(value)) {
                     exists = true;
                     break;
                 }

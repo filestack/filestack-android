@@ -4,10 +4,7 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Objects;
 
 import io.filepicker.Filepicker;
 import io.filepicker.models.FPFile;
@@ -18,13 +15,10 @@ import retrofit.Callback;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.http.Body;
-import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.Headers;
-import retrofit.http.Multipart;
 import retrofit.http.POST;
-import retrofit.http.Part;
 import retrofit.http.Path;
 import retrofit.http.Query;
 import retrofit.mime.TypedFile;
@@ -53,7 +47,7 @@ public class FpApiClient {
 
     public static void setFpApiClient(Context context) {
         final PreferencesUtils prefs = PreferencesUtils.newInstance(context);
-        RestAdapter restAdapter = null;
+        RestAdapter restAdapter;
 
         if (prefs.getSessionCookie() != null) {
             // Build with cookie
@@ -151,14 +145,14 @@ public class FpApiClient {
 
     /** JsSession query param class */
     static class JsBaseSession {
-        HashMap<String, String> app;
-        String storeLocation;
-        String storePath;
-        String storeContainer;
-        String storeAccess;
+        final HashMap<String, String> app;
+        final String storeLocation;
+        final String storePath;
+        final String storeContainer;
+        final String storeAccess;
 
         JsBaseSession(String apikey, Context context) {
-            this.app = new HashMap<String, String>();
+            this.app = new HashMap<>();
             this.app.put("apikey", apikey);
 
             PreferencesUtils prefs = PreferencesUtils.newInstance(context);
@@ -171,7 +165,7 @@ public class FpApiClient {
     }
 
     static class JsSession extends JsBaseSession {
-        String mimetypes;
+        final String mimetypes;
 
         JsSession(String apikey, Context context) {
             super(apikey, context);
@@ -180,7 +174,7 @@ public class FpApiClient {
     }
 
     static class MimetypeSession extends JsBaseSession{
-        String[] mimetypes;
+        final String[] mimetypes;
 
         MimetypeSession(String apikey, String[] mimetypes, Context context) {
             super(apikey, context);

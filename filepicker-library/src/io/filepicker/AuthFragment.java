@@ -25,10 +25,9 @@ public class AuthFragment extends Fragment {
         public void proceedAfterAuth();
     }
 
-    String providerUrl;
-
-    WebView webViewAuth;
-    ProgressBar mProgressBar;
+    private String providerUrl;
+    private WebView webViewAuth;
+    private ProgressBar mProgressBar;
 
     private static final String AUTH_OPEN = "open/?auth=true";
 
@@ -77,7 +76,7 @@ public class AuthFragment extends Fragment {
                 providerUrl + FpApiClient.AUTH_OPEN_URL;
     }
 
-    public Contract getContract() {
+    Contract getContract() {
         return (Contract) getActivity();
     }
 

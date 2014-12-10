@@ -1,21 +1,20 @@
 package io.filepicker.models;
 
-import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
  * Created by maciejwitowski on 10/27/14.
  */
-public class FPFile implements Parcelable {
+public final class FPFile implements Parcelable {
 
-    String container;
-    String url;
-    String filename;
-    String key;
-    String type;
-    String localPath;
-    long size;
+    private String container;
+    private String url;
+    private String filename;
+    private String key;
+    private String type;
+    private String localPath;
+    private long size;
 
     public FPFile(String container, String url, String filename, String key, String type, long size) {
         this.container = container;

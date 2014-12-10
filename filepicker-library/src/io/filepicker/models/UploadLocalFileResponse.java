@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Created by maciejwitowski on 10/27/14.
  */
 public class UploadLocalFileResponse {
-    ArrayList<Data> data;
+    public ArrayList<Data> data;
 
     public Data getFirstData() {
         return data.get(0);
@@ -17,7 +17,7 @@ public class UploadLocalFileResponse {
 
         String url = data.url;
 
-        FpFileData fpFileData = data.getFpFileData();
+        FpFileData fpFileData = data.data;
 
         return new FPFile(
                 fpFileData.container,
@@ -29,20 +29,16 @@ public class UploadLocalFileResponse {
     }
 
     // Help classes for parsing response
-    static class Data {
-        String url;
-        FpFileData data;
-
-        public FpFileData getFpFileData() {
-            return data;
-        }
+    private static class Data {
+        private String url;
+        private FpFileData data;
     }
 
-    static class FpFileData {
-        String container;
-        long size;
-        String type;
-        String key;
-        String filename;
+    private static class FpFileData {
+        private String container;
+        private long size;
+        private String type;
+        private String key;
+        private String filename;
     }
 }

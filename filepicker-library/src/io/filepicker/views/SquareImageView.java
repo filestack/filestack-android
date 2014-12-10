@@ -2,9 +2,7 @@ package io.filepicker.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 /**
  * Created by maciejwitowski on 10/29/14.

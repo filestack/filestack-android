@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.13.+'
+        classpath 'com.android.tools.build:gradle:1.0.0'
         classpath 'com.github.dcendents:android-maven-plugin:1.1'
     }
 }
@@ -11,9 +11,9 @@ buildscript {
 apply plugin: 'com.android.library'
 
 dependencies {
-    compile 'com.android.support:support-v4:21.0.0'
+    compile 'com.android.support:support-v4:21.0.2'
     compile 'de.greenrobot:eventbus:2.2.1'
-    compile 'com.google.code.gson:gson:2.2.4'
+    compile 'com.google.code.gson:gson:2.3'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.0.0-RC2'
     compile 'com.squareup.retrofit:retrofit:1.6.1'
     compile 'com.squareup.picasso:picasso:2.3.4'
@@ -21,7 +21,7 @@ dependencies {
 
 android {
     compileSdkVersion 21
-    buildToolsVersion '21.0.0'
+    buildToolsVersion '21.1.1'
 
     defaultConfig {
         minSdkVersion 14

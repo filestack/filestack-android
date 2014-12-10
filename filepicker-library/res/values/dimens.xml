@@ -8,9 +8,11 @@
 
     <!-- NEW LIBRARY -->
     <dimen name="padding_providers_list">16dp</dimen>
-    <dimen name="text_size_normal">16dp</dimen>
     <dimen name="padding_provider_icon">6dp</dimen>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="text_size_normal">18sp</dimen>
+    <dimen name="text_size_large">22sp</dimen>
 
 </resources>

@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 /**
  * Created by maciejwitowski on 10/23/14.
  */
-public class PreferencesUtils {
+public final class PreferencesUtils {
 
     private static final String KEY_PREFERENCES = "io.filepicker.library";
 
@@ -22,7 +22,7 @@ public class PreferencesUtils {
 
     private static PreferencesUtils prefUtils = null;
 
-    public PreferencesUtils(Context context) {
+    private PreferencesUtils(Context context) {
         this.context = context;
     }
 
@@ -36,10 +36,6 @@ public class PreferencesUtils {
 
     public SharedPreferences getSharedPreferences(){
         return context.getSharedPreferences(KEY_PREFERENCES, context.MODE_PRIVATE);
-    }
-
-    public void clearAll(){
-        getSharedPreferences().edit().clear().commit();
     }
 
     // String
@@ -71,8 +67,8 @@ public class PreferencesUtils {
         return getStringValue(KEY_SESSION_COOKIE);
     }
 
-    public void setMultiple() {
-        setBooleanValue(KEY_MULTIPLE, true);
+    public void setMultiple(boolean allowMultiple) {
+        setBooleanValue(KEY_MULTIPLE, allowMultiple);
     }
 
     public boolean getMultiple() {
