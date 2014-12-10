@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import io.filepicker.adapters.NodesAdapter;
 import io.filepicker.models.Node;
@@ -39,21 +40,21 @@ public class NodesFragment extends Fragment {
         public void logoutUser(Node node);
     }
 
-    static final String KEY_NODES = "nodes";
-    static final String KEY_PARENT_NODE = "parent_node";
-    static final String KEY_VIEW_TYPE = "viewType";
+    private static final String KEY_NODES = "nodes";
+    private  static final String KEY_PARENT_NODE = "parent_node";
+    private static final String KEY_VIEW_TYPE = "viewType";
 
-    String viewType;
-    ArrayList<Node> nodes;
-    Node parentNode;
+    private String viewType;
+    private ArrayList<Node> nodes;
+    private Node parentNode;
 
     // Used when user can pick many files at once
-    ArrayList<PickedFile> pickedFiles = new ArrayList<PickedFile>();
+    private ArrayList<PickedFile> pickedFiles = new ArrayList<>();
 
-    AbsListView currentView;
-    ProgressBar mProgressBar;
-    Button mUploadFilesButton;
-    NodesAdapter<Node> nodesAdapter;
+    private AbsListView currentView;
+    private ProgressBar mProgressBar;
+    private Button mUploadFilesButton;
+    private NodesAdapter<Node> nodesAdapter;
 
     public static NodesFragment newInstance(Node parentNode, Node[] nodes, String viewType) {
         NodesFragment frag = new NodesFragment();
@@ -77,7 +78,7 @@ public class NodesFragment extends Fragment {
         viewType = bundle.getString(KEY_VIEW_TYPE);
 
         Parcelable[] parcels = bundle.getParcelableArray(KEY_NODES);
-        nodes = new ArrayList<Node>();
+        nodes = new ArrayList<>();
         for(Parcelable parcel : parcels) {
             nodes.add((Node) parcel);
         }
@@ -130,7 +131,7 @@ public class NodesFragment extends Fragment {
                 Node node = (Node) parent.getAdapter().getItem(position);
 
                 // If node is dir then open it
-                if (node.isDir()) {
+                if (node.isDir) {
                     openDir(node);
                 } else {
                     // Proceed single file
@@ -225,8 +226,8 @@ public class NodesFragment extends Fragment {
     }
 
     private void updatePickedList(View view, PickedFile pickedFile) {
-        if (PickedFile.containsPosition(pickedFiles, pickedFile.getPosition())){
-            PickedFile.removeAtPosition(pickedFiles, pickedFile.getPosition());
+        if (PickedFile.containsPosition(pickedFiles, pickedFile.position)){
+            PickedFile.removeAtPosition(pickedFiles, pickedFile.position);
             view.setAlpha(1);
         } else {
             pickedFiles.add(pickedFile);
@@ -238,7 +239,7 @@ public class NodesFragment extends Fragment {
         return PreferencesUtils.newInstance(getActivity()).getMultiple();
     }
 
-    public Contract getContract() {
+    Contract getContract() {
         return (Contract) getActivity();
     }
 

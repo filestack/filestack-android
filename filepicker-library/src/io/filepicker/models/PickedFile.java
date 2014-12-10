@@ -1,31 +1,26 @@
 package io.filepicker.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 
 /**
  * Created by maciejwitowski on 10/30/14.
  */
-public class PickedFile {
-    Node node;
-    int position;
+public final class PickedFile {
+    public Node node;
+    public final int position;
 
     public PickedFile(Node node, int position) {
         this.node = node;
         this.position = position;
     }
 
-    public Node getNode() {
-        return node;
-    }
-
-    public int getPosition() {
-        return position;
-    }
-
     public static ArrayList<Node> getNodes(ArrayList<PickedFile> pickedFiles) {
-        ArrayList<Node> nodes = new ArrayList<Node>(pickedFiles.size());
+        ArrayList<Node> nodes = new ArrayList<>(pickedFiles.size());
         for(PickedFile file : pickedFiles) {
-            nodes.add(file.getNode());
+            nodes.add(file.node);
         }
 
         return nodes;
@@ -33,7 +28,7 @@ public class PickedFile {
 
     public static void removeAtPosition( ArrayList<PickedFile> pickedFiles, int position) {
         for(PickedFile file : pickedFiles) {
-            if(file.getPosition() == position) {
+            if(file.position == position) {
                 pickedFiles.remove(file);
                 break;
             }
@@ -42,7 +37,7 @@ public class PickedFile {
 
     public static boolean containsPosition(ArrayList<PickedFile> pickedFiles, int position) {
         for(PickedFile file : pickedFiles) {
-            if (file.getPosition() == position){
+            if (file.position == position){
                 return true;
             }
         }

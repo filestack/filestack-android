@@ -2,6 +2,10 @@ Change Log
 
 ==========
 
+Version 3.6 *(2014-12-10)*
+----------------------------
+  * Fix: Optimize java code
+
 Version 3.5 *(2014-12-09)*
 ----------------------------
   * New: Allow setting choose options

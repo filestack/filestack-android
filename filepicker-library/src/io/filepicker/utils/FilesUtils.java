@@ -47,7 +47,7 @@ public class FilesUtils {
     }
 
     @SuppressWarnings("NewApi")
-    public static String getPath(final Context context, final Uri uri) {
+    private static String getPath(final Context context, final Uri uri) {
 
         final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
 
@@ -122,7 +122,7 @@ public class FilesUtils {
      * @param selectionArgs (Optional) Selection arguments used in the query.
      * @return The value of the _data column, which is typically a file path.
      */
-    public static String getDataColumn(Context context, Uri uri, String selection,
+    private static String getDataColumn(Context context, Uri uri, String selection,
                                        String[] selectionArgs) {
 
         Cursor cursor = null;
@@ -150,7 +150,7 @@ public class FilesUtils {
      * @param uri The Uri to check.
      * @return Whether the Uri authority is ExternalStorageProvider.
      */
-    public static boolean isExternalStorageDocument(Uri uri) {
+    private static boolean isExternalStorageDocument(Uri uri) {
         return "com.android.externalstorage.documents".equals(uri.getAuthority());
     }
 
@@ -158,7 +158,7 @@ public class FilesUtils {
      * @param uri The Uri to check.
      * @return Whether the Uri authority is DownloadsProvider.
      */
-    public static boolean isDownloadsDocument(Uri uri) {
+    private static boolean isDownloadsDocument(Uri uri) {
         return "com.android.providers.downloads.documents".equals(uri.getAuthority());
     }
 
@@ -166,7 +166,7 @@ public class FilesUtils {
      * @param uri The Uri to check.
      * @return Whether the Uri authority is MediaProvider.
      */
-    public static boolean isMediaDocument(Uri uri) {
+    private static boolean isMediaDocument(Uri uri) {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
     }
 
@@ -174,7 +174,7 @@ public class FilesUtils {
      * @param uri The Uri to check.
      * @return Whether the Uri authority is Google Photos.
      */
-    public static boolean isGooglePhotosUri(Uri uri) {
+    private static boolean isGooglePhotosUri(Uri uri) {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
     }
 
@@ -186,7 +186,7 @@ public class FilesUtils {
      * @return String - path to file
      */
     public static String getFilePath(Node node, String filename, String fileExtension) {
-        String path = node.getLinkPath();
+        String path = node.linkPath;
         if(!path.endsWith("/"))
             path += "/";
 
@@ -225,8 +225,6 @@ public class FilesUtils {
             typedFile = new TypedFile(cr.getType(fileUri), outputFile);
             os.close();
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -6,8 +6,6 @@ import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,30 +40,30 @@ public class ExportFragment extends Fragment {
         public Uri getFileToExport();
     }
 
-    static final String KEY_NODES = "nodes";
-    static final String KEY_PARENT_NODE = "parent_node";
-    static final String KEY_VIEW_TYPE = "viewType";
+    private static final String KEY_NODES = "nodes";
+    private static final String KEY_PARENT_NODE = "parent_node";
+    private static final String KEY_VIEW_TYPE = "viewType";
 
-    public static final String LIST_VIEW   = "list";
-    public static final String THUMBNAILS_VIEW  = "thumbnails";
+    private static final String LIST_VIEW   = "list";
+    private static final String THUMBNAILS_VIEW  = "thumbnails";
 
-    String viewType;
-    ArrayList<Node> nodes;
-    Node parentNode;
+    private String viewType;
+    private ArrayList<Node> nodes;
+    private Node parentNode;
 
     // Used when user can pick many files at once
-    ArrayList<PickedFile> pickedFiles = new ArrayList<PickedFile>();
+    private final ArrayList<PickedFile> pickedFiles = new ArrayList<>();
 
-    AbsListView currentView;
-    ProgressBar mProgressBar;
-    NodesAdapter<Node> nodesAdapter;
-    TextView mFileType;
-    EditText etFilename;
-    Button mBtnSave;
+    private AbsListView currentView;
+    private ProgressBar mProgressBar;
+    private NodesAdapter<Node> nodesAdapter;
+    private TextView mFileType;
+    private EditText etFilename;
+    private Button mBtnSave;
 
 
     // Layout with edit text for filename and save button
-    LinearLayout mExportForm;
+    private LinearLayout mExportForm;
 
     public static ExportFragment newInstance(Node parentNode, Node[] nodes, String viewType) {
         ExportFragment frag = new ExportFragment();
@@ -89,7 +87,7 @@ public class ExportFragment extends Fragment {
         viewType = bundle.getString(KEY_VIEW_TYPE);
 
         Parcelable[] parcels = bundle.getParcelableArray(KEY_NODES);
-        nodes = new ArrayList<Node>();
+        nodes = new ArrayList<>();
         for(Parcelable parcel : parcels) {
             nodes.add((Node) parcel);
         }
@@ -113,12 +111,15 @@ public class ExportFragment extends Fragment {
         etFilename = (EditText) view.findViewById(R.id.etFilename);
         mBtnSave = (Button) view.findViewById(R.id.btnSave);
 
-        if(viewType.equals(LIST_VIEW)) {
-            currentView = (ListView) view.findViewById(R.id.listView);
-        } else if(viewType.equals(THUMBNAILS_VIEW)) {
-            currentView = (GridView) view.findViewById(R.id.gridView);
-        } else {
-            showEmptyView(view);
+        switch (viewType) {
+            case LIST_VIEW:
+                currentView = (ListView) view.findViewById(R.id.listView);
+                break;
+            case THUMBNAILS_VIEW:
+                currentView = (GridView) view.findViewById(R.id.gridView);
+                break;
+            default:
+                showEmptyView(view);
         }
 
         // Show edit text for filename and save button if we're in content (not in providers list)
@@ -152,7 +153,7 @@ public class ExportFragment extends Fragment {
                 Node node = (Node) parent.getAdapter().getItem(position);
 
                 // If node is dir then open it
-                if (node.isDir()) {
+                if (node.isDir) {
                     getContract().showContent(node);
                 }
             }
@@ -219,7 +220,7 @@ public class ExportFragment extends Fragment {
         ViewUtils.show(view.findViewById(R.id.emptylistView));
     }
 
-    public Contract getContract() {
+    Contract getContract() {
         return (Contract) getActivity();
     }
 

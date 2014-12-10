@@ -1,18 +1,10 @@
 package io.filepicker.utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
-import android.view.View;
 import android.widget.Toast;
 
-import com.squareup.picasso.OkHttpDownloader;
-import com.squareup.picasso.Picasso;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -54,10 +46,10 @@ public class Utils {
         if(providersCodes == null)
             return Constants.providersList;
 
-        ArrayList<Provider> selectedProviders = new ArrayList<Provider>();
+        ArrayList<Provider> selectedProviders = new ArrayList<>();
         for(String code : providersCodes) {
             for (Provider provider : Constants.providersList) {
-                if (provider.getCode().equals(code)) {
+                if (provider.code.equals(code)) {
                     selectedProviders.add(provider);
                 }
             }
@@ -68,10 +60,10 @@ public class Utils {
 
     // Get providers which allows saving
     public static Provider[] getExportableProviders(String[] providerCodes) {
-        ArrayList<Provider> exportableProviders = new ArrayList<Provider>();
+        ArrayList<Provider> exportableProviders = new ArrayList<>();
 
         for(Provider provider : getProviders(providerCodes)) {
-            if(provider.isExportSupported()) {
+            if(provider.exportSupported) {
                 exportableProviders.add(provider);
             }
         }
@@ -83,7 +75,7 @@ public class Utils {
         boolean isProvider = false;
 
         for(int i = 0; i < Constants.providersList.length; i++ ) {
-            if(node.getDisplayName().equals(Constants.providersList[i].getDisplayName())) {
+            if(node.displayName.equals(Constants.providersList[i].displayName)) {
                 isProvider = true;
                 break;
             }

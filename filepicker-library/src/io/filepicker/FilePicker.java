@@ -1,20 +1,15 @@
 package io.filepicker;
 
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 
 import java.util.ArrayList;
 
@@ -25,14 +20,12 @@ import io.filepicker.events.FpFilesReceivedEvent;
 import io.filepicker.events.GetContentEvent;
 import io.filepicker.events.SignedOutEvent;
 import io.filepicker.models.FPFile;
-import io.filepicker.models.Node;
 import io.filepicker.models.Folder;
+import io.filepicker.models.Node;
 import io.filepicker.services.ContentService;
 import io.filepicker.utils.Constants;
-import io.filepicker.utils.FilesUtils;
 import io.filepicker.utils.PreferencesUtils;
 import io.filepicker.utils.Utils;
-import retrofit.mime.TypedFile;
 
 
 public class Filepicker extends FragmentActivity
@@ -44,27 +37,27 @@ public class Filepicker extends FragmentActivity
     public static final String FPFILES_EXTRA = "fpfile";
 
     // We call this extra 'services' just because users are more used to this name
-    public static final String SELECTED_PROVIDERS_EXTRA = "services";
-    public static final String MULTIPLE_EXTRA = "multiple";
-    public static final String MIMETYPE_EXTRA = "mimetype";
-    public static final String LOCATION_EXTRA = "location";
-    public static final String PATH_EXTRA = "path";
-    public static final String CONTAINER_EXTRA = "container";
-    public static final String ACCESS_EXTRA = "access";
+    private static final String SELECTED_PROVIDERS_EXTRA = "services";
+    private static final String MULTIPLE_EXTRA = "multiple";
+    private static final String MIMETYPE_EXTRA = "mimetype";
+    private static final String LOCATION_EXTRA = "location";
+    private static final String PATH_EXTRA = "path";
+    private static final String CONTAINER_EXTRA = "container";
+    private static final String ACCESS_EXTRA = "access";
 
     // This key is use when the activity shows content, not providers list
-    public static final String CONTENT_EXTRA = "content";
+    private static final String CONTENT_EXTRA = "content";
 
-    private static String API_KEY_STATE = "apiKeyState";
-    private static String IMAGE_URI_STATE = "imageUriState";
+    private static final String API_KEY_STATE = "apiKeyState";
+    private static final String IMAGE_URI_STATE = "imageUriState";
 
     private static String API_KEY = "";
     private static String APP_NAME = "";
 
-    public final static int REQUEST_CODE_GETFILE = 601;
-    public final static int REQUEST_CODE_CAMERA = 602;
-    public final static int REQUEST_CODE_GET_LOCAL_FILE = 603;
-    public final static int REQUEST_CODE_EXPORT_FILE = 604;
+    public static final int REQUEST_CODE_GETFILE = 601;
+    public static final int REQUEST_CODE_CAMERA = 602;
+    public static final int REQUEST_CODE_GET_LOCAL_FILE = 603;
+    public static final int REQUEST_CODE_EXPORT_FILE = 604;
 
     // Action used by clients to indicate they want to export file
     public final static String ACTION_EXPORT_FILE = "export_file";
@@ -73,9 +66,8 @@ public class Filepicker extends FragmentActivity
     private Uri imageUri;
     private Node node;
 
-    ProgressBar mProgressBar;
-    boolean isAuthorized = false;
-    static Uri mFileToExport;
+    private ProgressBar mProgressBar;
+    private static Uri mFileToExport;
 
     public static void setKey(String apiKey) {
         if(API_KEY.isEmpty()) {
@@ -126,16 +118,13 @@ public class Filepicker extends FragmentActivity
         PreferencesUtils prefs = PreferencesUtils.newInstance(this);
 
         // Init Multiple option
-        if (intent.hasExtra(MULTIPLE_EXTRA) && intent.getBooleanExtra(MULTIPLE_EXTRA, false))
-            prefs.setMultiple();
+        if (intent.hasExtra(MULTIPLE_EXTRA))
+            prefs.setMultiple(intent.getBooleanExtra(MULTIPLE_EXTRA, false));
 
         // Init choosing mimetypes
         if (intent.hasExtra(MIMETYPE_EXTRA)){
             String[] mimetypes = intent.getStringArrayExtra(MIMETYPE_EXTRA);
-
-            if(mimetypes != null) {
-                prefs.setMimetypes(mimetypes);
-            }
+            prefs.setMimetypes(mimetypes);
         }
 
         // Init location
@@ -194,7 +183,7 @@ public class Filepicker extends FragmentActivity
     }
 
     private Fragment getProvidersFragment() {
-        Fragment contentFragment = null;
+        Fragment contentFragment;
 
         if(mExport) {
             contentFragment = ExportFragment.newInstance(null,
@@ -214,7 +203,7 @@ public class Filepicker extends FragmentActivity
         node = getIntent().getParcelableExtra(NODE_EXTRA);
 
         if(getActionBar() != null)
-            getActionBar().setTitle(node.getDisplayName());
+            getActionBar().setTitle(node.displayName);
 
         getContent();
     }
@@ -226,16 +215,15 @@ public class Filepicker extends FragmentActivity
     public void onEvent(GetContentEvent event) {
         hideProgressBar();
 
-        Folder folder= event.getFolder();
+        Folder folder= event.folder;
 
-        if(folder.isAuthorized()) {
-            isAuthorized = true;
+        if(folder.auth) {
             displayContent(folder);
         } else {
-            String client = folder.getClient();
+            String client = folder.client;
 
             Toast.makeText(this,
-                    "Connecting to " + node.getDisplayName() + " ...",
+                    "Connecting to " + node.displayName + " ...",
                     Toast.LENGTH_SHORT).show();
 
             addAuthFragment(client);
@@ -257,10 +245,10 @@ public class Filepicker extends FragmentActivity
 
         if(mExport) {
             contentFragment = ExportFragment.newInstance(node,
-                    folder.getNodes(), folder.getViewType());
+                    folder.nodes, folder.view);
         } else {
             contentFragment = NodesFragment.newInstance(node,
-                    folder.getNodes(), folder.getViewType());
+                    folder.nodes, folder.view);
         }
 
         return contentFragment;
@@ -282,7 +270,7 @@ public class Filepicker extends FragmentActivity
     }
 
     public void onEvent(FpFilesReceivedEvent event) {
-        ArrayList<FPFile> fpFiles = event.getFpFiles();
+        ArrayList<FPFile> fpFiles = event.fpFiles;
 
         Intent resultIntent = new Intent();
         resultIntent.putParcelableArrayListExtra(FPFILES_EXTRA, fpFiles);
@@ -300,15 +288,15 @@ public class Filepicker extends FragmentActivity
     }
 
     public void onEvent(FileExportedEvent event) {
-        String message = "File " + event.getFpFile().getFilename() +
-                " was exported to " + event.getPath().split("/")[0];
+        String message = "File " + event.fpFile.getFilename() +
+                " was exported to " + event.path.split("/")[0];
 
         Utils.showQuickToast(this, message);
 
         Intent resultIntent = new Intent();
 
-        ArrayList<FPFile> result = new ArrayList<FPFile>();
-        result.add(event.getFpFile());
+        ArrayList<FPFile> result = new ArrayList<>();
+        result.add(event.fpFile);
         resultIntent.putParcelableArrayListExtra(FPFILES_EXTRA, result);
         setResult(RESULT_OK, resultIntent);
         finish();

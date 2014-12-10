@@ -1,8 +1,6 @@
 package io.filepicker.adapters;
 
 import android.app.Activity;
-import android.content.Context;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,29 +8,21 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.OkHttpDownloader;
-import com.squareup.picasso.Picasso;
-
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
-import io.filepicker.models.Node;
 import io.filepicker.R;
+import io.filepicker.models.Node;
 import io.filepicker.models.PickedFile;
 import io.filepicker.utils.ImageLoader;
-import io.filepicker.utils.PreferencesUtils;
-import io.filepicker.utils.Utils;
 
 /**
  * Created by maciejwitowski on 10/22/14.
  */
 public class NodesAdapter<T> extends ArrayAdapter<T> {
 
-    boolean thumbnail = false;
+    private boolean thumbnail = false;
 
-    ArrayList<PickedFile> pickedFiles;
+    private ArrayList<PickedFile> pickedFiles;
 
     private Activity context;
     private ArrayList<T> nodes;
@@ -63,7 +53,7 @@ public class NodesAdapter<T> extends ArrayAdapter<T> {
             viewHolder = new ViewHolder();
 
             if (thumbnail) {
-                if (node.isDir()) {
+                if (node.isDir) {
                     viewHolder.icon = (ImageView) convertView.findViewById(R.id.imageFolder);
                     viewHolder.name = (TextView) convertView.findViewById(R.id.tvFolderName);
                 } else {
@@ -81,27 +71,26 @@ public class NodesAdapter<T> extends ArrayAdapter<T> {
 
         // GridView
         if(thumbnail) {
-            if (node.isDir()) {
-                viewHolder.name.setText(node.getDisplayName());
+            if (node.isDir) {
+                viewHolder.name.setText(node.displayName);
                 viewHolder.icon.setImageResource(node.getImageResource());
 
             } else {
-
                 ImageLoader.getImageLoader(context).load(node.getThumbnailUrl()).into(viewHolder.icon);
             }
 
         // ListView
         } else {
-            if(!node.isDir() && node.hasThumbnail()) {
+            if(!node.isDir && node.hasThumbnail()) {
                 ImageLoader.getImageLoader(context).load(node.getThumbnailUrl()).into(viewHolder.icon);
             } else {
                 viewHolder.icon.setImageResource(node.getImageResource());
             }
-            viewHolder.name.setText(node.getDisplayName());
+            viewHolder.name.setText(node.displayName);
         }
 
         if(PickedFile.containsPosition(pickedFiles, position)) {
-            convertView.setAlpha(0.2f);
+            convertView.setAlpha(0.4f);
         } else {
             convertView.setAlpha(1);
         }
@@ -116,7 +105,7 @@ public class NodesAdapter<T> extends ArrayAdapter<T> {
     private int getLayoutId(Node node) {
         int layoutId;
         if (thumbnail) {
-            if(node.isDir()) {
+            if(node.isDir) {
                 layoutId = R.layout.thumbnail_item_folder;
             } else {
                 layoutId = R.layout.thumbnail_item_node;
