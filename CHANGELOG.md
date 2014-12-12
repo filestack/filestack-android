@@ -2,7 +2,7 @@ Change Log
 
 ==========
 
-Version 3.7 *(2014-12-12)*
+Version 3.7.1 *(2014-12-12)*
 ----------------------------
   * Fix: UI improvements for upload and export list views
   * Fix: Improve Grid views efficiency for lists containing many elements 
