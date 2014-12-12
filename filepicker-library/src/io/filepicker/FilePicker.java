@@ -1,6 +1,7 @@
 package io.filepicker;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -222,9 +223,12 @@ public class Filepicker extends FragmentActivity
         } else {
             String client = folder.client;
 
-            Toast.makeText(this,
-                    "Connecting to " + node.displayName + " ...",
-                    Toast.LENGTH_SHORT).show();
+            Context context = getApplicationContext();
+            if(context != null) {
+                Toast.makeText(this,
+                        "Connecting to " + node.displayName + " ...",
+                        Toast.LENGTH_SHORT).show();
+            }
 
             addAuthFragment(client);
         }

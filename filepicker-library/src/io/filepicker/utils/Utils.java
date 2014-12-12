@@ -18,6 +18,8 @@ import io.filepicker.models.Provider;
  */
 public class Utils {
 
+    private Utils() {}
+
     // Check if there is internet connection
     public static Boolean isConnected(Context context) {
         ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -30,7 +32,9 @@ public class Utils {
         }
     }
 
-
+    public static String getShortName(String name){
+        return (name.length() > 25) ? name.substring(0, 25) + "..." : name;
+    }
 
     // Show Toast
     public static void showQuickToast(Context context, int resId ){
@@ -72,6 +76,8 @@ public class Utils {
     }
 
     public static boolean isProvider(Node node) {
+        if(!(node instanceof Provider)) return false;
+
         boolean isProvider = false;
 
         for(int i = 0; i < Constants.providersList.length; i++ ) {
@@ -88,5 +94,9 @@ public class Utils {
         Date date = new Date();
         SimpleDateFormat ft = new SimpleDateFormat("dd MMMM yyyy hh:mm a");
         return "Image " + ft.format(date) + ".jpg";
+    }
+
+    public static String filenameWithoutExtension(String filename) {
+        return filename.replaceFirst("[.][^.]+$", "");
     }
 }

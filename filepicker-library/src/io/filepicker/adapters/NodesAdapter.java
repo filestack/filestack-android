@@ -13,12 +13,20 @@ import java.util.ArrayList;
 import io.filepicker.R;
 import io.filepicker.models.Node;
 import io.filepicker.models.PickedFile;
+import io.filepicker.utils.Constants;
 import io.filepicker.utils.ImageLoader;
+import io.filepicker.utils.Utils;
 
 /**
  * Created by maciejwitowski on 10/22/14.
  */
 public class NodesAdapter<T> extends ArrayAdapter<T> {
+
+    private static final int VIEW_TYPE_COUNT = 3;
+
+    private static final int TYPE_THUMUBNAIL_NAMED_IMAGE = 0;
+    private static final int TYPE_THUMUBNAIL_IMAGE = 1;
+    private static final int TYPE_LIST_ITEM         = 2;
 
     private boolean thumbnail = false;
 
@@ -38,82 +46,98 @@ public class NodesAdapter<T> extends ArrayAdapter<T> {
         TextView name;
         ImageView icon;
 
+        void setName(String value) {
+            if(name != null) {
+                this.name.setText(value);
+            }
+        }
+
+        void setIcon(int res) {
+            if(icon != null) {
+                icon.setImageResource(res);
+            }
+        }
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        Node node = (Node) nodes.get(position);
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View row = convertView;
         ViewHolder viewHolder;
 
-        if(convertView == null) {
+        if(row == null) {
+            viewHolder = new ViewHolder();
             LayoutInflater inflater = context.getLayoutInflater();
 
-            convertView = inflater.inflate(getLayoutId(node), null);
+            switch (getItemViewType(position)) {
+                case TYPE_THUMUBNAIL_NAMED_IMAGE:
+                    row = inflater.inflate(R.layout.thumbnail_item_image_named_image, null);
+                    viewHolder.icon = (ImageView) row.findViewById(R.id.imageFolder);
+                    viewHolder.name = (TextView) row.findViewById(R.id.tvFolderName);
+                    break;
+                case TYPE_THUMUBNAIL_IMAGE:
+                    row = inflater.inflate(R.layout.thumbnail_item_node, null);
+                    viewHolder.icon = (ImageView) row.findViewById(R.id.thumbNode);
+                    break;
+                default:
+                    row = inflater.inflate(R.layout.list_item_node, null);
+                    viewHolder.icon = (ImageView) row.findViewById(R.id.thumbNode);
+                    viewHolder.icon = (ImageView) row.findViewById(R.id.imageNode);
+                    viewHolder.name = (TextView) row.findViewById(R.id.tvNodeName);
+            }
 
-            viewHolder = new ViewHolder();
+            row.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) row.getTag();
+        }
 
-            if (thumbnail) {
-                if (node.isDir) {
-                    viewHolder.icon = (ImageView) convertView.findViewById(R.id.imageFolder);
-                    viewHolder.name = (TextView) convertView.findViewById(R.id.tvFolderName);
+        Node node = (Node) nodes.get(position);
+
+        switch (getItemViewType(position)) {
+            case TYPE_THUMUBNAIL_NAMED_IMAGE:
+                viewHolder.setName(Utils.getShortName(node.displayName));
+                viewHolder.setIcon(node.getImageResource());
+                break;
+            case TYPE_THUMUBNAIL_IMAGE:
+                ImageLoader.getImageLoader(context)
+                        .load(node.getThumbnailUrl())
+                        .into(viewHolder.icon);
+                break;
+            default:
+                viewHolder.setName(node.displayName);
+                if(!node.isDir && node.hasThumbnail()) {
+                    ImageLoader.getImageLoader(context).load(node.getThumbnailUrl()).into(viewHolder.icon);
                 } else {
-                    viewHolder.icon = (ImageView) convertView.findViewById(R.id.thumbNode);
+                    viewHolder.setIcon(node.getImageResource());
                 }
-            } else {
-                viewHolder.icon = (ImageView) convertView.findViewById(R.id.imageNode);
-                viewHolder.name = (TextView) convertView.findViewById(R.id.tvNodeName);
-            }
-
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        // GridView
+        if (PickedFile.containsPosition(pickedFiles, position)) {
+            row.setAlpha(Constants.ALPHA_FADED);
+        } else {
+            row.setAlpha(Constants.ALPHA_NORMAL);
+        }
+
+        return row;
+    }
+
+    @Override
+    public int getViewTypeCount() {
+        return VIEW_TYPE_COUNT;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        Node node = (Node) nodes.get(position);
+
         if(thumbnail) {
-            if (node.isDir) {
-                viewHolder.name.setText(node.displayName);
-                viewHolder.icon.setImageResource(node.getImageResource());
-
-            } else {
-                ImageLoader.getImageLoader(context).load(node.getThumbnailUrl()).into(viewHolder.icon);
-            }
-
-        // ListView
+            if(node.isDir || !node.isProbablyImage()) return TYPE_THUMUBNAIL_NAMED_IMAGE;
+            else return TYPE_THUMUBNAIL_IMAGE;
         } else {
-            if(!node.isDir && node.hasThumbnail()) {
-                ImageLoader.getImageLoader(context).load(node.getThumbnailUrl()).into(viewHolder.icon);
-            } else {
-                viewHolder.icon.setImageResource(node.getImageResource());
-            }
-            viewHolder.name.setText(node.displayName);
+            return TYPE_LIST_ITEM;
         }
-
-        if(PickedFile.containsPosition(pickedFiles, position)) {
-            convertView.setAlpha(0.4f);
-        } else {
-            convertView.setAlpha(1);
-        }
-
-        return convertView;
     }
 
     public void setThumbnail(boolean thumbnail) {
         this.thumbnail = thumbnail;
-    }
-
-    private int getLayoutId(Node node) {
-        int layoutId;
-        if (thumbnail) {
-            if(node.isDir) {
-                layoutId = R.layout.thumbnail_item_folder;
-            } else {
-                layoutId = R.layout.thumbnail_item_node;
-            }
-        } else {
-            layoutId = R.layout.list_item_node;
-        }
-
-        return layoutId;
     }
 }

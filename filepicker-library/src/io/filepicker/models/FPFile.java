@@ -1,7 +1,12 @@
 package io.filepicker.models;
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import java.io.File;
+
+import io.filepicker.utils.Utils;
 
 /**
  * Created by maciejwitowski on 10/27/14.
@@ -70,6 +75,11 @@ public final class FPFile implements Parcelable {
         }
     };
 
+    // Takes content uri like "content://..." and returns file name
+    public static String contentUriToFilename(Uri contentUri) {
+        String filename = new File(contentUri.toString()).getName();
+        return filename.substring(filename.indexOf("_") + 1);
+    }
     /**
      * Parcelable constructor
      * @param in

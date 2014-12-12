@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.net.URLConnection;
 import java.util.ArrayList;
 
 import io.filepicker.R;
@@ -50,6 +51,15 @@ public class Node implements Parcelable {
                 return R.drawable.glyphicons_036_file;
             }
         }
+    }
+
+    public boolean isProbablyImage() {
+        if(displayName.equals(""))
+            return true;
+
+        String guessedType = URLConnection.guessContentTypeFromName(displayName);
+        return guessedType != null && guessedType.contains("image/");
+
     }
 
     public boolean isCamera() {

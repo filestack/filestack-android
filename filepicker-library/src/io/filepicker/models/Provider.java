@@ -1,5 +1,7 @@
 package io.filepicker.models;
 
+import io.filepicker.utils.Constants;
+
 /**
  * Created by maciejwitowski on 10/22/14.
  */
@@ -22,5 +24,9 @@ public final class Provider extends Node {
         this.mimetypes = mimetypes;
         this.exportSupported = saveSupported;
         this.code = code;
+    }
+
+    public boolean handleAllMimetypes() {
+        return this.mimetypes.equals(Constants.MIMETYPE_ALL);
     }
 }

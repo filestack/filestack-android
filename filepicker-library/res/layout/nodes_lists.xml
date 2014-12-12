@@ -32,6 +32,7 @@
         android:visibility="gone"
         android:gravity="center">
 
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -39,5 +40,4 @@
             android:text="@string/empty_list_text"
             android:id="@+id/textView" />
     </LinearLayout>
-
 </RelativeLayout>

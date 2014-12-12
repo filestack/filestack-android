@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <dimen name="padding_micro">4dp</dimen>
     <dimen name="padding_small">8dp</dimen>
     <dimen name="padding_medium">8dp</dimen>
     <dimen name="padding_large">16dp</dimen>
@@ -12,6 +13,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
+    <dimen name="text_size_small">14sp</dimen>
     <dimen name="text_size_normal">18sp</dimen>
     <dimen name="text_size_large">22sp</dimen>
 

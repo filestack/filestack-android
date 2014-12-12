@@ -10,13 +10,16 @@ public class Constants {
 
     private Constants(){}
 
+    public static final float ALPHA_NORMAL = 1f;
+    public static final float ALPHA_FADED = 0.2f;
+
     public static final String MIMETYPE_IMAGE = "image/*";
-    private static final String MIMETYPE_ALL = "*/*";
+    public static final String MIMETYPE_ALL = "*/*";
 
     public final static Provider[] providersList = new Provider[]{
             new Provider("Gallery",       "Gallery",      MIMETYPE_IMAGE ,    R.drawable.glyphicons_008_film, false, "GALLERY"),
             new Provider("Camera",        "Camera",       MIMETYPE_IMAGE,     R.drawable.glyphicons_011_camera, false, "CAMERA"),
-            new Provider("Facebook",      "Facebook",     MIMETYPE_IMAGE,     R.drawable.glyphicons_390_facebook, true, "FACEBOOK"),
+            new Provider("Facebook",      "Facebook",     MIMETYPE_IMAGE,     R.drawable.glyphicons_390_facebook, false, "FACEBOOK"),
             new Provider("Amazon Cloud Drive", "Clouddrive", MIMETYPE_ALL, R.drawable.ic_amazon_cloud_drive, true, "CLOUDDRIVE"),
             new Provider("Dropbox",       "Dropbox",      MIMETYPE_ALL,       R.drawable.glyphicons_361_dropbox, true, "DROPBOX"),
             new Provider("Box",           "Box",          MIMETYPE_ALL,       R.drawable.glyphicons_154_show_big_thumbnails, true, "BOX"),

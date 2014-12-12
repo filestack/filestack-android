@@ -1,5 +1,6 @@
 package io.filepicker;
 
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -19,11 +20,14 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import io.filepicker.adapters.NodesAdapter;
+import io.filepicker.models.FPFile;
 import io.filepicker.models.Node;
 import io.filepicker.models.PickedFile;
+import io.filepicker.utils.Constants;
 import io.filepicker.utils.FilesUtils;
 import io.filepicker.utils.Utils;
 import io.filepicker.utils.ViewUtils;
@@ -81,8 +85,7 @@ public class ExportFragment extends Fragment {
 
         Bundle bundle = getArguments();
 
-        if (bundle == null)
-            getActivity().finish();
+        if (bundle == null) getActivity().finish();
 
         viewType = bundle.getString(KEY_VIEW_TYPE);
 
@@ -105,7 +108,7 @@ public class ExportFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_export, container, false);
 
-        mProgressBar = (ProgressBar) view.findViewById(R.id.progressBarNode);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
         mExportForm = (LinearLayout) view.findViewById(R.id.exportForm);
         mFileType = (TextView) view.findViewById(R.id.fileType);
         etFilename = (EditText) view.findViewById(R.id.etFilename);
@@ -167,19 +170,19 @@ public class ExportFragment extends Fragment {
 
     private void initForm() {
         if(parentNode != null) {
-            mFileType.setText("." + typeOfExportFile());
+            Uri fileUri = getContract().getFileToExport();
+
+            mFileType.setText("." + FilesUtils.getFileExtension(getActivity(),fileUri));
+            String filename = FPFile.contentUriToFilename(fileUri);
+
+            etFilename.setText(Utils.filenameWithoutExtension(filename));
+            showSaveButton(filename);
         }
 
         etFilename.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable text) {
-                String value = text.toString() + "." + typeOfExportFile();
-
-                if(Node.nameExists(nodes, value)) {
-                    showOverrideBtn();
-                } else {
-                    showSaveBtn();
-                }
+                showSaveButton(text.toString() + "." + typeOfExportFile());
             }
 
             // Not used
@@ -199,6 +202,13 @@ public class ExportFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if(etFilename.getText().length() > 0) {
+                    currentView.setEnabled(false);
+                    currentView.setAlpha(Constants.ALPHA_FADED);
+                    etFilename.setEnabled(false);
+                    mBtnSave.setEnabled(false);
+                    mBtnSave.setText("Saving file...");
+                    mProgressBar.setVisibility(View.VISIBLE);
+
                     String filename = etFilename.getText().toString();
                     getContract().exportFile(filename);
                 }
@@ -206,14 +216,21 @@ public class ExportFragment extends Fragment {
         });
     }
 
-    private void showSaveBtn() {
-        mBtnSave.setText(getResources().getText(R.string.save));
-        mBtnSave.setBackgroundColor(getResources().getColor(R.color.blue));
-    }
+    private void showSaveButton(String value) {
+        int textRes;
+        int backgroundColor;
 
-    private void showOverrideBtn() {
-        mBtnSave.setText(getResources().getText(R.string.override));
-        mBtnSave.setBackgroundColor(getResources().getColor(R.color.yellow));
+        if(Node.nameExists(nodes, value)) {
+            textRes = R.string.override;
+            backgroundColor = R.color.yellow;
+        } else {
+            textRes = R.string.save;
+            backgroundColor = R.color.blue;
+        }
+
+        Resources res = getResources();
+        mBtnSave.setText(res.getText(textRes));
+        mBtnSave.setBackgroundColor(res.getColor(backgroundColor));
     }
 
     private void showEmptyView(View view) {
@@ -227,5 +244,4 @@ public class ExportFragment extends Fragment {
     private String typeOfExportFile() {
         return FilesUtils.getFileExtension(getActivity(), getContract().getFileToExport());
     }
-
 }
