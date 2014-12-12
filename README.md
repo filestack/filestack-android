@@ -163,4 +163,4 @@ startActivityForResult(intent, Filepicker.REQUEST_CODE_EXPORT_FILE);
 ```
 
 
-[1]: https://raw.github.com/Ink/filepicker-android/master/sample-studio/sample_screen.jpeg
+[1]: https://raw.github.com/Ink/filepicker-android/master/sample-studio/sample_screen.png
