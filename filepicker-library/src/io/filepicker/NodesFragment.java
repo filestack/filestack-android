@@ -17,7 +17,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import io.filepicker.adapters.NodesAdapter;
 import io.filepicker.models.Node;
@@ -141,6 +140,7 @@ public class NodesFragment extends Fragment {
                         updatePickedList(view, pickedFile);
                         setUploadButton();
                     } else {
+                        view.setAlpha(Constants.ALPHA_FADED);
                         uploadSingleFile(pickedFile);
                     }
                 }
@@ -153,7 +153,7 @@ public class NodesFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if(pickedFiles.size() > 0) {
-                    showProgressBar();
+                    showProgress();
                     getContract().pickFiles(PickedFile.getNodes(pickedFiles));
                 }
             }
@@ -220,9 +220,14 @@ public class NodesFragment extends Fragment {
     }
 
     private void uploadSingleFile(PickedFile pickedFile) {
-        showProgressBar();
+        showProgress();
         pickedFiles.add(pickedFile);
         getContract().pickFiles(PickedFile.getNodes(pickedFiles));
+    }
+
+    private void showProgress() {
+        showProgressBar();
+        currentView.setEnabled(false);
     }
 
     private void updatePickedList(View view, PickedFile pickedFile) {
@@ -231,7 +236,7 @@ public class NodesFragment extends Fragment {
             view.setAlpha(1);
         } else {
             pickedFiles.add(pickedFile);
-            view.setAlpha(0.2f);
+            view.setAlpha(Constants.ALPHA_FADED);
         }
     }
 

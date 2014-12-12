@@ -10,9 +10,7 @@
 
     <!-- Toast messages -->
     <string name="no_internet">Unexpected error occurred. Are you connected to internet?</string>
-
     <string name="uploading_image">Uploading image…</string>
-
     <string name="empty_list_text">This folder is empty.</string>
 
     <string name="filename">Filename</string>
@@ -20,4 +18,6 @@
 
     <string name="save">Save</string>
     <string name="override">Override</string>
+
+    <string name="saving_file">Saving file…</string>
 </resources>
