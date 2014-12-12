@@ -77,7 +77,7 @@ public final class FPFile implements Parcelable {
 
     // Takes content uri like "content://..." and returns file name
     public static String contentUriToFilename(Uri contentUri) {
-        String filename = new File(contentUri.toString()).getName();
+        String filename = new File(contentUri.getPath()).getName();
         return filename.substring(filename.indexOf("_") + 1);
     }
     /**
