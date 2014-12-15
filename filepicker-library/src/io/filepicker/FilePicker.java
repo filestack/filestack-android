@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -51,6 +52,9 @@ public class Filepicker extends FragmentActivity
 
     private static final String API_KEY_STATE = "apiKeyState";
     private static final String IMAGE_URI_STATE = "imageUriState";
+    private static final String LOADING_STATE = "loadingState";
+
+    private boolean mIsLoading = false;
 
     private static String API_KEY = "";
     private static String APP_NAME = "";
@@ -90,9 +94,13 @@ public class Filepicker extends FragmentActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filepicker);
+        mProgressBar = (ProgressBar) findViewById(R.id.fpProgressBar);
+
         initSavedState(savedInstanceState);
 
-        mProgressBar = (ProgressBar) findViewById(R.id.fpProgressBar);
+        if(getActionBar() != null) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         validateApiKey();
         initOptions();
@@ -110,6 +118,8 @@ public class Filepicker extends FragmentActivity
 
             if(savedInstanceState.getString(IMAGE_URI_STATE) != null)
                 imageUri = Uri.parse(savedInstanceState.getString(IMAGE_URI_STATE));
+
+            mIsLoading = savedInstanceState.getBoolean(LOADING_STATE);
         }
     }
 
@@ -163,6 +173,7 @@ public class Filepicker extends FragmentActivity
     protected void onSaveInstanceState(Bundle outState) {
         // Save api key in case the activity was destroyed
         outState.putString(API_KEY_STATE, getApiKey());
+        outState.putBoolean(LOADING_STATE, mIsLoading);
 
         if(imageUri != null)
             outState.putString(IMAGE_URI_STATE, imageUri.toString());
@@ -263,6 +274,7 @@ public class Filepicker extends FragmentActivity
     protected void onResume() {
         super.onResume();
 
+        displayLoading();
         EventBus.getDefault().register(this);
     }
 
@@ -416,6 +428,18 @@ public class Filepicker extends FragmentActivity
         ContentService.uploadFile(this, uri);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                overridePendingTransition(R.anim.right_slide_out_back,
+                        R.anim.right_slide_in_back);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     // For Camera and Gallery
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -437,15 +461,29 @@ public class Filepicker extends FragmentActivity
             case REQUEST_CODE_GET_LOCAL_FILE:
                 if (resultCode == RESULT_OK) {
                     Utils.showQuickToast(this, R.string.uploading_image);
+                    mIsLoading = true;
+                    displayLoading();
                     uploadLocalFile(data.getData());
                 }
                 break;
             case REQUEST_CODE_CAMERA:
                 if (resultCode == RESULT_OK) {
                     Utils.showQuickToast(this, R.string.uploading_image);
+                    mIsLoading = true;
+                    displayLoading();
                     uploadLocalFile(imageUri);
                 }
                 break;
+        }
+    }
+
+    private void displayLoading() {
+        mProgressBar.setVisibility(mIsLoading ? View.VISIBLE : View.GONE);
+        Fragment frag = getSupportFragmentManager().findFragmentById(android.R.id.content);
+
+        if(frag != null && frag.getView() != null) {
+            frag.getView().setEnabled(!mIsLoading);
+            frag.getView().setAlpha(mIsLoading ? 0.4f : 1f);
         }
     }
 

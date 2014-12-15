@@ -2,6 +2,11 @@ Change Log
 
 ==========
 
+Version 3.7.2 *(2014-12-15)*
+----------------------------
+  * UI: Disable providers list and show progress bar when the user picks file from gallery or camera 
+  * New: Add ActionBar Up caret
+
 Version 3.7.1 *(2014-12-12)*
 ----------------------------
   * Fix: UI improvements for upload and export list views
