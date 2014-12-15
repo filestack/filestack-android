@@ -2,6 +2,7 @@
 <resources>
 
     <dimen name="padding_micro">4dp</dimen>
+    <dimen name="padding_xsmall">6dp</dimen>
     <dimen name="padding_small">8dp</dimen>
     <dimen name="padding_medium">8dp</dimen>
     <dimen name="padding_large">16dp</dimen>
