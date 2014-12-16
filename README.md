@@ -30,7 +30,7 @@ If you use Maven, you can include this library as a dependency:
 For Gradle users:
 
 ```xml
-compile 'io.filepicker:filepicker-android:3.7.2’
+compile 'io.filepicker:filepicker-android:3.7.2'
 ```
 
 Usage
@@ -91,6 +91,7 @@ FpFile object contains following fields:
   * container - container in S3 where the file was stored (if it was stored)
   * url - file link to uploaded file
   * filename - name of file
+  * localPath - local path of file
   * key - unique key
   * type - mimetype
   * size - size in bytes
@@ -101,7 +102,7 @@ All fields’ values can be retrieved using conventional java getters (i.e for f
 
 ```java
 Intent intent = new Intent(this, Filepicker.class);
-intent.putExtra(“multiple”, true);
+intent.putExtra("multiple", true);
 ```
 
 ###Store options###
@@ -144,7 +145,7 @@ To see only content files with specific mimetypes within services user:
 
 ```java
 Intent intent = new Intent(this, Filepicker.class);
-String[] mimetypes = {"image/*”, “application/pdf”};
+String[] mimetypes = {"image/*", "application/pdf"};
 intent.putExtra("mimetype", mimetypes);
 ```
 
