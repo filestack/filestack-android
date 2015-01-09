@@ -90,6 +90,10 @@ public class Filepicker extends FragmentActivity
         APP_NAME = appName;
     }
 
+    public static String getAppName() {
+        return APP_NAME;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,10 +110,13 @@ public class Filepicker extends FragmentActivity
         initOptions();
 
         // Shows provider's folders and files
-        if(isProvidersContentView())
+        if(isProvidersContentView()) {
             showProvidersContent();
-        else
+        }
+        else {
+            displayAppName();
             showProvidersList();
+        }
     }
 
     private void initSavedState(Bundle savedInstanceState) {
@@ -191,6 +198,12 @@ public class Filepicker extends FragmentActivity
         if (getSupportFragmentManager().findFragmentById(android.R.id.content) == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(android.R.id.content, getProvidersFragment()).commit();
+        }
+    }
+
+    private void displayAppName() {
+        if(getActionBar() != null) {
+            getActionBar().setTitle(APP_NAME);
         }
     }
 

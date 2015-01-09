@@ -2,6 +2,10 @@ Change Log
 
 ==========
 
+Version 3.7.3 *(2015-01-09)
+----------------------------
+  * Fix: Bug fixing
+
 Version 3.7.2 *(2014-12-15)*
 ----------------------------
   * UI: Disable providers list and show progress bar when the user picks file from gallery or camera 
