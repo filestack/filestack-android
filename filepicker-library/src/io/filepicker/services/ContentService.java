@@ -167,7 +167,7 @@ public class ContentService extends IntentService {
                             public void success(UploadLocalFileResponse object, retrofit.client.Response response) {
                                 ArrayList<FPFile> fpFiles = new ArrayList<>();
 
-                                FPFile fpFile = object.parseToFpFile();
+                                final FPFile fpFile = object.parseToFpFile();
                                 fpFile.setLocalPath(uri.toString());
                                 fpFiles.add(fpFile);
 

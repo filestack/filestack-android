@@ -6,5 +6,6 @@
     <color name="white">#ffffff</color>
     <color name="yellow">#FFBB33</color>
     <color name="light_gray">#ECEDEC</color>
+    <color name="primary_text">#212121</color>
 
 </resources>
