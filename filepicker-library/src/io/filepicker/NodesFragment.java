@@ -1,7 +1,6 @@
 package io.filepicker;
 
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -35,13 +34,17 @@ public class NodesFragment extends Fragment {
         public void openCamera();
         public void openGallery();
         public void pickFiles(ArrayList<Node> node);
-        public void showContent(Node node);
+        public void showNextNode(Node node);
         public void logoutUser(Node node);
     }
 
     private static final String KEY_NODES = "nodes";
     private  static final String KEY_PARENT_NODE = "parent_node";
     private static final String KEY_VIEW_TYPE = "viewType";
+
+    private static final String PARENT_NODE_STATE = "parent_node_state";
+    private static final String NODES_STATE = "nodes_state";
+    private static final String VIEW_TYPE_STATE = "view_type_state";
 
     private String viewType;
     private ArrayList<Node> nodes;
@@ -55,11 +58,11 @@ public class NodesFragment extends Fragment {
     private Button mUploadFilesButton;
     private NodesAdapter<Node> nodesAdapter;
 
-    public static NodesFragment newInstance(Node parentNode, Node[] nodes, String viewType) {
+    public static NodesFragment newInstance(Node parentNode, ArrayList<Node> nodes, String viewType) {
         NodesFragment frag = new NodesFragment();
         Bundle args = new Bundle();
         args.putParcelable(KEY_PARENT_NODE, parentNode);
-        args.putParcelableArray(KEY_NODES, nodes);
+        args.putParcelableArrayList(KEY_NODES, nodes);
         args.putString(KEY_VIEW_TYPE, viewType);
         frag.setArguments(args);
         return frag;
@@ -69,20 +72,25 @@ public class NodesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle bundle = getArguments();
+        if(savedInstanceState != null) {
+            viewType = savedInstanceState.getString(VIEW_TYPE_STATE);
+            nodes = savedInstanceState.getParcelableArrayList(NODES_STATE);
+            parentNode = savedInstanceState.getParcelable(PARENT_NODE_STATE);
+        } else {
+            Bundle bundle = getArguments();
 
-        if (bundle == null)
-            getActivity().finish();
-
-        viewType = bundle.getString(KEY_VIEW_TYPE);
-
-        Parcelable[] parcels = bundle.getParcelableArray(KEY_NODES);
-        nodes = new ArrayList<>();
-        for(Parcelable parcel : parcels) {
-            nodes.add((Node) parcel);
+            if (bundle == null) {
+                getActivity().finish();
+            } else {
+                viewType = bundle.getString(KEY_VIEW_TYPE);
+                nodes = bundle.getParcelableArrayList(KEY_NODES);
+                parentNode = bundle.getParcelable(KEY_PARENT_NODE);
+            }
         }
-        parentNode = bundle.getParcelable(KEY_PARENT_NODE);
 
+        if(nodes == null) {
+            nodes = new ArrayList<>();
+        }
         if(parentNode != null && Utils.isProvider(parentNode)){
             setHasOptionsMenu(true);
         }
@@ -205,6 +213,15 @@ public class NodesFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(VIEW_TYPE_STATE, viewType);
+        outState.putParcelableArrayList(NODES_STATE, nodes);
+        outState.putParcelable(PARENT_NODE_STATE, parentNode);
+
+        super.onSaveInstanceState(outState);
+    }
+
     private void showEmptyView(View view) {
         view.findViewById(R.id.emptylistView).setVisibility(View.VISIBLE);
     }
@@ -215,7 +232,7 @@ public class NodesFragment extends Fragment {
         } else if (node.isCamera()) {
             getContract().openCamera();
         } else {
-            getContract().showContent(node);
+            getContract().showNextNode(node);
         }
     }
 

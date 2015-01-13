@@ -2,6 +2,11 @@ Change Log
 
 ==========
 
+Version 3.8.0 *(2015-01-13)
+----------------------------
+  * Fix: Major performance improvements
+  * Fix: Bug fixing
+
 Version 3.7.3 *(2015-01-09)
 ----------------------------
   * Fix: Bug fixing

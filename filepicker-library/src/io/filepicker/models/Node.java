@@ -77,6 +77,10 @@ public class Node implements Parcelable {
     public String getThumbnailUrl() {
         return thumbnailUrl;
     }
+
+    public String deslashedPath() {
+        return linkPath.replace("/", "_");
+    }
     /** Used to give additional hints on how to process the received parcel.*/
     @Override
     public int describeContents() {

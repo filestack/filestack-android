@@ -3,7 +3,6 @@ package io.filepicker;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,7 +19,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import io.filepicker.adapters.NodesAdapter;
@@ -39,7 +37,7 @@ public class ExportFragment extends Fragment {
 
     // Activity needs to implement these methods
     public interface Contract {
-        public void showContent(Node node);
+        public void showNextNode(Node node);
         public void exportFile(String fileName);
         public Uri getFileToExport();
     }
@@ -69,11 +67,11 @@ public class ExportFragment extends Fragment {
     // Layout with edit text for filename and save button
     private LinearLayout mExportForm;
 
-    public static ExportFragment newInstance(Node parentNode, Node[] nodes, String viewType) {
+    public static ExportFragment newInstance(Node parentNode, ArrayList<Node> nodes, String viewType) {
         ExportFragment frag = new ExportFragment();
         Bundle args = new Bundle();
         args.putParcelable(KEY_PARENT_NODE, parentNode);
-        args.putParcelableArray(KEY_NODES, nodes);
+        args.putParcelableArrayList(KEY_NODES, nodes);
         args.putString(KEY_VIEW_TYPE, viewType);
         frag.setArguments(args);
         return frag;
@@ -89,10 +87,9 @@ public class ExportFragment extends Fragment {
 
         viewType = bundle.getString(KEY_VIEW_TYPE);
 
-        Parcelable[] parcels = bundle.getParcelableArray(KEY_NODES);
-        nodes = new ArrayList<>();
-        for(Parcelable parcel : parcels) {
-            nodes.add((Node) parcel);
+        nodes = bundle.getParcelableArrayList(KEY_NODES);
+        if(nodes == null) {
+            nodes = new ArrayList<>();
         }
 
         parentNode = bundle.getParcelable(KEY_PARENT_NODE);
@@ -157,7 +154,7 @@ public class ExportFragment extends Fragment {
 
                 // If node is dir then open it
                 if (node.isDir) {
-                    getContract().showContent(node);
+                    getContract().showNextNode(node);
                 }
             }
         });

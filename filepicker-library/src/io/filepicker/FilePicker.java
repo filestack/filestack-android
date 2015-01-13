@@ -4,23 +4,37 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import de.greenrobot.event.EventBus;
 import io.filepicker.events.ApiErrorEvent;
 import io.filepicker.events.FileExportedEvent;
 import io.filepicker.events.FpFilesReceivedEvent;
-import io.filepicker.events.GetContentEvent;
+import io.filepicker.events.GotContentEvent;
 import io.filepicker.events.SignedOutEvent;
+import io.filepicker.models.DisplayedNode;
 import io.filepicker.models.FPFile;
 import io.filepicker.models.Folder;
 import io.filepicker.models.Node;
@@ -32,6 +46,8 @@ import io.filepicker.utils.Utils;
 
 public class Filepicker extends FragmentActivity
         implements AuthFragment.Contract, NodesFragment.Contract, ExportFragment.Contract {
+
+    private static final String LOG_TAG = Filepicker.class.getSimpleName();
 
     private static final String AUTH_FRAGMENT_TAG = "authFragment";
 
@@ -47,14 +63,15 @@ public class Filepicker extends FragmentActivity
     private static final String CONTAINER_EXTRA = "container";
     private static final String ACCESS_EXTRA = "access";
 
-    // This key is use when the activity shows content, not providers list
-    private static final String CONTENT_EXTRA = "content";
-
-    private static final String API_KEY_STATE = "apiKeyState";
-    private static final String IMAGE_URI_STATE = "imageUriState";
-    private static final String LOADING_STATE = "loadingState";
+    private static final String API_KEY_STATE = "api_key_state";
+    private static final String IMAGE_URI_STATE = "image_uri_state";
+    private static final String LOADING_STATE = "loading_state";
+    private static final String DISPLAYED_NODES_LIST_STATE = "nodes_list_state";
+    private static final String CURRENT_DISPLAYED_NODE_STATE = "current_displayed_node_state";
+    private static final String NODE_CONTENT_STATE = "node_content_state";
 
     private boolean mIsLoading = false;
+    private boolean mIsWaitingForContent = false;
 
     private static String API_KEY = "";
     private static String APP_NAME = "";
@@ -65,11 +82,18 @@ public class Filepicker extends FragmentActivity
     public static final int REQUEST_CODE_EXPORT_FILE = 604;
 
     // Action used by clients to indicate they want to export file
-    public final static String ACTION_EXPORT_FILE = "export_file";
+    public static final String ACTION_EXPORT_FILE = "export_file";
+
+    // List which will be traversed while the user goes in the folders tree
+    private ArrayList<DisplayedNode> mDisplayedNodesList;
+    private DisplayedNode mCurrentDisplayedNode;
+
+    private ArrayList<Node> mNodeContentList;
+//    private String mViewType;
 
     // Needed for camera request
     private Uri imageUri;
-    private Node node;
+//    private Node node;
 
     private ProgressBar mProgressBar;
     private static Uri mFileToExport;
@@ -98,9 +122,18 @@ public class Filepicker extends FragmentActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filepicker);
+
         mProgressBar = (ProgressBar) findViewById(R.id.fpProgressBar);
 
         initSavedState(savedInstanceState);
+
+        if(mDisplayedNodesList == null) {
+            mDisplayedNodesList = new ArrayList<>();
+        }
+
+        if(mNodeContentList == null) {
+            mNodeContentList = new ArrayList<>();
+        }
 
         if(getActionBar() != null) {
             getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -110,12 +143,12 @@ public class Filepicker extends FragmentActivity
         initOptions();
 
         // Shows provider's folders and files
-        if(isProvidersContentView()) {
-            showProvidersContent();
-        }
-        else {
-            displayAppName();
-            showProvidersList();
+        if(mDisplayedNodesList.isEmpty()) {
+            setTitle(APP_NAME);
+            showProvidersList(false);
+        } else {
+            setTitle(mCurrentDisplayedNode.node.displayName);
+            refreshFragment(false);
         }
     }
 
@@ -127,6 +160,9 @@ public class Filepicker extends FragmentActivity
                 imageUri = Uri.parse(savedInstanceState.getString(IMAGE_URI_STATE));
 
             mIsLoading = savedInstanceState.getBoolean(LOADING_STATE);
+            mDisplayedNodesList =  savedInstanceState.getParcelableArrayList(DISPLAYED_NODES_LIST_STATE);
+            mCurrentDisplayedNode = savedInstanceState.getParcelable(CURRENT_DISPLAYED_NODE_STATE);
+            mNodeContentList = savedInstanceState.getParcelableArrayList(NODE_CONTENT_STATE);
         }
     }
 
@@ -175,12 +211,14 @@ public class Filepicker extends FragmentActivity
         }
     }
 
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         // Save api key in case the activity was destroyed
         outState.putString(API_KEY_STATE, getApiKey());
         outState.putBoolean(LOADING_STATE, mIsLoading);
+        outState.putParcelableArrayList(DISPLAYED_NODES_LIST_STATE, mDisplayedNodesList);
+        outState.putParcelable(CURRENT_DISPLAYED_NODE_STATE, mCurrentDisplayedNode);
+        outState.putParcelableArrayList(NODE_CONTENT_STATE, mNodeContentList);
 
         if(imageUri != null)
             outState.putString(IMAGE_URI_STATE, imageUri.toString());
@@ -188,22 +226,118 @@ public class Filepicker extends FragmentActivity
         super.onSaveInstanceState(outState);
     }
 
-    private boolean isProvidersContentView() {
-        Intent intent = getIntent();
-        return (intent.hasExtra(CONTENT_EXTRA) && intent.getBooleanExtra(CONTENT_EXTRA, false));
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        EventBus.getDefault().register(this);
     }
 
+    @Override
+    protected void onPause() {
+        EventBus.getDefault().unregister(this);
 
-    private void showProvidersList() {
-        if (getSupportFragmentManager().findFragmentById(android.R.id.content) == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(android.R.id.content, getProvidersFragment()).commit();
+        super.onPause();
+    }
+
+    @Override
+    public void onBackPressed() {
+        // In case content is being loaded, we are not waiting for it
+        mIsWaitingForContent = false;
+
+        if(mDisplayedNodesList != null && mDisplayedNodesList.size() > 0) {
+            removeLastNode();
+
+            if(mDisplayedNodesList.size() > 0) {
+                mCurrentDisplayedNode = mDisplayedNodesList.get(mDisplayedNodesList.size()-1);
+                setTitle(mCurrentDisplayedNode.node.displayName);
+
+                Log.d(LOG_TAG, "Get cached data from " + mCurrentDisplayedNode.node.linkPath);
+                File currentFile = Utils.getCacheFile(this, mCurrentDisplayedNode.node.deslashedPath());
+
+                if(currentFile.exists()) {
+                    showCachedNode(currentFile);
+                } else {
+                    refreshCurrentlyDisplayedNode(mCurrentDisplayedNode, true);
+                }
+            } else {
+                showProvidersList(true);
+            }
+
+        } else {
+            super.onBackPressed();
+            overridePendingTransition(R.anim.right_slide_out_back,
+                    R.anim.right_slide_in_back);
         }
     }
 
-    private void displayAppName() {
-        if(getActionBar() != null) {
-            getActionBar().setTitle(APP_NAME);
+    @Override
+    protected void onDestroy() {
+        clearCachedFiles();
+        super.onStop();
+    }
+
+    public void getContent(Node node, boolean backPressed) {
+        mIsWaitingForContent = true;
+        showLoading();
+
+        ContentService.getContent(this, node, backPressed);
+    }
+
+    private void showFolderContent(Folder folder, boolean backPressed) {
+        mCurrentDisplayedNode.viewType = folder.view;
+
+        mNodeContentList = new ArrayList<>(Arrays.asList(folder.nodes));
+
+        // Cache items
+        new CacheGotItemsTask(this, mCurrentDisplayedNode.node).execute(mNodeContentList);
+
+        refreshFragment(backPressed);
+    }
+
+    private void refreshFragment(boolean backPressed) {
+        hideLoading();
+
+        Fragment contentFragment = getContentFragment();
+
+        if(backPressed) {
+            getSupportFragmentManager().beginTransaction()
+                    .setCustomAnimations(R.anim.right_slide_out_back, R.anim.right_slide_in_back)
+                    .replace(android.R.id.content, contentFragment)
+                    .commit();
+        } else {
+            getSupportFragmentManager().beginTransaction()
+                    .setCustomAnimations(R.anim.right_slide_in, R.anim.right_slide_out)
+                    .replace(android.R.id.content, contentFragment)
+                    .commit();
+        }
+    }
+
+    private Fragment getContentFragment() {
+        Fragment contentFragment;
+
+        if(mExport) {
+            contentFragment = ExportFragment.newInstance(mCurrentDisplayedNode.node,
+                    mNodeContentList, mCurrentDisplayedNode.viewType);
+        } else {
+            contentFragment = NodesFragment.newInstance(mCurrentDisplayedNode.node,
+                    mNodeContentList, mCurrentDisplayedNode.viewType);
+        }
+
+        return contentFragment;
+    }
+
+    private void showProvidersList(boolean backPressed) {
+        if(backPressed) {
+            getSupportFragmentManager().beginTransaction()
+                    .setCustomAnimations(R.anim.right_slide_out_back, R.anim.right_slide_in_back)
+                    .replace(android.R.id.content, getProvidersFragment())
+                    .commit();
+        } else {
+            getSupportFragmentManager().beginTransaction()
+                    .setCustomAnimations(R.anim.right_slide_in, R.anim.right_slide_out)
+                    .replace(android.R.id.content, getProvidersFragment())
+                    .commit();
         }
     }
 
@@ -223,79 +357,32 @@ public class Filepicker extends FragmentActivity
         return contentFragment;
     }
 
-    private void showProvidersContent() {
-        showProgressBar();
-        node = getIntent().getParcelableExtra(NODE_EXTRA);
-
-        if(getActionBar() != null)
-            getActionBar().setTitle(node.displayName);
-
-        getContent();
-    }
-
-    public void getContent() {
-        ContentService.getContent(this, node);
-    }
-
-    public void onEvent(GetContentEvent event) {
-        hideProgressBar();
+    public void onEvent(GotContentEvent event) {
+        if(!mIsWaitingForContent) {
+            return;
+        }
 
         Folder folder= event.folder;
 
         if(folder.auth) {
-            displayContent(folder);
+            showFolderContent(folder, event.backPressed);
         } else {
-            String client = folder.client;
-
-            Context context = getApplicationContext();
-            if(context != null) {
-                Toast.makeText(this,
-                        "Connecting to " + node.displayName + " ...",
-                        Toast.LENGTH_SHORT).show();
-            }
-
-            addAuthFragment(client);
+            showAuthFragment(folder.client);
         }
     }
 
-    private void displayContent(Folder folder) {
-        Fragment contentFragment = getContentFragment(folder);
-
-        if(getSupportFragmentManager().findFragmentById(android.R.id.content) == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(android.R.id.content, contentFragment).commit();
-        }
-    }
-
-
-    private Fragment getContentFragment(Folder folder) {
-        Fragment contentFragment;
-
-        if(mExport) {
-            contentFragment = ExportFragment.newInstance(node,
-                    folder.nodes, folder.view);
-        } else {
-            contentFragment = NodesFragment.newInstance(node,
-                    folder.nodes, folder.view);
+    private void showAuthFragment(String providerUrl) {
+        Context context = getApplicationContext();
+        if(context != null) {
+            Toast.makeText(this,
+                    "Connecting to " + mCurrentDisplayedNode.node.displayName + " ...",
+                    Toast.LENGTH_SHORT).show();
         }
 
-        return contentFragment;
-    }
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        displayLoading();
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    protected void onPause() {
-        EventBus.getDefault().unregister(this);
-
-        super.onPause();
+        getSupportFragmentManager().beginTransaction()
+                .replace(android.R.id.content,
+                        AuthFragment.newInstance(providerUrl), AUTH_FRAGMENT_TAG)
+                .commit();
     }
 
     public void onEvent(FpFilesReceivedEvent event) {
@@ -313,7 +400,7 @@ public class Filepicker extends FragmentActivity
     }
 
     public void onEvent(SignedOutEvent event) {
-        finish();
+        showProvidersList(true);
     }
 
     public void onEvent(FileExportedEvent event) {
@@ -332,23 +419,8 @@ public class Filepicker extends FragmentActivity
     }
 
     public void proceedAfterAuth() {
-       // Check if auth fragment exists. If so, remove it
-       removeAuthFragment();
-       showProgressBar();
-
        // Try getting content again
-       getContent();
-    }
-
-    private void addAuthFragment(String providerUrl) {
-        if(getSupportFragmentManager().findFragmentByTag(AUTH_FRAGMENT_TAG) == null) {
-
-            getSupportFragmentManager().beginTransaction()
-                    .add(android.R.id.content,
-                            AuthFragment.newInstance(providerUrl), AUTH_FRAGMENT_TAG)
-                    .commit();
-        }
-
+       getContent(mCurrentDisplayedNode.node, false);
     }
 
     private void removeAuthFragment() {
@@ -371,42 +443,44 @@ public class Filepicker extends FragmentActivity
 
     @Override
     public void pickFiles(ArrayList<Node> pickedFiles) {
+        showLoading();
         ContentService.pickFiles(this, pickedFiles);
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        overridePendingTransition(R.anim.right_slide_out_back,
-                R.anim.right_slide_in_back);
+    // Removes currently last node's cached file and the node itself from the list
+    private void removeLastNode() {
+        File file = Utils.getCacheFile(this, mCurrentDisplayedNode.node.deslashedPath());
+        if(file.exists()) {
+            file.delete();
+        }
+
+        mDisplayedNodesList.remove(mCurrentDisplayedNode);
     }
 
     @Override
-    public void showContent(Node node) {
-        Intent intent;
-        int requestCode;
+    public void showNextNode(Node newNode) {
+        mCurrentDisplayedNode = new DisplayedNode(newNode, Constants.LIST_VIEW); // Default view is listview
 
-        if(mExport) {
-            Uri contentUri = getIntent().getData();
-            intent = new Intent(Filepicker.ACTION_EXPORT_FILE, contentUri, this, Filepicker.class);
-            requestCode = Filepicker.REQUEST_CODE_EXPORT_FILE;
-        } else {
-            intent = new Intent(this, Filepicker.class);
-            requestCode = Filepicker.REQUEST_CODE_GETFILE;
+        mDisplayedNodesList.add(mCurrentDisplayedNode);
+        refreshCurrentlyDisplayedNode(mCurrentDisplayedNode, false);
+    }
+
+    private void refreshCurrentlyDisplayedNode(DisplayedNode displayedNode, boolean isBackPressed) {
+        setTitle(displayedNode.node.displayName);
+
+        getContent(displayedNode.node, isBackPressed);
+    }
+
+    private void setTitle(String title) {
+        if (getActionBar() != null){
+            getActionBar().setTitle(title);
         }
-
-        intent.putExtra(NODE_EXTRA, node);
-        intent.putExtra(CONTENT_EXTRA, true);
-        startActivityForResult(intent, requestCode);
-        overridePendingTransition(R.anim.right_slide_in,
-                R.anim.right_slide_out);
-
-
     }
 
     @Override
     public void exportFile(String filename) {
-        ContentService.exportFile(this, node, mFileToExport, filename);
+        showLoading();
+        ContentService.exportFile(this, mCurrentDisplayedNode.node, mFileToExport, filename);
     }
 
     @Override
@@ -437,7 +511,7 @@ public class Filepicker extends FragmentActivity
     }
 
     private void uploadLocalFile(Uri uri) {
-        showProgressBar();
+        showLoading();
         ContentService.uploadFile(this, uri);
     }
 
@@ -474,29 +548,37 @@ public class Filepicker extends FragmentActivity
             case REQUEST_CODE_GET_LOCAL_FILE:
                 if (resultCode == RESULT_OK) {
                     Utils.showQuickToast(this, R.string.uploading_image);
-                    mIsLoading = true;
-                    displayLoading();
+                    showLoading();
                     uploadLocalFile(data.getData());
                 }
                 break;
             case REQUEST_CODE_CAMERA:
                 if (resultCode == RESULT_OK) {
                     Utils.showQuickToast(this, R.string.uploading_image);
-                    mIsLoading = true;
-                    displayLoading();
+                    showLoading();
                     uploadLocalFile(imageUri);
                 }
                 break;
         }
     }
 
-    private void displayLoading() {
+    private void showLoading() {
+        mIsLoading = true;
+        updateLoadingView();
+    }
+
+    private void hideLoading() {
+        mIsLoading = false;
+        updateLoadingView();
+    };
+
+    private void updateLoadingView() {
         mProgressBar.setVisibility(mIsLoading ? View.VISIBLE : View.GONE);
         Fragment frag = getSupportFragmentManager().findFragmentById(android.R.id.content);
 
         if(frag != null && frag.getView() != null) {
             frag.getView().setEnabled(!mIsLoading);
-            frag.getView().setAlpha(mIsLoading ? 0.4f : 1f);
+            frag.getView().setAlpha(mIsLoading ? 0.2f : 1f);
         }
     }
 
@@ -508,14 +590,6 @@ public class Filepicker extends FragmentActivity
         values.put(MediaStore.Images.Media.DESCRIPTION, "Image captured by camera");
         values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
         imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-    }
-
-    private void showProgressBar() {
-        mProgressBar.setVisibility(View.VISIBLE);
-    }
-
-    private void hideProgressBar() {
-        mProgressBar.setVisibility(View.GONE);
     }
 
     // Returns array of selected providers if it was provided in intent
@@ -535,5 +609,81 @@ public class Filepicker extends FragmentActivity
         return intent.getAction() != null &&
                 intent.getAction().equals(ACTION_EXPORT_FILE) &&
                 intent.getData() != null;
+    }
+
+    private void showCachedNode(File nodeCachedData) {
+        new AsyncTask<File, Void, Void>() {
+            @Override
+            protected Void doInBackground(File... params) {
+                mNodeContentList = new ArrayList<Node>();
+                File nodeCachedData = params[0];
+
+                try {
+                    Log.d(LOG_TAG, "Reading from file " + nodeCachedData.getAbsolutePath());
+                    BufferedReader br = new BufferedReader(new FileReader(nodeCachedData));
+                    String line;
+
+                    while ((line = br.readLine()) != null) {
+                        for(Node node :  new Gson().fromJson(line, Node[].class)) {
+                            mNodeContentList.add(node);
+                        }
+
+                    }
+                    br.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void param) {
+                refreshFragment(true);
+            }
+        }.execute(nodeCachedData);
+    }
+
+    private void clearCachedFiles() {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                Utils.clearCachedFiles(Filepicker.this);
+                return null;
+            }
+        }.execute();
+    }
+    private static class CacheGotItemsTask extends AsyncTask<ArrayList<Node>, Void, Void> {
+
+        private Context mContext;
+        private Node mLastNode;
+
+        public CacheGotItemsTask(Context context, Node lastNode) {
+            this.mContext = context;
+            this.mLastNode = lastNode;
+        }
+
+        @Override
+        protected Void doInBackground(ArrayList<Node>... params) {
+            final ArrayList<Node> nodes = params[0];
+            if(nodes != null && nodes.size() > 0 && mLastNode != null) {
+                Gson gson = new Gson();
+                JsonElement jsonElement = new JsonParser().parse(gson.toJson(nodes));
+                String result = gson.toJson(jsonElement);
+                File file = Utils.getCacheFile(mContext, mLastNode.deslashedPath());
+                try {
+                    Log.d(LOG_TAG, "Writing to file " + file.getAbsolutePath());
+                    FileOutputStream output = new FileOutputStream(file);
+                    output.write(result.getBytes());
+                    output.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+            return null;
+        }
     }
 }

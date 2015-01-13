@@ -6,8 +6,6 @@ import android.os.Parcelable;
 
 import java.io.File;
 
-import io.filepicker.utils.Utils;
-
 /**
  * Created by maciejwitowski on 10/27/14.
  */
