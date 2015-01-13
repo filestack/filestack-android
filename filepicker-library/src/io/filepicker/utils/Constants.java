@@ -1,5 +1,8 @@
 package io.filepicker.utils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import io.filepicker.R;
 import io.filepicker.models.Provider;
 
@@ -16,7 +19,9 @@ public class Constants {
     public static final String MIMETYPE_IMAGE = "image/*";
     public static final String MIMETYPE_ALL = "*/*";
 
-    public final static Provider[] providersList = new Provider[]{
+    public static final String CACHED_FILES_PREFIX = "io_filepicker_library_";
+
+    public final static ArrayList<Provider> providersList = new ArrayList<>(Arrays.asList(
             new Provider("Gallery",       "Gallery",      MIMETYPE_IMAGE ,    R.drawable.glyphicons_008_film, false, "GALLERY"),
             new Provider("Camera",        "Camera",       MIMETYPE_IMAGE,     R.drawable.glyphicons_011_camera, false, "CAMERA"),
             new Provider("Facebook",      "Facebook",     MIMETYPE_IMAGE,     R.drawable.glyphicons_390_facebook, false, "FACEBOOK"),
@@ -29,7 +34,7 @@ public class Constants {
             new Provider("Picasa",        "Picasa",       MIMETYPE_IMAGE,     R.drawable.glyphicons_366_picasa, true, "PICASA"),
             new Provider("Github",        "Github",       MIMETYPE_ALL,       R.drawable.glyphicons_381_github, false, "GITHUB"),
             new Provider("Google Drive",  "GoogleDrive",       MIMETYPE_ALL,       R.drawable.gdrive, false, "GOOGLE_DRIVE")
-    };
+    ));
 
     public static final String LIST_VIEW   = "list";
     public static final String THUMBNAILS_VIEW  = "thumbnails";

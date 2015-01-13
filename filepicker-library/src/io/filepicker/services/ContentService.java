@@ -13,7 +13,7 @@ import io.filepicker.api.FpApiClient;
 import io.filepicker.events.ApiErrorEvent;
 import io.filepicker.events.FileExportedEvent;
 import io.filepicker.events.FpFilesReceivedEvent;
-import io.filepicker.events.GetContentEvent;
+import io.filepicker.events.GotContentEvent;
 import io.filepicker.events.SignedOutEvent;
 import io.filepicker.models.FPFile;
 import io.filepicker.models.Folder;
@@ -42,6 +42,7 @@ public class ContentService extends IntentService {
     private static final String ACTION_LOGOUT = "io.filepicker.services.action.logout";
     private static final String ACTION_EXPORT_FILE = "io.filepicker.services.action.export_file";
 
+    private static final String EXTRA_BACK_PRESSED = "io.filepicker.services.extra.back_pressed";
     private static final String EXTRA_NODE = "io.filepicker.services.extra.node";
     private static final String EXTRA_FILENAME = "io.filepicker.services.extra.filename";
 
@@ -52,10 +53,11 @@ public class ContentService extends IntentService {
         super("ContentService");
     }
 
-    public static void getContent(Context context, Node node) {
+    public static void getContent(Context context, Node node, boolean backPressed) {
         Intent intent = new Intent(context, ContentService.class);
         intent.setAction(ACTION_GET_CONTENT);
         intent.putExtra(EXTRA_NODE, node);
+        intent.putExtra(EXTRA_BACK_PRESSED, backPressed);
         context.startService(intent);
     }
 
@@ -98,7 +100,8 @@ public class ContentService extends IntentService {
             switch(action) {
                 case ACTION_GET_CONTENT:
                     node = intent.getParcelableExtra(EXTRA_NODE);
-                    handleActionGetContent(node);
+                    boolean backPressed = intent.getBooleanExtra(EXTRA_BACK_PRESSED, false);
+                    handleActionGetContent(node, backPressed);
                     break;
                 case ACTION_UPLOAD_FILE:
                     Uri uri = intent.getParcelableExtra(EXTRA_FILE_URI);
@@ -124,15 +127,14 @@ public class ContentService extends IntentService {
         }
     }
 
-    private void handleActionGetContent(Node node) {
-        Log.d(LOG_TAG, "handleActionGetContent for path " + node.linkPath);
+    private void handleActionGetContent(Node node, final boolean backPressed) {
         FpApiClient.getFpApiClient(this)
                 .getFolder(node.linkPath, "info",
                     FpApiClient.getJsSession(this),
                     new Callback<Folder>() {
                         @Override
                         public void success(Folder folder, retrofit.client.Response response) {
-                            EventBus.getDefault().post(new GetContentEvent(folder));
+                            EventBus.getDefault().post(new GotContentEvent(folder, backPressed));
                         }
 
                         @Override

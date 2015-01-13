@@ -5,6 +5,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.widget.Toast;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,12 +47,14 @@ public class Utils {
     }
 
     // Get providers
-    public static Provider[] getProviders(String[] providersCodes) {
-        if(providersCodes == null)
-            return Constants.providersList;
+    public static ArrayList<Node> getProviders(String[] providersCodes) {
+        if(providersCodes == null || !(providersCodes.length > 0)) {
+            return getProvidersAsNodes();
+        }
 
-        ArrayList<Provider> selectedProviders = new ArrayList<>();
-        for(String code : providersCodes) {
+        ArrayList<Node> selectedProviders = new ArrayList<>();
+
+        for (String code : providersCodes) {
             for (Provider provider : Constants.providersList) {
                 if (provider.code.equals(code)) {
                     selectedProviders.add(provider);
@@ -59,20 +62,45 @@ public class Utils {
             }
         }
 
-        return selectedProviders.toArray(new Provider[selectedProviders.size()]);
+        return selectedProviders;
     }
 
     // Get providers which allows saving
-    public static Provider[] getExportableProviders(String[] providerCodes) {
-        ArrayList<Provider> exportableProviders = new ArrayList<>();
+    public static ArrayList<Node> getExportableProviders(String[] providersCodes) {
+        if(providersCodes == null || !(providersCodes.length > 0)) {
+            return getExportableProvidersAsNodes();
+        }
 
-        for(Provider provider : getProviders(providerCodes)) {
-            if(provider.exportSupported) {
+        ArrayList<Node> exportableProviders = new ArrayList<>();
+
+        for (Node node : getProviders(providersCodes)) {
+            Provider provider = (Provider) node;
+            if (provider.exportSupported) {
                 exportableProviders.add(provider);
             }
         }
 
-        return exportableProviders.toArray(new Provider[exportableProviders.size()]);
+        return exportableProviders;
+    }
+
+    private static ArrayList<Node> getProvidersAsNodes() {
+        ArrayList<Node> nodesList = new ArrayList<Node>();
+        for(Provider provider : Constants.providersList) {
+            nodesList.add(provider);
+        }
+
+        return nodesList;
+    }
+
+    private static ArrayList<Node> getExportableProvidersAsNodes() {
+        ArrayList<Node> nodesList = new ArrayList<Node>();
+        for(Provider provider : Constants.providersList) {
+            if(provider.exportSupported) {
+                nodesList.add(provider);
+            }
+        }
+
+        return nodesList;
     }
 
     public static boolean isProvider(Node node) {
@@ -80,8 +108,8 @@ public class Utils {
 
         boolean isProvider = false;
 
-        for(int i = 0; i < Constants.providersList.length; i++ ) {
-            if(node.displayName.equals(Constants.providersList[i].displayName)) {
+        for(int i = 0; i < Constants.providersList.size(); i++ ) {
+            if(node.displayName.equals(Constants.providersList.get(i).displayName)) {
                 isProvider = true;
                 break;
             }
@@ -98,5 +126,17 @@ public class Utils {
 
     public static String filenameWithoutExtension(String filename) {
         return filename.replaceFirst("[.][^.]+$", "");
+    }
+
+    public static File getCacheFile(Context context, String path) {
+        return new File(context.getCacheDir(), "io_filepicker_library_" + path);
+    }
+
+    public static void clearCachedFiles(Context context) {
+        for(File file : context.getCacheDir().listFiles()) {
+            if(file.getName().contains(Constants.CACHED_FILES_PREFIX)) {
+                file.delete();
+            }
+        }
     }
 }
