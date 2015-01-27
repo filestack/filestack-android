@@ -69,6 +69,8 @@ public class Filepicker extends FragmentActivity
     private static final String DISPLAYED_NODES_LIST_STATE = "nodes_list_state";
     private static final String CURRENT_DISPLAYED_NODE_STATE = "current_displayed_node_state";
     private static final String NODE_CONTENT_STATE = "node_content_state";
+    private static final String IS_USER_AUTHORIZED_STATE = "is_user_authorized_state";
+    private static final String FOLDER_CLIENT_CODE_STATE = "folder_client_code_state";
 
     private boolean mIsLoading = false;
     private boolean mIsWaitingForContent = false;
@@ -88,12 +90,16 @@ public class Filepicker extends FragmentActivity
     private ArrayList<DisplayedNode> mDisplayedNodesList;
     private DisplayedNode mCurrentDisplayedNode;
 
+    // True is user is authorized to the current node
+    private boolean mIsUserAuthorized;
+
+    // The code of the folder's client returned from API
+    private String mFolderClientCode;
+
     private ArrayList<Node> mNodeContentList;
-//    private String mViewType;
 
     // Needed for camera request
     private Uri imageUri;
-//    private Node node;
 
     private ProgressBar mProgressBar;
     private static Uri mFileToExport;
@@ -148,7 +154,12 @@ public class Filepicker extends FragmentActivity
             showProvidersList(false);
         } else {
             setTitle(mCurrentDisplayedNode.node.displayName);
-            refreshFragment(false);
+
+            if(!mIsUserAuthorized) {
+                showAuthFragment();
+            } else {
+                refreshFragment(false);
+            }
         }
     }
 
@@ -163,6 +174,8 @@ public class Filepicker extends FragmentActivity
             mDisplayedNodesList =  savedInstanceState.getParcelableArrayList(DISPLAYED_NODES_LIST_STATE);
             mCurrentDisplayedNode = savedInstanceState.getParcelable(CURRENT_DISPLAYED_NODE_STATE);
             mNodeContentList = savedInstanceState.getParcelableArrayList(NODE_CONTENT_STATE);
+            mIsUserAuthorized = savedInstanceState.getBoolean(IS_USER_AUTHORIZED_STATE);
+            mFolderClientCode = savedInstanceState.getString(FOLDER_CLIENT_CODE_STATE);
         }
     }
 
@@ -219,6 +232,7 @@ public class Filepicker extends FragmentActivity
         outState.putParcelableArrayList(DISPLAYED_NODES_LIST_STATE, mDisplayedNodesList);
         outState.putParcelable(CURRENT_DISPLAYED_NODE_STATE, mCurrentDisplayedNode);
         outState.putParcelableArrayList(NODE_CONTENT_STATE, mNodeContentList);
+        outState.putString(FOLDER_CLIENT_CODE_STATE, mFolderClientCode);
 
         if(imageUri != null)
             outState.putString(IMAGE_URI_STATE, imageUri.toString());
@@ -300,6 +314,7 @@ public class Filepicker extends FragmentActivity
 
         Fragment contentFragment = getContentFragment();
 
+        // TODO change so only animation are in if/else
         if(backPressed) {
             getSupportFragmentManager().beginTransaction()
                     .setCustomAnimations(R.anim.right_slide_out_back, R.anim.right_slide_in_back)
@@ -363,15 +378,17 @@ public class Filepicker extends FragmentActivity
         }
 
         Folder folder= event.folder;
+        mIsUserAuthorized = folder.auth;
+        mFolderClientCode = event.folder.client;
 
-        if(folder.auth) {
+        if(mIsUserAuthorized) {
             showFolderContent(folder, event.backPressed);
         } else {
-            showAuthFragment(folder.client);
+            showAuthFragment();
         }
     }
 
-    private void showAuthFragment(String providerUrl) {
+    private void showAuthFragment() {
         Context context = getApplicationContext();
         if(context != null) {
             Toast.makeText(this,
@@ -381,7 +398,7 @@ public class Filepicker extends FragmentActivity
 
         getSupportFragmentManager().beginTransaction()
                 .replace(android.R.id.content,
-                        AuthFragment.newInstance(providerUrl), AUTH_FRAGMENT_TAG)
+                        AuthFragment.newInstance(mFolderClientCode), AUTH_FRAGMENT_TAG)
                 .commit();
     }
 
