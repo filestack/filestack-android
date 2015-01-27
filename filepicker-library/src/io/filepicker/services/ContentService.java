@@ -170,8 +170,10 @@ public class ContentService extends IntentService {
                                 ArrayList<FPFile> fpFiles = new ArrayList<>();
 
                                 final FPFile fpFile = object.parseToFpFile();
-                                fpFile.setLocalPath(uri.toString());
-                                fpFiles.add(fpFile);
+                                if(fpFile != null) {
+                                    fpFile.setLocalPath(uri.toString());
+                                    fpFiles.add(fpFile);
+                                }
 
                                 EventBus.getDefault().post(new FpFilesReceivedEvent(fpFiles));
                             }
