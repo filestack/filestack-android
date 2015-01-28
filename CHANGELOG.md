@@ -1,6 +1,11 @@
 Change Log
 
 ==========
+Version 3.8.1 *(2015-01-28)
+----------------------------
+  * Fix: Bugs during uploading files
+  * Fix: Login out from all services
+  * Fix: Bugs with login view for services
 
 Version 3.8.0 *(2015-01-13)
 ----------------------------

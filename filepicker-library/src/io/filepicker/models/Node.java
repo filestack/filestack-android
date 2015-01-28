@@ -2,13 +2,14 @@ package io.filepicker.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.webkit.MimeTypeMap;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.net.URLConnection;
 import java.util.ArrayList;
 
 import io.filepicker.R;
+import io.filepicker.utils.Utils;
 
 /**
  * Created by maciejwitowski on 10/23/14.
@@ -53,13 +54,17 @@ public class Node implements Parcelable {
         }
     }
 
-    public boolean isProbablyImage() {
-        if(displayName.equals(""))
+    public boolean isImage() {
+        if(linkPath == null || linkPath.equals(""))
+            return false;
+
+        // Facebook is special case since its linkPath doesn't contain file name
+        if(isFacebookImage()) {
             return true;
+        }
 
-        String guessedType = URLConnection.guessContentTypeFromName(displayName);
-        return guessedType != null && guessedType.contains("image/");
-
+        String fileExtension = MimeTypeMap.getFileExtensionFromUrl(linkPath);
+        return fileExtension != null && Utils.isImage(fileExtension);
     }
 
     public boolean isCamera() {
@@ -125,5 +130,9 @@ public class Node implements Parcelable {
         }
 
         return exists;
+    }
+
+    private boolean isFacebookImage() {
+        return !isDir && linkPath.contains("Facebook");
     }
 }

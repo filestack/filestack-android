@@ -5,16 +5,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import io.filepicker.api.FpApiClient;
-import io.filepicker.utils.PreferencesUtils;
+import io.filepicker.utils.SessionUtils;
 
 /**
  * Created by maciejwitowski on 10/23/14.
@@ -80,41 +76,20 @@ public class AuthFragment extends Fragment {
         return (Contract) getActivity();
     }
 
-    // Store session cookie
-    private void setSessionCookie() {
-        String sessionCookie = getSessionCookie();
-
-        if(!sessionCookie.isEmpty())
-            PreferencesUtils.newInstance(getActivity()).setSessionCookie(sessionCookie);
-
-
-        // Set FpApiClient which will use the cookie
-        FpApiClient.setFpApiClient(getActivity());
-    }
-
-    // Get session cookie from CookieManager
-    private String getSessionCookie() {
-        String cookie = CookieManager.getInstance().getCookie(FpApiClient.DIALOG_URL);
-        Pattern regex = Pattern.compile("session=\"(.*)\"");
-        Matcher match = regex.matcher(cookie);
-        if (!match.matches())
-            return null;
-
-        return match.group(1);
-    }
-
     private class AuthWebviewClient extends WebViewClient {
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             if (url.contains(AUTH_OPEN)) {
-               setSessionCookie();
+               SessionUtils.setSessionCookie(getActivity());
                getContract().proceedAfterAuth();
                return true;
             } else {
                 return false;
             }
         }
+
+
     }
 
     private void hideProgressBar() {

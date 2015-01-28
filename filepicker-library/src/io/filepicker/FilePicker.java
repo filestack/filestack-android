@@ -41,6 +41,7 @@ import io.filepicker.models.Node;
 import io.filepicker.services.ContentService;
 import io.filepicker.utils.Constants;
 import io.filepicker.utils.PreferencesUtils;
+import io.filepicker.utils.SessionUtils;
 import io.filepicker.utils.Utils;
 
 
@@ -233,6 +234,7 @@ public class Filepicker extends FragmentActivity
         outState.putParcelable(CURRENT_DISPLAYED_NODE_STATE, mCurrentDisplayedNode);
         outState.putParcelableArrayList(NODE_CONTENT_STATE, mNodeContentList);
         outState.putString(FOLDER_CLIENT_CODE_STATE, mFolderClientCode);
+        outState.putBoolean(IS_USER_AUTHORIZED_STATE, mIsUserAuthorized);
 
         if(imageUri != null)
             outState.putString(IMAGE_URI_STATE, imageUri.toString());
@@ -275,6 +277,7 @@ public class Filepicker extends FragmentActivity
                     refreshCurrentlyDisplayedNode(mCurrentDisplayedNode, true);
                 }
             } else {
+                setTitle(getAppName());
                 showProvidersList(true);
             }
 
@@ -417,6 +420,7 @@ public class Filepicker extends FragmentActivity
     }
 
     public void onEvent(SignedOutEvent event) {
+        clearSession(this);
         showProvidersList(true);
     }
 
@@ -506,8 +510,8 @@ public class Filepicker extends FragmentActivity
     }
 
     @Override
-    public void logoutUser(Node parentNode) {
-        ContentService.logout(this, parentNode);
+    public void logoutUser() {
+        Filepicker.clearSession(this);
     }
 
     @Override
@@ -702,5 +706,9 @@ public class Filepicker extends FragmentActivity
             }
             return null;
         }
+    }
+
+    public static void clearSession(Context context) {
+        SessionUtils.clearSessionCookies(context);
     }
 }
