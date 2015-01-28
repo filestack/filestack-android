@@ -67,6 +67,10 @@ public final class PreferencesUtils {
         return getStringValue(KEY_SESSION_COOKIE);
     }
 
+    public void clearSessionCookie() {
+        getSharedPreferences().edit().remove(KEY_SESSION_COOKIE).commit();
+    }
+
     public void setMultiple(boolean allowMultiple) {
         setBooleanValue(KEY_MULTIPLE, allowMultiple);
     }

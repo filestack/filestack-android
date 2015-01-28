@@ -28,11 +28,20 @@ import retrofit.mime.TypedFile;
 public class FilesUtils {
 
     public static TypedFile getTypedFileFromUri(Context context, Uri uri) {
-        String mimetype = context.getContentResolver().getType(uri);
-        String path = getPath(context, uri);
+        String mimetype;
+        if("content".equalsIgnoreCase(uri.getScheme())) {
+            mimetype = context.getContentResolver().getType(uri);
+        } else {
+            mimetype = MimeTypeMap.getFileExtensionFromUrl(uri.getPath());
+        }
 
+        if(mimetype == null) {
+            return null;
+        }
+
+        String path = getPath(context, uri);
         // File path and mimetype are required
-        if(path == null || mimetype == null)
+        if(path == null)
             return null;
 
         File file = new File(path);

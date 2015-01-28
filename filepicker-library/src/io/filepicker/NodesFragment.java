@@ -22,7 +22,6 @@ import io.filepicker.models.Node;
 import io.filepicker.models.PickedFile;
 import io.filepicker.utils.Constants;
 import io.filepicker.utils.PreferencesUtils;
-import io.filepicker.utils.Utils;
 
 /**
  * Created by maciejwitowski on 10/22/14.
@@ -35,7 +34,7 @@ public class NodesFragment extends Fragment {
         public void openGallery();
         public void pickFiles(ArrayList<Node> node);
         public void showNextNode(Node node);
-        public void logoutUser(Node node);
+        public void logoutUser();
     }
 
     private static final String KEY_NODES = "nodes";
@@ -91,7 +90,7 @@ public class NodesFragment extends Fragment {
         if(nodes == null) {
             nodes = new ArrayList<>();
         }
-        if(parentNode != null && Utils.isProvider(parentNode)){
+        if(parentNode == null){
             setHasOptionsMenu(true);
         }
     }
@@ -207,7 +206,7 @@ public class NodesFragment extends Fragment {
         int id = item.getItemId();
 
         if(id == R.id.action_logout) {
-            getContract().logoutUser(parentNode);
+            getContract().logoutUser();
         }
 
         return super.onOptionsItemSelected(item);

@@ -14,7 +14,6 @@ import io.filepicker.events.ApiErrorEvent;
 import io.filepicker.events.FileExportedEvent;
 import io.filepicker.events.FpFilesReceivedEvent;
 import io.filepicker.events.GotContentEvent;
-import io.filepicker.events.SignedOutEvent;
 import io.filepicker.models.FPFile;
 import io.filepicker.models.Folder;
 import io.filepicker.models.Node;
@@ -39,7 +38,6 @@ public class ContentService extends IntentService {
     private static final String ACTION_GET_CONTENT = "io.filepicker.services.action.get_content";
     private static final String ACTION_UPLOAD_FILE = "io.filepicker.services.action.upload_file";
     private static final String ACTION_PICK_FILES = "io.filepicker.services.action.pick_files";
-    private static final String ACTION_LOGOUT = "io.filepicker.services.action.logout";
     private static final String ACTION_EXPORT_FILE = "io.filepicker.services.action.export_file";
 
     private static final String EXTRA_BACK_PRESSED = "io.filepicker.services.extra.back_pressed";
@@ -75,13 +73,6 @@ public class ContentService extends IntentService {
         context.startService(intent);
     }
 
-    public static void logout(Context context, Node node) {
-        Intent intent = new Intent(context, ContentService.class);
-        intent.setAction(ACTION_LOGOUT);
-        intent.putExtra(EXTRA_NODE, node);
-        context.startService(intent);
-    }
-
     public static void exportFile(Context context, Node node, Uri fileUri, String filename) {
         Intent intent = new Intent(context, ContentService.class);
         intent.setAction(ACTION_EXPORT_FILE);
@@ -110,10 +101,6 @@ public class ContentService extends IntentService {
                 case ACTION_PICK_FILES:
                     ArrayList<Node> files = intent.getParcelableArrayListExtra(EXTRA_NODE);
                     handleActionPickFiles(files);
-                    break;
-                case ACTION_LOGOUT:
-                    node = intent.getParcelableExtra(EXTRA_NODE);
-                    handleActionLogout(node);
                     break;
                 case ACTION_EXPORT_FILE:
                     node = intent.getParcelableExtra(EXTRA_NODE);
@@ -160,10 +147,12 @@ public class ContentService extends IntentService {
     }
 
     private void handleActionUploadFile(final Uri uri) {
+        TypedFile typedFile = FilesUtils.getTypedFileFromUri(this, uri);
+
         FpApiClient.getFpApiClient(this)
                 .uploadFile(Utils.getImageName(),
                         FpApiClient.getJsSession(this),
-                        FilesUtils.getTypedFileFromUri(this, uri),
+                        typedFile,
                         new Callback<UploadLocalFileResponse>() {
                             @Override
                             public void success(UploadLocalFileResponse object, retrofit.client.Response response) {
@@ -176,24 +165,6 @@ public class ContentService extends IntentService {
                                 }
 
                                 EventBus.getDefault().post(new FpFilesReceivedEvent(fpFiles));
-                            }
-
-                            @Override
-                            public void failure(RetrofitError error) {
-                                handleError(error);
-                            }
-                        });
-    }
-
-    private void handleActionLogout (Node node) {
-        FpApiClient.getFpApiClient(this)
-                .logout(node.displayName.toLowerCase(),
-                        FpApiClient.getJsSession(this),
-
-                        new Callback<Object>() {
-                            @Override
-                            public void success(Object fpFile, Response response) {
-                                EventBus.getDefault().post(new SignedOutEvent());
                             }
 
                             @Override
