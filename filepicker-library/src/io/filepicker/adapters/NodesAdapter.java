@@ -130,8 +130,13 @@ public class NodesAdapter<T> extends ArrayAdapter<T> {
         Node node = (Node) nodes.get(position);
 
         if(thumbnail) {
-            if(node.isDir || !node.isProbablyImage()) return TYPE_THUMUBNAIL_NAMED_IMAGE;
-            else return TYPE_THUMUBNAIL_IMAGE;
+            // Directories and files with names (not images)
+            if(node.isDir || !node.isImage()) {
+                return TYPE_THUMUBNAIL_NAMED_IMAGE;
+            }
+            else {
+                return TYPE_THUMUBNAIL_IMAGE;
+            }
         } else {
             return TYPE_LIST_ITEM;
         }

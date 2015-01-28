@@ -55,7 +55,7 @@ public class Utils {
         ArrayList<Node> selectedProviders = new ArrayList<>();
 
         for (String code : providersCodes) {
-            for (Provider provider : Constants.providersList) {
+            for (Provider provider : Constants.PROVIDERS_LIST) {
                 if (provider.code.equals(code)) {
                     selectedProviders.add(provider);
                 }
@@ -85,7 +85,7 @@ public class Utils {
 
     private static ArrayList<Node> getProvidersAsNodes() {
         ArrayList<Node> nodesList = new ArrayList<Node>();
-        for(Provider provider : Constants.providersList) {
+        for(Provider provider : Constants.PROVIDERS_LIST) {
             nodesList.add(provider);
         }
 
@@ -94,7 +94,7 @@ public class Utils {
 
     private static ArrayList<Node> getExportableProvidersAsNodes() {
         ArrayList<Node> nodesList = new ArrayList<Node>();
-        for(Provider provider : Constants.providersList) {
+        for(Provider provider : Constants.PROVIDERS_LIST) {
             if(provider.exportSupported) {
                 nodesList.add(provider);
             }
@@ -108,8 +108,8 @@ public class Utils {
 
         boolean isProvider = false;
 
-        for(int i = 0; i < Constants.providersList.size(); i++ ) {
-            if(node.displayName.equals(Constants.providersList.get(i).displayName)) {
+        for(int i = 0; i < Constants.PROVIDERS_LIST.size(); i++ ) {
+            if(node.displayName.equals(Constants.PROVIDERS_LIST.get(i).displayName)) {
                 isProvider = true;
                 break;
             }
@@ -138,5 +138,11 @@ public class Utils {
                 file.delete();
             }
         }
+    }
+
+    public static boolean isImage(String extension) {
+        return extension.equals(Constants.EXTENSION_JPEG) ||
+                extension.equals(Constants.EXTENSION_JPG)  ||
+                extension.equals(Constants.EXTENSION_PNG);
     }
 }

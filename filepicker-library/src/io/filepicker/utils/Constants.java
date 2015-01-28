@@ -19,9 +19,13 @@ public class Constants {
     public static final String MIMETYPE_IMAGE = "image/*";
     public static final String MIMETYPE_ALL = "*/*";
 
+    public static final String EXTENSION_JPEG = "jpeg";
+    public static final String EXTENSION_JPG = "jpg";
+    public static final String EXTENSION_PNG = "png";
+
     public static final String CACHED_FILES_PREFIX = "io_filepicker_library_";
 
-    public final static ArrayList<Provider> providersList = new ArrayList<>(Arrays.asList(
+    public final static ArrayList<Provider> PROVIDERS_LIST = new ArrayList<>(Arrays.asList(
             new Provider("Gallery",       "Gallery",      MIMETYPE_IMAGE ,    R.drawable.glyphicons_008_film, false, "GALLERY"),
             new Provider("Camera",        "Camera",       MIMETYPE_IMAGE,     R.drawable.glyphicons_011_camera, false, "CAMERA"),
             new Provider("Facebook",      "Facebook",     MIMETYPE_IMAGE,     R.drawable.glyphicons_390_facebook, false, "FACEBOOK"),

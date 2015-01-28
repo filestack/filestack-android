@@ -31,7 +31,8 @@ public class FilesUtils {
         String mimetype = context.getContentResolver().getType(uri);
         String path = getPath(context, uri);
 
-        if(path == null)
+        // File path and mimetype are required
+        if(path == null || mimetype == null)
             return null;
 
         File file = new File(path);
