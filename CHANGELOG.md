@@ -1,6 +1,11 @@
 Change Log
 
 ==========
+
+Version 3.8.2 *(2015-01-30)
+----------------------------
+  * Fix: Clearing web view session for Android version < 21
+
 Version 3.8.1 *(2015-01-28)
 ----------------------------
   * Fix: Bugs during uploading files
