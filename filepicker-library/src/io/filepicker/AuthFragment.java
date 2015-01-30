@@ -82,7 +82,11 @@ public class AuthFragment extends Fragment {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             if (url.contains(AUTH_OPEN)) {
                SessionUtils.setSessionCookie(getActivity());
-               getContract().proceedAfterAuth();
+
+               if(getContract() != null) {
+                   getContract().proceedAfterAuth();
+               }
+
                return true;
             } else {
                 return false;
