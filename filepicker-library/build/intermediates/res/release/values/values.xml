@@ -36,6 +36,7 @@
     <eat-comment/>
     <string name="action_logout">Logout</string>
     <string name="apikey_missing">API Key is missing</string>
+    <string name="camera_not_found">Camera not found.</string>
     <string name="empty_list_text">This folder is empty.</string>
     <string name="file_picker_animation_duration">400</string>
     <string name="filename">Filename</string>

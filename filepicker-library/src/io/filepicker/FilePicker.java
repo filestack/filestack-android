@@ -1,5 +1,6 @@
 package io.filepicker;
 
+import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -520,7 +521,12 @@ public class Filepicker extends FragmentActivity
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        startActivityForResult(intent, REQUEST_CODE_CAMERA);
+
+        try {
+            startActivityForResult(intent, REQUEST_CODE_CAMERA);
+        } catch(ActivityNotFoundException e) {
+            Utils.showQuickToast(this, R.string.camera_not_found);
+        }
     }
 
     @Override
