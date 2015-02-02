@@ -2,6 +2,10 @@ Change Log
 
 ==========
 
+Version 3.8.3 *(2015-02-02)
+----------------------------
+  * Fix: Handle ActivityNotFoundExeception when Camera not found
+
 Version 3.8.2 *(2015-01-30)
 ----------------------------
   * Fix: Clearing web view session for Android version < 21

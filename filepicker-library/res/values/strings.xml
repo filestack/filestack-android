@@ -13,6 +13,8 @@
     <string name="uploading_image">Uploading image…</string>
     <string name="empty_list_text">This folder is empty.</string>
 
+    <string name="camera_not_found">Camera not found.</string>
+
     <string name="filename">Filename</string>
     <string name="upload">Upload</string>
 
@@ -20,5 +22,6 @@
     <string name="override">Override</string>
 
     <string name="saving_file">Saving file…</string>
+
 
 </resources>
