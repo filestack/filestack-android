@@ -118,6 +118,21 @@ public class Utils {
         return isProvider;
     }
 
+    public static boolean belongsToImageOnlyProvider(Node node) {
+        boolean belongsToImageOnlyProvider = false;
+        for (Provider provider : Constants.PROVIDERS_LIST) {
+            if (provider.mimetypes.equals(Constants.MIMETYPE_IMAGE) &&
+                    node.linkPath.contains(provider.linkPath)) {
+
+                belongsToImageOnlyProvider = true;
+                break;
+            }
+        }
+
+        return belongsToImageOnlyProvider;
+    }
+
+
     public static String getImageName() {
         Date date = new Date();
         SimpleDateFormat ft = new SimpleDateFormat("dd MMMM yyyy hh:mm a");
