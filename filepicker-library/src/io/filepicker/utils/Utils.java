@@ -132,7 +132,6 @@ public class Utils {
         return belongsToImageOnlyProvider;
     }
 
-
     public static String getImageName() {
         Date date = new Date();
         SimpleDateFormat ft = new SimpleDateFormat("dd MMMM yyyy hh:mm a");

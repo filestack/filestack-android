@@ -7,7 +7,6 @@ Version 3.8.4 *(2015-02-09)
   * Fix: Update Retrofit, OkHttp and Picasso to the latest versions
   * Fix: Displaying images in Flickr
 
-
 Version 3.8.3 *(2015-02-02)
 ----------------------------
   * Fix: Handle ActivityNotFoundExeception when Camera not found
