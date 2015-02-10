@@ -59,7 +59,7 @@ public class Node implements Parcelable {
             return false;
 
         // Facebook is special case since its linkPath doesn't contain file name
-        if(Utils.belongsToImageOnlyProvider(this)) {
+        if(isFacebookImage()) {
             return true;
         }
 
@@ -130,5 +130,9 @@ public class Node implements Parcelable {
         }
 
         return exists;
+    }
+
+    private boolean isFacebookImage() {
+        return !isDir && linkPath.contains("Facebook");
     }
 }

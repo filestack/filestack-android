@@ -1,15 +1,13 @@
 package io.filepicker.utils;
 
 import android.content.Context;
+import android.net.Uri;
 
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 
 /**
  * Created by maciejwitowski on 10/29/14.
@@ -33,30 +31,16 @@ public class ImageLoader {
     public static Picasso buildImageLoader(final Context context) {
         Picasso.Builder builder = new Picasso.Builder(context);
 
-        OkHttpClient fpHttpClient = new OkHttpClient();
-        fpHttpClient.networkInterceptors().add(new FpSessionedInterceptor(context));
-        builder.downloader(new OkHttpDownloader(fpHttpClient));
+        builder.downloader(new OkHttpDownloader(context) {
+            @Override
+            protected HttpURLConnection openConnection(Uri uri) throws IOException {
+                HttpURLConnection connection = super.openConnection(uri);
+                connection.setRequestProperty("Cookie", "session=" +
+                        PreferencesUtils.newInstance(context).getSessionCookie());
+
+                return connection;
+            }
+        });
         return builder.build();
-    }
-
-    // Interceptor which has filepicker cookie session set
-    private static class FpSessionedInterceptor implements Interceptor {
-
-        Context mContext;
-
-        FpSessionedInterceptor(Context context) {
-            mContext = context;
-        }
-
-        @Override
-        public Response intercept(Chain chain) throws IOException {
-            Request request = chain.request();
-
-            Request sessionedRequest = request.newBuilder()
-                    .header("Cookie", "session=" +
-                            PreferencesUtils.newInstance(mContext).getSessionCookie())
-                    .build();
-            return chain.proceed(sessionedRequest);
-        }
     }
 }
