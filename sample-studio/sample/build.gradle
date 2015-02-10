@@ -27,6 +27,6 @@ android {
 
 dependencies {
     compile 'com.android.support:support-v4:21.0.2'
+    compile 'com.squareup.picasso:picasso:2.5.0'
     compile project(':filepicker-library')
-    compile 'com.squareup.picasso:picasso:2.4.0'
 }

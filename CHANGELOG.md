@@ -1,7 +1,5 @@
 Change Log
 
-==========
-
 Version 3.8.4 *(2015-02-09)
 ----------------------------
   * Fix: Update Retrofit, OkHttp and Picasso to the latest versions
