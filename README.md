@@ -33,6 +33,30 @@ For Gradle users:
 compile 'io.filepicker:filepicker-android:3.8.4’
 ```
 
+ProGuard
+========
+Add the following to your ProGuard rules
+````ProGuard
+-keepattributes *Annotation*, Signature
+
+##== Filepicker ==
+-keep class io.filepicker.Filepicker {
+  public void onEvent(...);
+}
+-keep class io.filepicker.models.** { *; }
+
+##== Retrofit ==
+-keep class retrofit.** { *; }
+-keepclassmembernames interface * {
+    @retrofit.http.* <methods>;
+}
+
+##== Gson ==
+-keep class sun.misc.Unsafe { *; }
+-keep class com.google.gson.stream.** { *; }
+
+````
+
 Usage
 =====
 
