@@ -1,5 +1,10 @@
 Change Log
 
+Version 3.8.5 *(2015-02-19)
+----------------------------
+  * New: When user specifies video mime type use it for Gallery and Camera
+  * Fix: Code optimizations
+
 Version 3.8.4 *(2015-02-09)
 ----------------------------
   * Fix: Update Retrofit, OkHttp and Picasso to the latest versions

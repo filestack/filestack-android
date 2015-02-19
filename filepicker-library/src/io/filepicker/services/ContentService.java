@@ -150,21 +150,13 @@ public class ContentService extends IntentService {
         TypedFile typedFile = FilesUtils.getTypedFileFromUri(this, uri);
 
         FpApiClient.getFpApiClient(this)
-                .uploadFile(Utils.getImageName(),
+                .uploadFile(Utils.getUploadedFilename(typedFile.mimeType()),
                         FpApiClient.getJsSession(this),
                         typedFile,
                         new Callback<UploadLocalFileResponse>() {
                             @Override
                             public void success(UploadLocalFileResponse object, retrofit.client.Response response) {
-                                ArrayList<FPFile> fpFiles = new ArrayList<>();
-
-                                final FPFile fpFile = object.parseToFpFile();
-                                if(fpFile != null) {
-                                    fpFile.setLocalPath(uri.toString());
-                                    fpFiles.add(fpFile);
-                                }
-
-                                EventBus.getDefault().post(new FpFilesReceivedEvent(fpFiles));
+                                onFileUploadSuccess(object, uri);
                             }
 
                             @Override
@@ -172,6 +164,18 @@ public class ContentService extends IntentService {
                                 handleError(error);
                             }
                         });
+    }
+
+    private void onFileUploadSuccess(UploadLocalFileResponse response, Uri fileUri) {
+        ArrayList<FPFile> fpFiles = new ArrayList<>();
+
+        final FPFile fpFile = response.parseToFpFile();
+        if(fpFile != null) {
+            fpFile.setLocalPath(fileUri.toString());
+            fpFiles.add(fpFile);
+        }
+
+        EventBus.getDefault().post(new FpFilesReceivedEvent(fpFiles));
     }
 
     /** Exports file to service

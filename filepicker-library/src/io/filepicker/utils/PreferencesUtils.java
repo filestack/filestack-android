@@ -18,7 +18,7 @@ public final class PreferencesUtils {
     private static final String KEY_CONTAINER = "storeContainer";
     private static final String KEY_ACCESS = "storeAccess";
 
-    private Context context;
+    private final Context context;
 
     private static PreferencesUtils prefUtils = null;
 
@@ -34,25 +34,25 @@ public final class PreferencesUtils {
         return prefUtils;
     }
 
-    public SharedPreferences getSharedPreferences(){
-        return context.getSharedPreferences(KEY_PREFERENCES, context.MODE_PRIVATE);
+    private SharedPreferences getSharedPreferences(){
+        return context.getSharedPreferences(KEY_PREFERENCES, Context.MODE_PRIVATE);
     }
 
     // String
-    public void setStringValue(String key, String value){
+    private void setStringValue(String key, String value){
         getSharedPreferences().edit().putString(key, value).apply();
     }
 
-    public String getStringValue(String key){
+    private String getStringValue(String key){
         return getSharedPreferences().getString(key, null);
     }
 
     // Boolean
-    public void setBooleanValue(String key, Boolean value){
+    private void setBooleanValue(String key, Boolean value){
         getSharedPreferences().edit().putBoolean(key, value).apply();
     }
 
-    public Boolean getBooleanValue(String key){
+    private Boolean getBooleanValue(String key){
         return getSharedPreferences().getBoolean(key, false);
     }
 
@@ -98,6 +98,17 @@ public final class PreferencesUtils {
         }
 
         return mimetypes;
+    }
+
+    public boolean isMimetypeSet(String baseType) {
+        String[] mimetypes = getMimetypes();
+        for(String mimetype : mimetypes) {
+            if(mimetype.contains(baseType)){
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void setLocation(String location) {

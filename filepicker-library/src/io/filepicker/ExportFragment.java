@@ -58,14 +58,9 @@ public class ExportFragment extends Fragment {
 
     private AbsListView currentView;
     private ProgressBar mProgressBar;
-    private NodesAdapter<Node> nodesAdapter;
     private TextView mFileType;
     private EditText etFilename;
     private Button mBtnSave;
-
-
-    // Layout with edit text for filename and save button
-    private LinearLayout mExportForm;
 
     public static ExportFragment newInstance(Node parentNode, ArrayList<Node> nodes, String viewType) {
         ExportFragment frag = new ExportFragment();
@@ -83,7 +78,10 @@ public class ExportFragment extends Fragment {
 
         Bundle bundle = getArguments();
 
-        if (bundle == null) getActivity().finish();
+        if (bundle == null) {
+            getActivity().finish();
+            return;
+        }
 
         viewType = bundle.getString(KEY_VIEW_TYPE);
 
@@ -106,7 +104,6 @@ public class ExportFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_export, container, false);
 
         mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
-        mExportForm = (LinearLayout) view.findViewById(R.id.exportForm);
         mFileType = (TextView) view.findViewById(R.id.fileType);
         etFilename = (EditText) view.findViewById(R.id.etFilename);
         mBtnSave = (Button) view.findViewById(R.id.btnSave);
@@ -124,7 +121,8 @@ public class ExportFragment extends Fragment {
 
         // Show edit text for filename and save button if we're in content (not in providers list)
         if(parentNode != null) {
-            ViewUtils.show(mExportForm);
+            LinearLayout exportForm = (LinearLayout) view.findViewById(R.id.exportForm);
+            ViewUtils.show(exportForm);
         }
 
         return view;
@@ -138,7 +136,7 @@ public class ExportFragment extends Fragment {
         if(currentView == null)
             return;
 
-        nodesAdapter = new NodesAdapter(getActivity(), nodes, pickedFiles);
+        NodesAdapter nodesAdapter = new NodesAdapter(getActivity(), nodes, pickedFiles);
 
         if(viewType.equals(THUMBNAILS_VIEW))
             nodesAdapter.setThumbnail(true);

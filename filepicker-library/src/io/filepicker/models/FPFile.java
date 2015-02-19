@@ -11,11 +11,11 @@ import java.io.File;
  */
 public final class FPFile implements Parcelable {
 
-    private String container;
-    private String url;
-    private String filename;
-    private String key;
-    private String type;
+    private final String container;
+    private final String url;
+    private final String filename;
+    private final String key;
+    private final String type;
     private String localPath;
     private long size;
 

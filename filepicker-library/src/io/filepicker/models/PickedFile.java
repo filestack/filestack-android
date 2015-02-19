@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Created by maciejwitowski on 10/30/14.
  */
 public final class PickedFile {
-    public Node node;
+    public final Node node;
     public final int position;
 
     public PickedFile(Node node, int position) {

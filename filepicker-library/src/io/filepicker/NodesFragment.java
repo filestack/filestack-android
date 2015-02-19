@@ -50,12 +50,11 @@ public class NodesFragment extends Fragment {
     private Node parentNode;
 
     // Used when user can pick many files at once
-    private ArrayList<PickedFile> pickedFiles = new ArrayList<>();
+    private final ArrayList<PickedFile> pickedFiles = new ArrayList<>();
 
     private AbsListView currentView;
     private ProgressBar mProgressBar;
     private Button mUploadFilesButton;
-    private NodesAdapter<Node> nodesAdapter;
 
     public static NodesFragment newInstance(Node parentNode, ArrayList<Node> nodes, String viewType) {
         NodesFragment frag = new NodesFragment();
@@ -122,7 +121,7 @@ public class NodesFragment extends Fragment {
         if(currentView == null)
             return;
 
-        nodesAdapter = new NodesAdapter(getActivity(), nodes, pickedFiles);
+        NodesAdapter nodesAdapter = new NodesAdapter(getActivity(), nodes, pickedFiles);
 
         if(viewType.equals(Constants.THUMBNAILS_VIEW))
             nodesAdapter.setThumbnail(true);

@@ -1,16 +1,10 @@
 package io.filepicker.sample;
 
-import android.content.ContentResolver;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
 import android.app.Activity;
-import android.util.Log;
-import android.view.Menu;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -34,13 +28,6 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.activity_main);
 
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
     }
 
     public void runFilepicker(View view) {

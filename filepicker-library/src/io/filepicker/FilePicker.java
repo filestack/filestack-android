@@ -81,9 +81,10 @@ public class Filepicker extends FragmentActivity
     private static String APP_NAME = "";
 
     public static final int REQUEST_CODE_GETFILE = 601;
-    public static final int REQUEST_CODE_CAMERA = 602;
+    public static final int REQUEST_CODE_TAKE_PICTURE = 602;
     public static final int REQUEST_CODE_GET_LOCAL_FILE = 603;
     public static final int REQUEST_CODE_EXPORT_FILE = 604;
+    public static final int REQUEST_CODE_VIDEO = 605;
 
     // Action used by clients to indicate they want to export file
     public static final String ACTION_EXPORT_FILE = "export_file";
@@ -517,13 +518,27 @@ public class Filepicker extends FragmentActivity
 
     @Override
     public void openCamera() {
+        if (isOnlyVideoCamera()) {
+            recordVideo();
+        } else {
+            takePhoto();
+        }
+    }
+
+    private void recordVideo() {
+        Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takeVideoIntent, REQUEST_CODE_VIDEO);
+        }
+    }
+
+    private void takePhoto() {
         setCameraImageUri();
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-
         try {
-            startActivityForResult(intent, REQUEST_CODE_CAMERA);
+            startActivityForResult(intent, REQUEST_CODE_TAKE_PICTURE);
         } catch(ActivityNotFoundException e) {
             Utils.showQuickToast(this, R.string.camera_not_found);
         }
@@ -532,8 +547,8 @@ public class Filepicker extends FragmentActivity
     @Override
     public void openGallery() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType(Constants.MIMETYPE_IMAGE).addCategory(
-                Intent.CATEGORY_OPENABLE);
+        intent.setType(isOnlyVideoCamera() ? Constants.MIMETYPE_VIDEO : Constants.MIMETYPE_IMAGE);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
         startActivityForResult(intent, REQUEST_CODE_GET_LOCAL_FILE);
     }
 
@@ -573,13 +588,14 @@ public class Filepicker extends FragmentActivity
                 break;
 
             case REQUEST_CODE_GET_LOCAL_FILE:
+            case REQUEST_CODE_VIDEO:
                 if (resultCode == RESULT_OK) {
                     Utils.showQuickToast(this, R.string.uploading_image);
                     showLoading();
                     uploadLocalFile(data.getData());
                 }
                 break;
-            case REQUEST_CODE_CAMERA:
+            case REQUEST_CODE_TAKE_PICTURE:
                 if (resultCode == RESULT_OK) {
                     Utils.showQuickToast(this, R.string.uploading_image);
                     showLoading();
@@ -597,7 +613,7 @@ public class Filepicker extends FragmentActivity
     private void hideLoading() {
         mIsLoading = false;
         updateLoadingView();
-    };
+    }
 
     private void updateLoadingView() {
         mProgressBar.setVisibility(mIsLoading ? View.VISIBLE : View.GONE);
@@ -683,8 +699,8 @@ public class Filepicker extends FragmentActivity
     }
     private static class CacheGotItemsTask extends AsyncTask<ArrayList<Node>, Void, Void> {
 
-        private Context mContext;
-        private Node mLastNode;
+        private final Context mContext;
+        private final Node mLastNode;
 
         public CacheGotItemsTask(Context context, Node lastNode) {
             this.mContext = context;
@@ -716,5 +732,11 @@ public class Filepicker extends FragmentActivity
 
     public static void clearSession(Context context) {
         SessionUtils.clearSessionCookies(context);
+    }
+
+    private boolean isOnlyVideoCamera() {
+        PreferencesUtils prefs = PreferencesUtils.newInstance(this);
+
+        return prefs.isMimetypeSet("video") && !prefs.isMimetypeSet("image");
     }
 }

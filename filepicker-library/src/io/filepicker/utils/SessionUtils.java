@@ -45,7 +45,7 @@ public class SessionUtils {
     }
 
     // Get session cookie from CookieManager
-    public static String getSessionCookie() {
+    private static String getSessionCookie() {
         String cookie = CookieManager.getInstance().getCookie(FpApiClient.DIALOG_URL);
         Pattern regex = Pattern.compile("session=\"(.*)\"");
         Matcher match = regex.matcher(cookie);

@@ -17,6 +17,7 @@ public class Constants {
     public static final float ALPHA_FADED = 0.2f;
 
     public static final String MIMETYPE_IMAGE = "image/*";
+    public static final String MIMETYPE_VIDEO = "video/*";
     public static final String MIMETYPE_ALL = "*/*";
 
     public static final String EXTENSION_JPEG = "jpeg";

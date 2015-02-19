@@ -30,7 +30,7 @@ public class ImageLoader {
     }
 
     // Return Picasso object with the session set, so Picasso can fetch thumbnails from Filepicker Api
-    public static Picasso buildImageLoader(final Context context) {
+    private static Picasso buildImageLoader(final Context context) {
         Picasso.Builder builder = new Picasso.Builder(context);
 
         OkHttpClient fpHttpClient = new OkHttpClient();
@@ -42,7 +42,7 @@ public class ImageLoader {
     // Interceptor which has filepicker cookie session set
     private static class FpSessionedInterceptor implements Interceptor {
 
-        Context mContext;
+        final Context mContext;
 
         FpSessionedInterceptor(Context context) {
             mContext = context;

@@ -30,10 +30,10 @@ public class NodesAdapter<T> extends ArrayAdapter<T> {
 
     private boolean thumbnail = false;
 
-    private ArrayList<PickedFile> pickedFiles;
+    private final ArrayList<PickedFile> pickedFiles;
 
-    private Activity context;
-    private ArrayList<T> nodes;
+    private final Activity context;
+    private final ArrayList<T> nodes;
 
     public NodesAdapter(Activity context, ArrayList<T> nodes, ArrayList<PickedFile> pickedFiles) {
         super(context, R.layout.list_item_node, nodes);

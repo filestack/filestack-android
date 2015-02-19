@@ -21,18 +21,6 @@ public class Utils {
 
     private Utils() {}
 
-    // Check if there is internet connection
-    public static Boolean isConnected(Context context) {
-        ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if(networkInfo != null && networkInfo.isConnected()){
-            return true;
-        } else {
-            Utils.showQuickToast(context, R.string.no_internet);
-            return false;
-        }
-    }
-
     public static String getShortName(String name){
         return (name.length() > 25) ? name.substring(0, 25) + "..." : name;
     }
@@ -132,10 +120,13 @@ public class Utils {
         return belongsToImageOnlyProvider;
     }
 
-    public static String getImageName() {
+    public static String getUploadedFilename(String mimetype) {
         Date date = new Date();
         SimpleDateFormat ft = new SimpleDateFormat("dd MMMM yyyy hh:mm a");
-        return "Image " + ft.format(date) + ".jpg";
+
+        String basename = (mimetype.contains("video") ? "Video " : "Image ");
+        String extension = (mimetype.contains("video") ? ".mp4" : ".jpg");
+        return basename + ft.format(date) + extension;
     }
 
     public static String filenameWithoutExtension(String filename) {

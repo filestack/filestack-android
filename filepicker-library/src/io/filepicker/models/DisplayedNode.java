@@ -23,13 +23,6 @@ public class DisplayedNode implements Parcelable {
         dest.writeString(this.viewType);
     }
 
-    public DisplayedNode() {
-    }
-
-    public DisplayedNode(Node node) {
-        this.node = node;
-    }
-
     public DisplayedNode(Node node, String viewType) {
         this.node = node;
         this.viewType = viewType;

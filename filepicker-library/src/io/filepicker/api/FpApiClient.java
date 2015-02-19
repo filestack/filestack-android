@@ -108,14 +108,6 @@ public class FpApiClient {
                 Callback<UploadLocalFileResponse> response
         );
 
-        @Headers("User-Agent: Mobile-Android")
-        @GET(API_CLIENT_URL + "{provider}" + "/unauth")
-        void logout(
-                @Path("provider") String provider,
-                @Query("js_session") String jsSession,
-                Callback<Object> fpFile
-        );
-
         @Headers({
                 "User-Agent: Mobile-Android",
                 "Content-Type:application/octet-stream"
