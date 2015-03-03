@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
+import com.google.gson.JsonSyntaxException;
+
 import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
@@ -134,16 +136,20 @@ public class ContentService extends IntentService {
     private void handleActionPickFiles(ArrayList<Node> nodes) {
         final ArrayList<FPFile> results = new ArrayList<>();
 
-        for(Node node : nodes) {
-            FPFile result = FpApiClient.getFpApiClient(this).pickFile(
-                    node.linkPath,
-                    "fpurl",
-                    FpApiClient.getJsSession(this));
+        try {
+            for (Node node : nodes) {
+                FPFile result = FpApiClient.getFpApiClient(this).pickFile(
+                        node.linkPath,
+                        "fpurl",
+                        FpApiClient.getJsSession(this));
 
-            results.add(result);
+                results.add(result);
+            }
+
+            EventBus.getDefault().post(new FpFilesReceivedEvent(results));
+        } catch (JsonSyntaxException syntaxException) {
+            EventBus.getDefault().post(new ApiErrorEvent(ApiErrorEvent.ErrorType.WRONG_RESPONSE));
         }
-
-        EventBus.getDefault().post(new FpFilesReceivedEvent(results));
     }
 
     private void handleActionUploadFile(final Uri uri) {
@@ -206,7 +212,14 @@ public class ContentService extends IntentService {
     }
 
     private void handleError(RetrofitError error) {
-        EventBus.getDefault().post(new ApiErrorEvent(error));
+        ApiErrorEvent apiErrorEvent = null;
+
+        if(error.getKind().equals(RetrofitError.Kind.NETWORK)) {
+            apiErrorEvent = new ApiErrorEvent(ApiErrorEvent.ErrorType.NETWORK);
+        } else if(error.getResponse().getStatus() == 401){
+            apiErrorEvent = new ApiErrorEvent(ApiErrorEvent.ErrorType.UNAUTHORIZED);
+        }
+        EventBus.getDefault().post(apiErrorEvent);
     }
 }
 

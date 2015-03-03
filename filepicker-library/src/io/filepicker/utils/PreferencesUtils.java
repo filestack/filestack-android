@@ -81,6 +81,8 @@ public final class PreferencesUtils {
 
     // Gets array of mimetypes and saves it as String
     public void setMimetypes(String[] mimetypes) {
+        if(mimetypes == null) return;
+
         StringBuilder mimetypesString = new StringBuilder();
         for(String mimetype : mimetypes) {
             mimetypesString.append(mimetype).append(",");
@@ -102,13 +104,20 @@ public final class PreferencesUtils {
 
     public boolean isMimetypeSet(String baseType) {
         String[] mimetypes = getMimetypes();
-        for(String mimetype : mimetypes) {
-            if(mimetype.contains(baseType)){
-                return true;
+
+        if(mimetypes != null) {
+            for (String mimetype : mimetypes) {
+                if (mimetype.contains(baseType)) {
+                    return true;
+                }
             }
         }
 
         return false;
+    }
+
+    public void clearMimetypes() {
+        setStringValue(KEY_MIMETYPES, null);
     }
 
     public void setLocation(String location) {

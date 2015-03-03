@@ -195,6 +195,8 @@ public class Filepicker extends FragmentActivity
         if (intent.hasExtra(MIMETYPE_EXTRA)){
             String[] mimetypes = intent.getStringArrayExtra(MIMETYPE_EXTRA);
             prefs.setMimetypes(mimetypes);
+        } else {
+            prefs.clearMimetypes();
         }
 
         // Init location
@@ -417,7 +419,17 @@ public class Filepicker extends FragmentActivity
     }
 
     public void onEvent(ApiErrorEvent event) {
-        Utils.showQuickToast(this, R.string.no_internet);
+        int errorMessage;
+
+        if(event.error.equals(ApiErrorEvent.ErrorType.NETWORK)) {
+            errorMessage = R.string.error_connection;
+        } else if(event.error.equals(ApiErrorEvent.ErrorType.UNAUTHORIZED)) {
+            errorMessage = R.string.error_authorization;
+        } else {
+            errorMessage = R.string.error_unexpected;
+        }
+
+        Utils.showQuickToast(this, errorMessage);
         finish();
     }
 

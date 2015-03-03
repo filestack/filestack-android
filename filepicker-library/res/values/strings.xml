@@ -9,7 +9,10 @@
     <string name="title_activity_content">Filepicker</string>
 
     <!-- Toast messages -->
-    <string name="no_internet">Unexpected error occurred. Are you connected to internet?</string>
+    <string name="error_connection">Error with network connection.</string>
+    <string name="error_authorization">Error with authorization.</string>
+    <string name="error_unexpected">Unexpected error has occured. Please try again.</string>
+
     <string name="uploading_image">Uploading image…</string>
     <string name="empty_list_text">This folder is empty.</string>
 
