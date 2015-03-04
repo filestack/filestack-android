@@ -147,7 +147,7 @@ public class ContentService extends IntentService {
             }
 
             EventBus.getDefault().post(new FpFilesReceivedEvent(results));
-        } catch (JsonSyntaxException syntaxException) {
+        } catch (Exception syntaxException) {
             EventBus.getDefault().post(new ApiErrorEvent(ApiErrorEvent.ErrorType.WRONG_RESPONSE));
         }
     }

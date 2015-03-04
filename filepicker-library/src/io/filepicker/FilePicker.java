@@ -469,7 +469,7 @@ public class Filepicker extends FragmentActivity
     }
 
     private void validateApiKey() {
-        if(API_KEY.isEmpty()) {
+        if(API_KEY.isEmpty() || !API_KEY.startsWith("A") || !API_KEY.endsWith("z") || API_KEY.length() != 22) {
             Toast.makeText(this, R.string.apikey_missing, Toast.LENGTH_SHORT).show();
             setResult(RESULT_CANCELED);
             finish();
