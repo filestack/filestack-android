@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
-import com.google.gson.JsonSyntaxException;
-
 import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;

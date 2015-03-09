@@ -1,8 +1,12 @@
 package io.filepicker.api;
 
 import android.content.Context;
+import android.util.Base64;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.json.JSONObject;
 
 import java.util.HashMap;
 
@@ -11,6 +15,7 @@ import io.filepicker.models.FPFile;
 import io.filepicker.models.Folder;
 import io.filepicker.models.UploadLocalFileResponse;
 import io.filepicker.utils.PreferencesUtils;
+import io.filepicker.utils.Utils;
 import retrofit.Callback;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
@@ -125,9 +130,11 @@ public class FpApiClient {
 
     /** JsSession query param  */
     public static String buildJsSession(String apikey, Context context) {
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 
         String[] mimetypes = PreferencesUtils.newInstance(context).getMimetypes();
+
+        String res = gson.toJson(new JsSession(apikey, context));
         if(mimetypes == null) {
             return gson.toJson(new JsSession(apikey, context));
         } else {
@@ -137,22 +144,79 @@ public class FpApiClient {
 
     /** JsSession query param class */
     static class JsBaseSession {
-        final HashMap<String, String> app;
         final String storeLocation;
         final String storePath;
         final String storeContainer;
         final String storeAccess;
+        final String apikey;
+        final String version;
+
+        String policy;
+        String signature;
 
         JsBaseSession(String apikey, Context context) {
-            this.app = new HashMap<>();
-            this.app.put("apikey", apikey);
-
             PreferencesUtils prefs = PreferencesUtils.newInstance(context);
 
+            this.apikey=apikey;
             this.storeLocation = prefs.getLocation();
             this.storePath = prefs.getPath();
             this.storeContainer = prefs.getContainer();
             this.storeAccess = prefs.getAccess();
+            this.version = "v1";
+
+            setupSecurity(prefs);
+        }
+
+        private void setupSecurity(PreferencesUtils prefs) {
+            String secretKey = prefs.getSecret();
+            String[] policyCalls = prefs.getPolicyCalls();
+            int expiry = prefs.getPolicyExpiry();
+
+            if(secretKey == null || secretKey.isEmpty() || policyCalls == null || policyCalls.length == 0 || expiry <= 0) {
+                return;
+            }
+
+            HashMap<String, Object> jsonPolicy = new HashMap<>();
+            jsonPolicy.put("call", policyCalls);
+
+            long fpExpiry = System.currentTimeMillis()/1000 + expiry;
+            jsonPolicy.put("expiry", fpExpiry);
+
+            String handle = prefs.getPolicyHandle();
+            if(handle != null && !handle.isEmpty()) {
+                jsonPolicy.put("handle",handle);
+            }
+
+            int maxSize = prefs.getPolicyMaxSize();
+            if(maxSize > 0) {
+                jsonPolicy.put("maxSize", maxSize);
+            }
+
+            int minSize = prefs.getPolicyMinSize();
+            if(minSize > 0) {
+                jsonPolicy.put("minSize", minSize);
+            }
+
+            String path = prefs.getPolicyPath();
+            if(path != null && !path.isEmpty()) {
+                jsonPolicy.put("path", path);
+            }
+
+            String container = prefs.getPolicyContainer();
+            if(container != null && !container.isEmpty()) {
+                jsonPolicy.put("container", path);
+            }
+
+            JSONObject json = new JSONObject(jsonPolicy);
+            String json_tos = json.toString();
+
+            this.policy = Base64.encodeToString(json_tos.getBytes(), Base64.NO_WRAP);
+
+            try {
+                this.signature = Utils.encodeHmac(secretKey, policy).toLowerCase();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

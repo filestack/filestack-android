@@ -18,6 +18,15 @@ public final class PreferencesUtils {
     private static final String KEY_CONTAINER = "storeContainer";
     private static final String KEY_ACCESS = "storeAccess";
 
+    private static final String KEY_SECRET = "app_secret";
+    private static final String KEY_POLICY_CALLS = "policy_calls";
+    private static final String KEY_POLICY_HANDLE = "policy_handle";
+    private static final String KEY_POLICY_EXPIRY = "policy_expiry";
+    private static final String KEY_POLICY_MAX_SIZE = "policy_max_size";
+    private static final String KEY_POLICY_MIN_SIZE = "policy_min_size";
+    private static final String KEY_POLICY_PATH = "policy_path";
+    private static final String KEY_POLICY_CONTAINER = "policy_container";
+
     private final Context context;
 
     private static PreferencesUtils prefUtils = null;
@@ -54,6 +63,15 @@ public final class PreferencesUtils {
 
     private Boolean getBooleanValue(String key){
         return getSharedPreferences().getBoolean(key, false);
+    }
+
+    // Int
+    private void setIntValue(String key, int value){
+        getSharedPreferences().edit().putInt(key, value).apply();
+    }
+
+    private int getIntValue(String key){
+        return getSharedPreferences().getInt(key, 0);
     }
 
     public void setSessionCookie(String sessionCookie) {
@@ -100,6 +118,28 @@ public final class PreferencesUtils {
         }
 
         return mimetypes;
+    }
+
+    public void setPolicyCalls(String[] policyCalls) {
+        if(policyCalls == null) return;
+
+        StringBuilder policyCallsString = new StringBuilder();
+        for(String policyCall : policyCalls) {
+            policyCallsString.append(policyCall).append(",");
+        }
+
+        setStringValue(KEY_POLICY_CALLS, policyCallsString.toString());
+    }
+
+    // Returns array of mimetypes Strings
+    public String[] getPolicyCalls() {
+        String[] policyCalls = null;
+
+        if(getStringValue(KEY_POLICY_CALLS) != null) {
+            policyCalls = getStringValue(KEY_POLICY_CALLS).split(",");
+        }
+
+        return policyCalls;
     }
 
     public boolean isMimetypeSet(String baseType) {
@@ -150,5 +190,61 @@ public final class PreferencesUtils {
 
     public String getAccess() {
         return getStringValue(KEY_ACCESS);
+    }
+
+    public void setSecret(String secret) {
+        setStringValue(KEY_SECRET, secret);
+    }
+
+    public String getSecret() {
+        return getStringValue(KEY_SECRET);
+    }
+
+    public void setPolicyHandle(String policyHandle) {
+        setStringValue(KEY_POLICY_HANDLE, policyHandle);
+    }
+
+    public String getPolicyHandle() {
+        return getStringValue(KEY_POLICY_HANDLE);
+    }
+
+    public void setPolicyExpiry(int expiry) {
+        setIntValue(KEY_POLICY_EXPIRY, expiry);
+    }
+
+    public int getPolicyExpiry() {
+        return getIntValue(KEY_POLICY_EXPIRY);
+    }
+
+    public void setPolicyMaxSize(int maxSize) {
+        setIntValue(KEY_POLICY_MAX_SIZE, maxSize);
+    }
+
+    public int getPolicyMaxSize() {
+        return getIntValue(KEY_POLICY_MAX_SIZE);
+    }
+
+    public void setPolicyMinSize(int minSize) {
+        setIntValue(KEY_POLICY_MIN_SIZE, minSize);
+    }
+
+    public int getPolicyMinSize() {
+        return getIntValue(KEY_POLICY_MIN_SIZE);
+    }
+
+    public void setPolicyPath(String policyPath) {
+        setStringValue(KEY_POLICY_PATH, policyPath);
+    }
+
+    public String getPolicyPath() {
+        return getStringValue(KEY_POLICY_PATH);
+    }
+
+    public void setPolicyContainer(String policyContainer) {
+        setStringValue(KEY_POLICY_CONTAINER, policyContainer);
+    }
+
+    public String getPolicyContainer() {
+        return getStringValue(KEY_POLICY_CONTAINER);
     }
 }

@@ -65,6 +65,16 @@ public class Filepicker extends FragmentActivity
     private static final String CONTAINER_EXTRA = "container";
     private static final String ACCESS_EXTRA = "access";
 
+    // Security extras
+    private static final String SECRET_EXTRA = "app_secret";
+    private static final String POLICY_CALLS_EXTRA = "policy_calls";
+    private static final String POLICY_HANDLE_EXTRA = "policy_handle";
+    private static final String POLICY_EXPIRY_EXTRA = "policy_expiry";
+    private static final String POLICY_MAX_SIZE_EXTRA = "policy_max_size";
+    private static final String POLICY_MIN_SIZE_EXTRA = "policy_min_size";
+    private static final String POLICY_PATH_EXTRA = "policy_path";
+    private static final String POLICY_CONTAINER_EXTRA = "policy_container";
+
     private static final String API_KEY_STATE = "api_key_state";
     private static final String IMAGE_URI_STATE = "image_uri_state";
     private static final String LOADING_STATE = "loading_state";
@@ -227,6 +237,15 @@ public class Filepicker extends FragmentActivity
             mExport = false;
             mFileToExport = null;
         }
+
+        prefs.setSecret(intent.getStringExtra(SECRET_EXTRA));
+        prefs.setPolicyCalls(intent.getStringArrayExtra(POLICY_CALLS_EXTRA));
+        prefs.setPolicyHandle(intent.getStringExtra(POLICY_HANDLE_EXTRA));
+        prefs.setPolicyExpiry(intent.getIntExtra(POLICY_EXPIRY_EXTRA, 0));
+        prefs.setPolicyMaxSize(intent.getIntExtra(POLICY_MAX_SIZE_EXTRA, 0));
+        prefs.setPolicyMinSize(intent.getIntExtra(POLICY_MIN_SIZE_EXTRA, 0));
+        prefs.setPolicyPath(intent.getStringExtra(POLICY_PATH_EXTRA));
+        prefs.setPolicyContainer(intent.getStringExtra(POLICY_CONTAINER_EXTRA));
     }
 
     @Override

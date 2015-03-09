@@ -1,8 +1,6 @@
 package io.filepicker.utils;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.widget.Toast;
 
 import java.io.File;
@@ -10,7 +8,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import io.filepicker.R;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
 import io.filepicker.models.Node;
 import io.filepicker.models.Provider;
 
@@ -149,5 +149,24 @@ public class Utils {
         return extension.equals(Constants.EXTENSION_JPEG) ||
                 extension.equals(Constants.EXTENSION_JPG)  ||
                 extension.equals(Constants.EXTENSION_PNG);
+    }
+
+    public static String encodeHmac(String key, String data) throws Exception {
+        Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
+        SecretKeySpec secret_key = new SecretKeySpec(key.getBytes(), "HmacSHA256");
+        sha256_HMAC.init(secret_key);
+
+        return bytesToHex(sha256_HMAC.doFinal(data.getBytes()));
+    }
+
+    public static String bytesToHex(byte[] bytes) {
+        char[] hexArray = "0123456789ABCDEF".toCharArray();
+        char[] hexChars = new char[bytes.length * 2];
+        for ( int j = 0; j < bytes.length; j++ ) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
     }
 }
