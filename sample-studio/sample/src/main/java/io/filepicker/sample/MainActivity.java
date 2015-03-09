@@ -55,6 +55,36 @@ public class MainActivity extends Activity {
         //   String[] mimetypes = {"image/*"};
         //   intent.putExtra("mimetype", mimetypes);
 
+
+        // Security options
+        // https://developers.filepicker.io/docs/security/
+
+        //   String appSecret = "LDIUJKQGDZCVTBV7ADUPKR2UKE";
+        //   intent.putExtra("app_secret", appSecret);
+
+        //   String[] calls = new String[]{"pick", "read"};
+        //   intent.putExtra("policy_calls", calls);
+
+        //   String handle = "SET HANDLE";
+        //   intent.putExtra("policy_handle", handle);
+
+        // NOTE: Expiry states for how long the policy is valid (the value is added to the request's time)
+        //   int expiry = 60*60;
+        //   intent.putExtra("policy_expiry", expiry);
+
+        //   int maxSize = 100;
+        //   intent.putExtra("policy_max_size", maxSize);
+
+        //   int minSize = 100;
+        //   intent.putExtra("policy_min_size", maxSize);
+
+        //   String policyPath = "SET PATH";
+        //   intent.putExtra("policy_path", policyPath);
+
+        //   String policyContainer = "SET CONTAINER";
+        //   intent.putExtra("policy_container", policyContainer);
+
+
         startActivityForResult(intent, Filepicker.REQUEST_CODE_GETFILE);
     }
 
