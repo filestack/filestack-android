@@ -1,5 +1,9 @@
 Change Log
 
+Version 3.8.8 *(2015-03-09)
+----------------------------
+  * New: Security support
+
 Version 3.8.7 *(2015-03-04)
 ----------------------------
   * Fix: Bug fixes

@@ -23,14 +23,14 @@ If you use Maven, you can include this library as a dependency:
 <dependency>
   <groupId>io.filepicker</groupId>
   <artifactId>filepicker-android</artifactId>
-  <version>3.8.7</version>
+  <version>3.8.8</version>
 </dependency>
 ```
 	
 For Gradle users:
 
 ```xml
-compile 'io.filepicker:filepicker-android:3.8.7’
+compile 'io.filepicker:filepicker-android:3.8.8’
 ```
 
 Usage
@@ -163,5 +163,22 @@ Intent intent = new Intent()
 startActivityForResult(intent, Filepicker.REQUEST_CODE_EXPORT_FILE);
 ```
 
+### Security ###
+The library support security options.
+
+```java
+Intent intent = new Intent(this, Filepicker.class);
+intent.putExtra("app_secret", appSecret);
+intent.putExtra("policy_calls", calls);
+intent.putExtra("policy_handle", handle);
+intent.putExtra("policy_expiry", expiry);
+intent.putExtra("policy_max_size", maxSize);
+intent.putExtra("policy_min_size", maxSize);
+intent.putExtra("policy_path", policyPath);
+intent.putExtra("policy_container", policyContainer);
+```
+
+The set of arguments is the same as specified in [docs](https://developers.filepicker.io/docs/security/).
+Note the “policy” prefix in options.
 
 [1]: https://raw.github.com/Ink/filepicker-android/master/sample-studio/sample_screen.png
