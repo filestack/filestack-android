@@ -171,7 +171,7 @@ public class NodesFragment extends Fragment {
     }
 
     private void setUploadButton() {
-        if (pickedFiles.size() > 0) {
+        if (pickedFiles.size() > 0 && (maxFiles() < 0 || pickedFiles.size() <= maxFiles())) {
             mUploadFilesButton.setVisibility(View.VISIBLE);
 
             String btnText;
@@ -257,6 +257,10 @@ public class NodesFragment extends Fragment {
 
     private boolean canPickMultiple() {
         return PreferencesUtils.newInstance(getActivity()).getMultiple();
+    }
+
+    private Integer maxFiles() {
+        return PreferencesUtils.newInstance(getActivity()).getMaxFiles();
     }
 
     Contract getContract() {

@@ -64,6 +64,7 @@ public class Filepicker extends FragmentActivity
     private static final String PATH_EXTRA = "path";
     private static final String CONTAINER_EXTRA = "container";
     private static final String ACCESS_EXTRA = "access";
+    private static final String MAX_FILES_EXTRA = "maxFiles";
 
     // Security extras
     private static final String SECRET_EXTRA = "app_secret";
@@ -237,6 +238,14 @@ public class Filepicker extends FragmentActivity
             mExport = false;
             mFileToExport = null;
         }
+
+        // Init Max Files option
+        if (intent.hasExtra(MAX_FILES_EXTRA)){
+            prefs.setMaxFiles(intent.getIntExtra(MAX_FILES_EXTRA, -1));
+        }else{
+            prefs.clearMaxFiles();
+        }
+
 
         prefs.setSecret(intent.getStringExtra(SECRET_EXTRA));
         prefs.setPolicyCalls(intent.getStringArrayExtra(POLICY_CALLS_EXTRA));

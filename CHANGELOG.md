@@ -1,4 +1,5 @@
 Change Log
+  * Max files option
 
 Version 3.8.8 *(2015-03-09)
 ----------------------------
