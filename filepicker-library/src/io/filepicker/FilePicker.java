@@ -199,8 +199,11 @@ public class Filepicker extends FragmentActivity
         PreferencesUtils prefs = PreferencesUtils.newInstance(this);
 
         // Init Multiple option
-        if (intent.hasExtra(MULTIPLE_EXTRA))
+        if (intent.hasExtra(MULTIPLE_EXTRA)) {
             prefs.setMultiple(intent.getBooleanExtra(MULTIPLE_EXTRA, false));
+        }else{
+            prefs.clearMultiple();
+        }
 
         // Init choosing mimetypes
         if (intent.hasExtra(MIMETYPE_EXTRA)){

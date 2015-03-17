@@ -99,6 +99,10 @@ public final class PreferencesUtils {
         return getBooleanValue(KEY_MULTIPLE);
     }
 
+    public void clearMultiple() {
+        setBooleanValue(KEY_MULTIPLE, false);
+    }
+
     // Gets array of mimetypes and saves it as String
     public void setMimetypes(String[] mimetypes) {
         if(mimetypes == null) return;
