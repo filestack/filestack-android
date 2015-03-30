@@ -128,6 +128,12 @@ All fields’ values can be retrieved using conventional java getters (i.e for f
 Intent intent = new Intent(this, Filepicker.class);
 intent.putExtra("multiple", true);
 ```
+###Choosing max files###
+
+```java
+Intent intent = new Intent(this, Filepicker.class);
+intent.putExtra("maxFiles", 20);
+```
 
 ###Store options###
 

@@ -55,6 +55,9 @@ public class MainActivity extends Activity {
         //   String[] mimetypes = {"image/*"};
         //   intent.putExtra("mimetype", mimetypes);
 
+        // Choose max number of files
+        //   intent.putExtra("maxFiles", 0);
+
 
         // Security options
         // https://developers.filepicker.io/docs/security/

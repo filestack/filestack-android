@@ -17,6 +17,7 @@ public final class PreferencesUtils {
     private static final String KEY_PATH = "storePath";
     private static final String KEY_CONTAINER = "storeContainer";
     private static final String KEY_ACCESS = "storeAccess";
+    private static final String KEY_MAX_FILES = "maxFiles";
 
     private static final String KEY_SECRET = "app_secret";
     private static final String KEY_POLICY_CALLS = "policy_calls";
@@ -30,6 +31,7 @@ public final class PreferencesUtils {
     private final Context context;
 
     private static PreferencesUtils prefUtils = null;
+    private Integer maxFiles;
 
     private PreferencesUtils(Context context) {
         this.context = context;
@@ -95,6 +97,10 @@ public final class PreferencesUtils {
 
     public boolean getMultiple() {
         return getBooleanValue(KEY_MULTIPLE);
+    }
+
+    public void clearMultiple() {
+        setBooleanValue(KEY_MULTIPLE, false);
     }
 
     // Gets array of mimetypes and saves it as String
@@ -202,6 +208,18 @@ public final class PreferencesUtils {
 
     public void setPolicyHandle(String policyHandle) {
         setStringValue(KEY_POLICY_HANDLE, policyHandle);
+    }
+
+    public void setMaxFiles(Integer maxFiles) {
+        setIntValue(KEY_MAX_FILES, maxFiles);
+    }
+
+    public Integer getMaxFiles() {
+        return getIntValue(KEY_MAX_FILES);
+    }
+
+    public void clearMaxFiles() {
+        setIntValue(KEY_MAX_FILES, -1);
     }
 
     public String getPolicyHandle() {
