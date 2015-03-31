@@ -40,10 +40,7 @@ Add the following to your ProGuard rules
 -keepattributes *Annotation*, Signature
 
 ##== Filepicker ==
--keep class io.filepicker.Filepicker {
-  public void onEvent(...);
-}
--keep class io.filepicker.models.** { *; }
+-keep class io.filepicker.** { *; }
 
 ##== Retrofit ==
 -keep class retrofit.** { *; }

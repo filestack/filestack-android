@@ -1,48 +1,49 @@
-Change Log
-  * Max files option
+Version 3.8.9 *(2015-03-30)*
+----------------------------
+  * New: Max files option
 
-Version 3.8.8 *(2015-03-09)
+Version 3.8.8 *(2015-03-09)*
 ----------------------------
   * New: Security support
 
-Version 3.8.7 *(2015-03-04)
+Version 3.8.7 *(2015-03-04)*
 ----------------------------
   * Fix: Bug fixes
 
-Version 3.8.6 *(2015-03-03)
+Version 3.8.6 *(2015-03-03)*
 ----------------------------
   * Fix: Bug fixes
 
-Version 3.8.5 *(2015-02-19)
+Version 3.8.5 *(2015-02-19)*
 ----------------------------
   * New: When user specifies video mime type use it for Gallery and Camera
   * Fix: Code optimizations
 
-Version 3.8.4 *(2015-02-09)
+Version 3.8.4 *(2015-02-09)*
 ----------------------------
   * Fix: Update Retrofit, OkHttp and Picasso to the latest versions
   * Fix: Displaying images in Flickr
 
-Version 3.8.3 *(2015-02-02)
+Version 3.8.3 *(2015-02-02)*
 ----------------------------
   * Fix: Handle ActivityNotFoundExeception when Camera not found
 
-Version 3.8.2 *(2015-01-30)
+Version 3.8.2 *(2015-01-30)*
 ----------------------------
   * Fix: Clearing web view session for Android version < 21
 
-Version 3.8.1 *(2015-01-28)
+Version 3.8.1 *(2015-01-28)*
 ----------------------------
   * Fix: Bugs during uploading files
   * Fix: Login out from all services
   * Fix: Bugs with login view for services
 
-Version 3.8.0 *(2015-01-13)
+Version 3.8.0 *(2015-01-13)*
 ----------------------------
   * Fix: Major performance improvements
   * Fix: Bug fixing
 
-Version 3.7.3 *(2015-01-09)
+Version 3.7.3 *(2015-01-09)*
 ----------------------------
   * Fix: Bug fixing
 
