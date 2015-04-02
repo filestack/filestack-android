@@ -1,3 +1,7 @@
+Version 3.8.11 *(2015-04-02)*
+----------------------------
+  * New: Add maxSize option for pick
+
 Version 3.8.10 *(2015-04-02)*
 ----------------------------
   * New: Support for Evernote and OneDrive

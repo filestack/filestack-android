@@ -132,6 +132,13 @@ Intent intent = new Intent(this, Filepicker.class);
 intent.putExtra("maxFiles", 20);
 ```
 
+###Choosing max file size###
+
+```java
+Intent intent = new Intent(this, Filepicker.class);
+intent.putExtra(“maxSize”, 10*1024*1024);
+```
+
 ###Store options###
 
 ```java

@@ -18,6 +18,7 @@ public final class PreferencesUtils {
     private static final String KEY_CONTAINER = "storeContainer";
     private static final String KEY_ACCESS = "storeAccess";
     private static final String KEY_MAX_FILES = "maxFiles";
+    private static final String KEY_MAX_SIZE = "maxSize";
 
     private static final String KEY_SECRET = "app_secret";
     private static final String KEY_POLICY_CALLS = "policy_calls";
@@ -190,6 +191,31 @@ public final class PreferencesUtils {
         return getStringValue(KEY_CONTAINER);
     }
 
+    public void setMaxFiles(Integer maxFiles) {
+        setIntValue(KEY_MAX_FILES, maxFiles);
+    }
+
+    public Integer getMaxFiles() {
+        return getIntValue(KEY_MAX_FILES);
+    }
+
+    public void clearMaxFiles() {
+        setIntValue(KEY_MAX_FILES, -1);
+    }
+
+    public void setMaxSize(Integer maxSize) {
+        setIntValue(KEY_MAX_SIZE, maxSize);
+    }
+
+    public Integer getMaxSize() {
+        return getIntValue(KEY_MAX_SIZE);
+    }
+
+    public void clearMaxSize() {
+        setIntValue(KEY_MAX_SIZE, 0);
+    }
+
+
     public void setAccess(String access) {
         setStringValue(KEY_ACCESS, access);
     }
@@ -208,18 +234,6 @@ public final class PreferencesUtils {
 
     public void setPolicyHandle(String policyHandle) {
         setStringValue(KEY_POLICY_HANDLE, policyHandle);
-    }
-
-    public void setMaxFiles(Integer maxFiles) {
-        setIntValue(KEY_MAX_FILES, maxFiles);
-    }
-
-    public Integer getMaxFiles() {
-        return getIntValue(KEY_MAX_FILES);
-    }
-
-    public void clearMaxFiles() {
-        setIntValue(KEY_MAX_FILES, -1);
     }
 
     public String getPolicyHandle() {

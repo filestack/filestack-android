@@ -150,6 +150,7 @@ public class FpApiClient {
         final String storeAccess;
         final String apikey;
         final String version;
+        final int maxSize;
 
         String policy;
         String signature;
@@ -163,6 +164,7 @@ public class FpApiClient {
             this.storeContainer = prefs.getContainer();
             this.storeAccess = prefs.getAccess();
             this.version = "v1";
+            this.maxSize = prefs.getMaxSize();
 
             setupSecurity(prefs);
         }

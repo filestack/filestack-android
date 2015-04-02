@@ -58,11 +58,13 @@ public class MainActivity extends Activity {
         // Choose max number of files
         //   intent.putExtra("maxFiles", 0);
 
+        // Choose max size (in bytes) of files for pick
+        //   intent.putExtra("maxSize", 1024*1024); // MaxSize = 1MB
+
 
         // Security options
         // https://developers.filepicker.io/docs/security/
 
-        //   String appSecret = "LDIUJKQGDZCVTBV7ADUPKR2UKE";
         //   intent.putExtra("app_secret", appSecret);
 
         //   String[] calls = new String[]{"pick", "read"};
