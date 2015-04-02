@@ -38,7 +38,9 @@ public class Constants {
             new Provider("Flickr",        "Flickr",       MIMETYPE_IMAGE,     R.drawable.glyphicons_395_flickr, true, "FLICKR"),
             new Provider("Picasa",        "Picasa",       MIMETYPE_IMAGE,     R.drawable.glyphicons_366_picasa, true, "PICASA"),
             new Provider("Github",        "Github",       MIMETYPE_ALL,       R.drawable.glyphicons_381_github, false, "GITHUB"),
-            new Provider("Google Drive",  "GoogleDrive",       MIMETYPE_ALL,       R.drawable.gdrive, false, "GOOGLE_DRIVE")
+            new Provider("Google Drive",  "GoogleDrive",       MIMETYPE_ALL,       R.drawable.gdrive, false, "GOOGLE_DRIVE"),
+            new Provider("Evernote",  "Evernote",       MIMETYPE_ALL,       R.drawable.evernote, true, "EVERNOTE"),
+            new Provider("OneDrive",  "OneDrive",       MIMETYPE_ALL,       R.drawable.onedrive, true, "SKYDRIVE")
     ));
 
     public static final String LIST_VIEW   = "list";

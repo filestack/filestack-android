@@ -158,6 +158,8 @@ By default the following services are available (meaning of keys in brackets is 
   * Picasa (PICASA)
   * Github (GITHUB)
   * Google Drive (GOOGLE_DRIVE)
+  * Evernote (EVERNOTE)
+  * OneDrive (SKYDRIVE)
 
 To use only selected services:
 

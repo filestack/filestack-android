@@ -1,3 +1,7 @@
+Version 3.8.10 *(2015-04-02)*
+----------------------------
+  * New: Support for Evernote and OneDrive
+
 Version 3.8.9 *(2015-03-30)*
 ----------------------------
   * New: Max files option
