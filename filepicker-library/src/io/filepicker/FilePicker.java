@@ -35,6 +35,7 @@ import io.filepicker.events.FileExportedEvent;
 import io.filepicker.events.FpFilesReceivedEvent;
 import io.filepicker.events.GotContentEvent;
 import io.filepicker.events.SignedOutEvent;
+import io.filepicker.events.UploadFileErrorEvent;
 import io.filepicker.models.DisplayedNode;
 import io.filepicker.models.FPFile;
 import io.filepicker.models.Folder;
@@ -66,6 +67,7 @@ public class Filepicker extends FragmentActivity
     private static final String ACCESS_EXTRA = "access";
     private static final String MAX_FILES_EXTRA = "maxFiles";
     private static final String MAX_SIZE_EXTRA = "maxSize";
+    private static final String SHOW_ERROR_TOAST_EXTRA = "showErrorToast";
 
     // Security extras
     private static final String SECRET_EXTRA = "app_secret";
@@ -137,6 +139,10 @@ public class Filepicker extends FragmentActivity
 
     public static String getAppName() {
         return APP_NAME;
+    }
+
+    public static void uploadLocalFile(Uri uri, Context context) {
+        ContentService.uploadFile(context, uri);
     }
 
     @Override
@@ -257,6 +263,8 @@ public class Filepicker extends FragmentActivity
             prefs.clearMaxSize();
         }
 
+        boolean showShowErrorToast = intent.getBooleanExtra(SHOW_ERROR_TOAST_EXTRA, true);
+        prefs.setShowErrorToast(showShowErrorToast);
 
         prefs.setSecret(intent.getStringExtra(SECRET_EXTRA));
         prefs.setPolicyCalls(intent.getStringArrayExtra(POLICY_CALLS_EXTRA));
@@ -458,18 +466,35 @@ public class Filepicker extends FragmentActivity
     }
 
     public void onEvent(ApiErrorEvent event) {
+        PreferencesUtils prefs = PreferencesUtils.newInstance(this);
+
+        if(prefs.shouldShowErrorToast()) {
+            showErrorMessage(event.error);
+        }
+
+        if(event instanceof UploadFileErrorEvent) {
+            Intent data = new Intent();
+            data.setData(((UploadFileErrorEvent)event).getUri());
+            setResult(RESULT_CANCELED, data);
+        }
+
+        finish();
+    }
+
+    private void showErrorMessage(ApiErrorEvent.ErrorType errorType) {
         int errorMessage;
 
-        if(event.error.equals(ApiErrorEvent.ErrorType.NETWORK)) {
+        if(errorType.equals(ApiErrorEvent.ErrorType.NETWORK)) {
             errorMessage = R.string.error_connection;
-        } else if(event.error.equals(ApiErrorEvent.ErrorType.UNAUTHORIZED)) {
+        } else if(errorType.equals(ApiErrorEvent.ErrorType.UNAUTHORIZED)) {
             errorMessage = R.string.error_authorization;
+        } else if(errorType.equals(ApiErrorEvent.ErrorType.INVALID_FILE)) {
+            errorMessage = R.string.error_invalid_file;
         } else {
             errorMessage = R.string.error_unexpected;
         }
 
         Utils.showQuickToast(this, errorMessage);
-        finish();
     }
 
     public void onEvent(SignedOutEvent event) {
@@ -605,7 +630,7 @@ public class Filepicker extends FragmentActivity
 
     private void uploadLocalFile(Uri uri) {
         showLoading();
-        ContentService.uploadFile(this, uri);
+        uploadLocalFile(uri, this);
     }
 
     @Override

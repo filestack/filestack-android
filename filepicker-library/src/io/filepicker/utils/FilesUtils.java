@@ -147,6 +147,8 @@ public class FilesUtils {
                 final int column_index = cursor.getColumnIndexOrThrow(column);
                 return cursor.getString(column_index);
             }
+        } catch(IllegalArgumentException e) {
+            e.printStackTrace();
         } finally {
             if (cursor != null)
                 cursor.close();

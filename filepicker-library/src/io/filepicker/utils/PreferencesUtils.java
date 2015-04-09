@@ -19,6 +19,7 @@ public final class PreferencesUtils {
     private static final String KEY_ACCESS = "storeAccess";
     private static final String KEY_MAX_FILES = "maxFiles";
     private static final String KEY_MAX_SIZE = "maxSize";
+    private static final String KEY_SHOW_ERROR_TOAST = "showErrorToast";
 
     private static final String KEY_SECRET = "app_secret";
     private static final String KEY_POLICY_CALLS = "policy_calls";
@@ -203,6 +204,14 @@ public final class PreferencesUtils {
         setIntValue(KEY_MAX_FILES, -1);
     }
 
+    public void setShowErrorToast(Boolean showErrorToast) {
+        setBooleanValue(KEY_SHOW_ERROR_TOAST, showErrorToast);
+    }
+
+    public Boolean shouldShowErrorToast() {
+        return getBooleanValue(KEY_SHOW_ERROR_TOAST);
+    }
+
     public void setMaxSize(Integer maxSize) {
         setIntValue(KEY_MAX_SIZE, maxSize);
     }
@@ -214,7 +223,6 @@ public final class PreferencesUtils {
     public void clearMaxSize() {
         setIntValue(KEY_MAX_SIZE, 0);
     }
-
 
     public void setAccess(String access) {
         setStringValue(KEY_ACCESS, access);

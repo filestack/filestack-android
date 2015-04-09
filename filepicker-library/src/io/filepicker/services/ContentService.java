@@ -14,6 +14,7 @@ import io.filepicker.events.ApiErrorEvent;
 import io.filepicker.events.FileExportedEvent;
 import io.filepicker.events.FpFilesReceivedEvent;
 import io.filepicker.events.GotContentEvent;
+import io.filepicker.events.UploadFileErrorEvent;
 import io.filepicker.models.FPFile;
 import io.filepicker.models.Folder;
 import io.filepicker.models.Node;
@@ -52,6 +53,10 @@ public class ContentService extends IntentService {
     }
 
     public static void getContent(Context context, Node node, boolean backPressed) {
+        if(context == null) {
+            return;
+        }
+
         Intent intent = new Intent(context, ContentService.class);
         intent.setAction(ACTION_GET_CONTENT);
         intent.putExtra(EXTRA_NODE, node);
@@ -60,6 +65,10 @@ public class ContentService extends IntentService {
     }
 
     public static void pickFiles(Context context, ArrayList<Node> files) {
+        if(context == null) {
+            return;
+        }
+
         Intent intent = new Intent(context, ContentService.class);
         intent.setAction(ACTION_PICK_FILES);
         intent.putParcelableArrayListExtra(EXTRA_NODE, files);
@@ -67,6 +76,10 @@ public class ContentService extends IntentService {
     }
 
     public static void uploadFile(Context context, Uri fileUri) {
+        if(context == null) {
+            return;
+        }
+
         Intent intent = new Intent(context, ContentService.class);
         intent.setAction(ACTION_UPLOAD_FILE);
         intent.putExtra(EXTRA_FILE_URI, fileUri);
@@ -74,6 +87,10 @@ public class ContentService extends IntentService {
     }
 
     public static void exportFile(Context context, Node node, Uri fileUri, String filename) {
+        if(context == null) {
+            return;
+        }
+
         Intent intent = new Intent(context, ContentService.class);
         intent.setAction(ACTION_EXPORT_FILE);
         intent.putExtra(EXTRA_NODE, node);
@@ -153,6 +170,11 @@ public class ContentService extends IntentService {
     private void handleActionUploadFile(final Uri uri) {
         TypedFile typedFile = FilesUtils.getTypedFileFromUri(this, uri);
 
+        if(typedFile == null) {
+            EventBus.getDefault().post(new UploadFileErrorEvent(uri, ApiErrorEvent.ErrorType.INVALID_FILE));
+            return;
+        }
+
         FpApiClient.getFpApiClient(this)
                 .uploadFile(Utils.getUploadedFilename(typedFile.mimeType()),
                         FpApiClient.getJsSession(this),
@@ -165,7 +187,8 @@ public class ContentService extends IntentService {
 
                             @Override
                             public void failure(RetrofitError error) {
-                                handleError(error);
+                                ApiErrorEvent.ErrorType errorType = getErrorType(error);
+                                EventBus.getDefault().post(new UploadFileErrorEvent(uri, errorType));
                             }
                         });
     }
@@ -210,14 +233,23 @@ public class ContentService extends IntentService {
     }
 
     private void handleError(RetrofitError error) {
-        ApiErrorEvent apiErrorEvent = null;
-
-        if(error.getKind().equals(RetrofitError.Kind.NETWORK)) {
-            apiErrorEvent = new ApiErrorEvent(ApiErrorEvent.ErrorType.NETWORK);
-        } else if(error.getResponse().getStatus() == 401){
-            apiErrorEvent = new ApiErrorEvent(ApiErrorEvent.ErrorType.UNAUTHORIZED);
-        }
+        ApiErrorEvent.ErrorType errorType = getErrorType(error);
+        ApiErrorEvent apiErrorEvent = new ApiErrorEvent(errorType);
         EventBus.getDefault().post(apiErrorEvent);
+    }
+
+    public ApiErrorEvent.ErrorType getErrorType(RetrofitError error) {
+        ApiErrorEvent.ErrorType errorType = null;
+
+        if(error != null) {
+            if(error.getKind().equals(RetrofitError.Kind.NETWORK)) {
+                errorType = ApiErrorEvent.ErrorType.NETWORK;
+            } else if(error.getResponse().getStatus() == 401){
+                errorType = ApiErrorEvent.ErrorType.UNAUTHORIZED;
+            }
+        }
+
+        return errorType;
     }
 }
 

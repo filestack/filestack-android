@@ -23,14 +23,14 @@ If you use Maven, you can include this library as a dependency:
 <dependency>
   <groupId>io.filepicker</groupId>
   <artifactId>filepicker-android</artifactId>
-  <version>3.8.8</version>
+  <version>3.8.12</version>
 </dependency>
 ```
 	
 For Gradle users:
 
 ```xml
-compile 'io.filepicker:filepicker-android:3.8.8’
+compile 'io.filepicker:filepicker-android:3.8.12’
 ```
 
 ProGuard
@@ -149,6 +149,8 @@ intent.putExtra("container", "example_bucket");
 intent.putExtra("access", "public");
 ```
 
+NOTE: Setting ‘path’ option disables generating unique key value for Filepicker file. When ‘path’ is used with ‘multiple’ option, all stored files will have the same key (which means they won’t be saved in storages like S3 which requires unique key values).
+
 ###Choosing services###
 
 By default the following services are available (meaning of keys in brackets is described below):
@@ -212,6 +214,21 @@ intent.putExtra("policy_max_size", maxSize);
 intent.putExtra("policy_min_size", maxSize);
 intent.putExtra("policy_path", policyPath);
 intent.putExtra("policy_container", policyContainer);
+```
+	
+### Error toasts ###
+By default, whenever an error occurs during uploading/downloading files, there is toast message displayed.
+This message can be disabled.
+
+```java
+intent.putExtra("showErrorToast", false);
+```
+
+### Upload local file API call ###
+Local files can be uploaded using the library without making the user go through the library interface.
+
+```java
+Filepicker.uploadLocalFile(uriToLocalFile, context);
 ```
 
 The set of arguments is the same as specified in [docs](https://developers.filepicker.io/docs/security/).

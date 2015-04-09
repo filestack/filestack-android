@@ -11,7 +11,8 @@
     <!-- Toast messages -->
     <string name="error_connection">Error with network connection.</string>
     <string name="error_authorization">Error with authorization.</string>
-    <string name="error_unexpected">Unexpected error has occured. Please try again.</string>
+    <string name="error_unexpected">Unexpected error has occurred. Please try again.</string>
+    <string name="error_invalid_file">The file you chose is invalid..</string>
 
     <string name="uploading_image">Uploading image…</string>
     <string name="empty_list_text">This folder is empty.</string>

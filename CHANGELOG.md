@@ -1,3 +1,9 @@
+Version 3.8.12 *(2015-04-09)*
+----------------------------
+  * New: Add showErrorToast option
+  * New: Add public method to upload files without going showing the interface
+  * Fix: Fixed crash of the app when user uploads picture from Gallery->Google Drive
+
 Version 3.8.11 *(2015-04-02)*
 ----------------------------
   * New: Add maxSize option for pick
