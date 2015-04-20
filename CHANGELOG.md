@@ -1,3 +1,7 @@
+Version 3.8.13 *(2015-04-20)*
+----------------------------
+  * Fix: Encode file names before pick
+
 Version 3.8.12 *(2015-04-09)*
 ----------------------------
   * New: Add showErrorToast option

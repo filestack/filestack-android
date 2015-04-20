@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
@@ -154,7 +155,7 @@ public class ContentService extends IntentService {
         try {
             for (Node node : nodes) {
                 FPFile result = FpApiClient.getFpApiClient(this).pickFile(
-                        node.linkPath,
+                        URLDecoder.decode(node.linkPath, "utf-8"),
                         "fpurl",
                         FpApiClient.getJsSession(this));
 
