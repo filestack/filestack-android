@@ -366,20 +366,13 @@ public class Filepicker extends FragmentActivity
     private void refreshFragment(boolean backPressed) {
         hideLoading();
 
-        Fragment contentFragment = getContentFragment();
+        int animEnter = (backPressed ? R.anim.right_slide_out_back : R.anim.right_slide_in);
+        int animExit  = (backPressed ? R.anim.right_slide_in_back : R.anim.right_slide_out);
 
-        // TODO change so only animation are in if/else
-        if(backPressed) {
-            getSupportFragmentManager().beginTransaction()
-                    .setCustomAnimations(R.anim.right_slide_out_back, R.anim.right_slide_in_back)
-                    .replace(android.R.id.content, contentFragment)
-                    .commit();
-        } else {
-            getSupportFragmentManager().beginTransaction()
-                    .setCustomAnimations(R.anim.right_slide_in, R.anim.right_slide_out)
-                    .replace(android.R.id.content, contentFragment)
-                    .commit();
-        }
+        getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(animEnter, animExit)
+                .replace(android.R.id.content, getContentFragment())
+                .commit();
     }
 
     private Fragment getContentFragment() {
@@ -397,17 +390,13 @@ public class Filepicker extends FragmentActivity
     }
 
     private void showProvidersList(boolean backPressed) {
-        if(backPressed) {
-            getSupportFragmentManager().beginTransaction()
-                    .setCustomAnimations(R.anim.right_slide_out_back, R.anim.right_slide_in_back)
-                    .replace(android.R.id.content, getProvidersFragment())
-                    .commit();
-        } else {
-            getSupportFragmentManager().beginTransaction()
-                    .setCustomAnimations(R.anim.right_slide_in, R.anim.right_slide_out)
-                    .replace(android.R.id.content, getProvidersFragment())
-                    .commit();
-        }
+        int animEnter = (backPressed ? R.anim.right_slide_out_back : R.anim.right_slide_in);
+        int animExit  = (backPressed ? R.anim.right_slide_in_back : R.anim.right_slide_out);
+
+        getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(animEnter, animExit)
+                .replace(android.R.id.content, getProvidersFragment())
+                .commit();
     }
 
     private Fragment getProvidersFragment() {
