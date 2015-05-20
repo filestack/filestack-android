@@ -1,3 +1,7 @@
+Version 3.8.14 *(2015-05-20)*
+----------------------------
+  * Fix: Bug fixes styles
+
 Version 3.8.13 *(2015-04-20)*
 ----------------------------
   * Fix: Encode file names before pick

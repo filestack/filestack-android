@@ -23,7 +23,7 @@ If you use Maven, you can include this library as a dependency:
 <dependency>
   <groupId>io.filepicker</groupId>
   <artifactId>filepicker-android</artifactId>
-  <version>3.8.13</version>
+  <version>3.8.14</version>
 </dependency>
 ```
 	

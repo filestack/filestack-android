@@ -8,7 +8,8 @@
     <application>
         <activity
             android:name=".Filepicker"
-            android:label="@string/title_activity_content">
+            android:label="@string/title_activity_content"
+            android:theme="@style/FilepickerTheme">
         </activity>
 
         <service
