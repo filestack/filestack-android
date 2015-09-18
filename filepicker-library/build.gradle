@@ -57,5 +57,3 @@ allprojects {
 def isReleaseBuild() {
     return version.contains("SNAPSHOT") == false
 }
-
-apply from: 'maven_push.gradle'
