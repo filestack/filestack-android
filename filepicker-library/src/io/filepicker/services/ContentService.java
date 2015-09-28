@@ -104,6 +104,10 @@ public class ContentService extends IntentService {
         context.startService(intent);
     }
 
+    public static void cancelAll() {
+        FpApiClient.cancelAll();
+    }
+
     @Override
     protected  void onHandleIntent(Intent intent) {
         if(intent != null) {
@@ -288,7 +292,7 @@ public class ContentService extends IntentService {
                 int read;
                 long length = length();
 
-                while ((read = in.read(buffer)) != -1) {
+                while ((read = in.read(buffer)) != -1 && !Thread.interrupted()) {
                     out.write(buffer, 0, read);
                     written += read;
                     mListener.onProgress(written / length);

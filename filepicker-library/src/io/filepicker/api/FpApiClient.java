@@ -9,6 +9,8 @@ import com.google.gson.GsonBuilder;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import io.filepicker.Filepicker;
 import io.filepicker.models.FPFile;
@@ -19,6 +21,7 @@ import io.filepicker.utils.Utils;
 import retrofit.Callback;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
+import retrofit.android.MainThreadExecutor;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.Header;
@@ -42,6 +45,7 @@ public class FpApiClient {
 
 
     private static FpApiInterface fpApiInterface;
+    private static ExecutorService executor;
 
     public static FpApiInterface getFpApiClient( Context context ) {
         if (fpApiInterface == null) {
@@ -54,6 +58,8 @@ public class FpApiClient {
         final PreferencesUtils prefs = PreferencesUtils.newInstance(context);
         RestAdapter restAdapter;
 
+        executor = Executors.newCachedThreadPool();
+
         if (prefs.getSessionCookie() != null) {
             // Build with cookie
             restAdapter = getCookieRestAdapter(prefs.getSessionCookie());
@@ -65,9 +71,19 @@ public class FpApiClient {
         fpApiInterface = restAdapter.create(FpApiInterface.class);
     }
 
+    public static void cancelAll() {
+        if (executor != null) {
+                executor.shutdownNow();
+
+                executor = null;
+                fpApiInterface = null;
+        }
+    }
+
     public static RestAdapter getRestAdapter() {
         return new RestAdapter.Builder()
                 .setEndpoint(DIALOG_ENDPOINT)
+                .setExecutors(executor, new MainThreadExecutor())
                 .build();
     }
 
@@ -80,6 +96,7 @@ public class FpApiClient {
                     }
                 })
                 .setEndpoint(DIALOG_ENDPOINT)
+                .setExecutors(executor, new MainThreadExecutor())
                 .build();
     }
 

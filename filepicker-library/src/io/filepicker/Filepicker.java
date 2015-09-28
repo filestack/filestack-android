@@ -145,6 +145,10 @@ public class Filepicker extends FragmentActivity
         ContentService.uploadFile(context, uri);
     }
 
+    public static void cancelLocalFileUploading() {
+        ContentService.cancelAll();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
