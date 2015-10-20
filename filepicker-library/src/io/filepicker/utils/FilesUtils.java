@@ -32,7 +32,8 @@ public class FilesUtils {
         if("content".equalsIgnoreCase(uri.getScheme())) {
             mimetype = context.getContentResolver().getType(uri);
         } else {
-            mimetype = MimeTypeMap.getFileExtensionFromUrl(uri.getPath());
+            String extension = MimeTypeMap.getFileExtensionFromUrl(uri.getPath());
+            mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
         }
 
         if(mimetype == null) {
