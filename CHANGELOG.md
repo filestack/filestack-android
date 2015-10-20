@@ -1,3 +1,7 @@
+Version 3.8.15 *(2015-10-20)*
+----------------------------
+  * Fix: Bug fixes
+
 Version 3.8.14 *(2015-05-20)*
 ----------------------------
   * Fix: Bug fixes styles
@@ -71,13 +75,13 @@ Version 3.7.3 *(2015-01-09)*
 
 Version 3.7.2 *(2014-12-15)*
 ----------------------------
-  * UI: Disable providers list and show progress bar when the user picks file from gallery or camera 
+  * UI: Disable providers list and show progress bar when the user picks file from gallery or camera
   * New: Add ActionBar Up caret
 
 Version 3.7.1 *(2014-12-12)*
 ----------------------------
   * Fix: UI improvements for upload and export list views
-  * Fix: Improve Grid views efficiency for lists containing many elements 
+  * Fix: Improve Grid views efficiency for lists containing many elements
   * Fix: Bug fixing
 
 Version 3.6 *(2014-12-10)*
@@ -114,4 +118,3 @@ Versions 3.0-3.2 *(2014-11-14)*
   * Fix: Getting path to local file is changed to work on KitKat and higher versions.
   * Fix: Change the way services and mimetypes can be selected.
   * Fix: Uploading/downloading data to/from Filepicker API is moved to background service.
- 

@@ -23,14 +23,14 @@ If you use Maven, you can include this library as a dependency:
 <dependency>
   <groupId>io.filepicker</groupId>
   <artifactId>filepicker-android</artifactId>
-  <version>3.8.14</version>
+  <version>3.8.15</version>
 </dependency>
 ```
-	
+
 For Gradle users:
 
 ```xml
-compile 'io.filepicker:filepicker-android:3.8.14’
+compile 'io.filepicker:filepicker-android:3.8.15’
 ```
 
 ProGuard
@@ -61,15 +61,15 @@ Usage
 
 ###Setting api key###
 
-Api key must be set before making any calls to Filepicker. 
-To set api key use 
+Api key must be set before making any calls to Filepicker.
+To set api key use
 
 ```java
 Filepicker.setKey(MY_API_KEY).
 ```
 
 ###Setting application name###
-If you want your application’s name to be visible at the top of Filepicker view, set it with 
+If you want your application’s name to be visible at the top of Filepicker view, set it with
 
 ```java
 Filepicker.setAppName(MY_APP_NAME)
@@ -116,7 +116,7 @@ FpFile object contains following fields:
   * key - unique key
   * type - mimetype
   * size - size in bytes
-  
+
 All fields’ values can be retrieved using conventional java getters (i.e for field “size”, getter method “getSize()” is used).
 
 ###Getting multiple files###
@@ -190,6 +190,7 @@ intent.putExtra("mimetype", mimetypes);
 ###Exporting file###
 
 The library offer also a way to export files. It can be used to easily save a taken picture in cloud services.
+Note: export works for the following cloud services: Cloud Drive, Dropbox, Box, Instagram, Flickr, Picasa, Evernote, Skydrive.
 
 ```java
 Intent intent = new Intent()
@@ -215,7 +216,7 @@ intent.putExtra("policy_min_size", maxSize);
 intent.putExtra("policy_path", policyPath);
 intent.putExtra("policy_container", policyContainer);
 ```
-	
+
 ### Error toasts ###
 By default, whenever an error occurs during uploading/downloading files, there is toast message displayed.
 This message can be disabled.
