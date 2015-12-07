@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 
@@ -16,6 +19,7 @@ import io.filepicker.events.FileExportedEvent;
 import io.filepicker.events.FpFilesReceivedEvent;
 import io.filepicker.events.GotContentEvent;
 import io.filepicker.events.UploadFileErrorEvent;
+import io.filepicker.events.UploadProgressEvent;
 import io.filepicker.models.FPFile;
 import io.filepicker.models.Folder;
 import io.filepicker.models.Node;
@@ -98,6 +102,10 @@ public class ContentService extends IntentService {
         intent.putExtra(EXTRA_FILENAME, filename);
         intent.putExtra(EXTRA_FILE_URI, fileUri);
         context.startService(intent);
+    }
+
+    public static void cancelAll() {
+        FpApiClient.cancelAll();
     }
 
     @Override
@@ -187,6 +195,13 @@ public class ContentService extends IntentService {
             return;
         }
 
+        typedFile = new ProgressTypedFile(typedFile, new ProgressTypedFile.Listener() {
+            @Override
+            public void onProgress(float progress) {
+                EventBus.getDefault().post(new UploadProgressEvent(uri, progress));
+            }
+        });
+
         FpApiClient.getFpApiClient(this).uploadFile(
                 Utils.getUploadedFilename(typedFile.mimeType()),
                 FpApiClient.getJsSession(this),
@@ -267,6 +282,43 @@ public class ContentService extends IntentService {
         }
 
         return errorType;
+    }
+
+    private static class ProgressTypedFile extends TypedFile {
+
+        private static final int BUFFER_SIZE = 4096;
+
+        interface Listener {
+            void onProgress(float progress);
+        }
+
+        private final Listener mListener;
+
+        public ProgressTypedFile(TypedFile typedFile, Listener listener) {
+            super(typedFile.mimeType(), typedFile.file());
+            mListener = listener;
+        }
+
+        @Override
+        public void writeTo(OutputStream out) throws IOException {
+            byte[] buffer = new byte[BUFFER_SIZE];
+            FileInputStream in = new FileInputStream(file());
+            float written = 0;
+
+            try {
+                int read;
+                long length = length();
+
+                while ((read = in.read(buffer)) != -1 && !Thread.interrupted()) {
+                    out.write(buffer, 0, read);
+                    written += read;
+                    mListener.onProgress(written / length);
+                }
+            } finally {
+                in.close();
+            }
+        }
+
     }
 }
 
