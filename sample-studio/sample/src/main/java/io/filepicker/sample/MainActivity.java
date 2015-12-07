@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -29,15 +28,29 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-
-    }
-
-    public void runFilepicker(View view) {
-
         Filepicker.setKey(FILEPICKER_API_KEY);
         Filepicker.setAppName(PARENT_APP);
+    }
 
+    public void getFromAll(View view) {
         Intent intent = new Intent(this, Filepicker.class);
+        startActivityForResult(intent, Filepicker.REQUEST_CODE_GETFILE);
+    }
+
+    public void getFromFacebook(View view) {
+        Intent intent = new Intent(this, Filepicker.class);
+
+        String[] services = {"FACEBOOK"};
+        intent.putExtra("services", services);
+
+        startActivityForResult(intent, Filepicker.REQUEST_CODE_GETFILE);
+    }
+
+    public void getFromCamera(View view) {
+        Intent intent = new Intent(this, Filepicker.class);
+
+        String[] services = {"CAMERA"};
+        intent.putExtra("services", services);
 
         startActivityForResult(intent, Filepicker.REQUEST_CODE_GETFILE);
     }

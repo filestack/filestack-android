@@ -23,14 +23,14 @@ If you use Maven, you can include this library as a dependency:
 <dependency>
   <groupId>io.filepicker</groupId>
   <artifactId>filepicker-android</artifactId>
-  <version>3.8.15</version>
+  <version>3.8.17</version>
 </dependency>
 ```
 
 For Gradle users:
 
 ```xml
-compile 'io.filepicker:filepicker-android:3.8.15’
+compile 'io.filepicker:filepicker-android:3.8.17’
 ```
 
 ProGuard

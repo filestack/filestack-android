@@ -31,6 +31,6 @@ public final class Provider extends Node {
     }
 
     public boolean matchedCode(String selectedCode) {
-        return this.code.toLowerCase().equals(code.toLowerCase());
+        return this.code.toLowerCase().equals(selectedCode.toLowerCase());
     }
 }

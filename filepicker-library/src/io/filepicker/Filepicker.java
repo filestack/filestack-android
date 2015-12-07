@@ -113,7 +113,7 @@ public class Filepicker extends Activity
     // The code of the folder's client returned from API
     private String mFolderClientCode;
 
-    private ArrayList mProviders;
+    private ArrayList<Node> mProviders;
     private ArrayList<Node> mNodeContentList;
 
     // Needed for camera request
@@ -176,8 +176,13 @@ public class Filepicker extends Activity
 
         // Shows provider's folders and files
         if(mDisplayedNodesList.isEmpty()) {
-            setTitle(APP_NAME);
-            showProvidersList();
+            // Go straight to the only 1 user-specified provider
+            if (mProviders.size() == 1) {
+                handleSingleProviderScenario();
+            } else {
+                setTitle(APP_NAME);
+                showProvidersList();
+            }
         } else {
             setTitle(mCurrentDisplayedNode.node.displayName);
 
@@ -186,6 +191,18 @@ public class Filepicker extends Activity
             } else {
                 refreshFragment(false);
             }
+        }
+    }
+
+    private void handleSingleProviderScenario() {
+        Node providerNode= mProviders.get(0);
+
+        if(providerNode.isCamera()) {
+            openCamera();
+        } else if(providerNode.isGallery()) {
+            openGallery();
+        } else {
+            showNextNode(providerNode);
         }
     }
 
@@ -270,7 +287,6 @@ public class Filepicker extends Activity
 
         // Init providers
         String[] selectedProviders = null;
-
         if(getIntent().hasExtra(SELECTED_PROVIDERS_EXTRA))
             selectedProviders = getIntent().getStringArrayExtra(SELECTED_PROVIDERS_EXTRA);
 
@@ -340,6 +356,8 @@ public class Filepicker extends Activity
                 } else {
                     refreshCurrentlyDisplayedNode(mCurrentDisplayedNode, true);
                 }
+            } else if(mProviders.size() == 1) {
+                super.onBackPressed();
             } else {
                 setTitle(getAppName());
                 showProvidersList();
@@ -626,6 +644,11 @@ public class Filepicker extends Activity
     // For Camera and Gallery
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == RESULT_CANCELED) {
+            finish();
+            return;
+        }
+
         switch (requestCode) {
             case REQUEST_CODE_GETFILE:
                 if (resultCode == RESULT_OK) {
@@ -652,7 +675,6 @@ public class Filepicker extends Activity
             case REQUEST_CODE_TAKE_PICTURE:
                 if (resultCode == RESULT_OK) {
                     Utils.showQuickToast(this, R.string.uploading_image);
-                    showLoading();
                     uploadLocalFile(imageUri);
                 }
                 break;

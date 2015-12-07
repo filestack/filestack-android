@@ -10,15 +10,31 @@
     android:orientation="vertical"
     android:gravity="center_horizontal">
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Get file from all services"
+        android:textColor="#ffffff"
+        android:background="#0099CC"
+        android:onClick="getFromAll"
+        android:layout_marginBottom="10dp" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Run File Picker"
-        android:id="@+id/buttonNew"
+        android:text="Get file from Facebook"
         android:textColor="#ffffff"
         android:background="#0099CC"
-        android:onClick="runFilepicker"
+        android:onClick="getFromFacebook"
+        android:layout_marginBottom="10dp" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Get file from Camera"
+        android:textColor="#ffffff"
+        android:background="#0099CC"
+        android:onClick="getFromCamera"
         android:layout_marginBottom="10dp" />
 
     <ImageView
