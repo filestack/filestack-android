@@ -29,4 +29,8 @@ public final class Provider extends Node {
     public boolean handleAllMimetypes() {
         return this.mimetypes.equals(Constants.MIMETYPE_ALL);
     }
+
+    public boolean matchedCode(String selectedCode) {
+        return this.code.toLowerCase().equals(code.toLowerCase());
+    }
 }

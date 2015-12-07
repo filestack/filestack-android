@@ -1,4 +1,5 @@
 package io.filepicker.utils;
+
 import android.content.Context;
 import android.os.Build;
 import android.webkit.CookieManager;
@@ -19,7 +20,7 @@ public class SessionUtils {
     private SessionUtils(){}
 
     public static void setSessionCookie(Context context) {
-         String sessionCookie = getSessionCookie();
+        String sessionCookie = getSessionCookie();
 
         if(sessionCookie != null && !sessionCookie.isEmpty())
             PreferencesUtils.newInstance(context).setSessionCookie(sessionCookie);
@@ -46,7 +47,13 @@ public class SessionUtils {
 
     // Get session cookie from CookieManager
     private static String getSessionCookie() {
+        CookieManager cm = CookieManager.getInstance();
+
+        boolean has = cm.hasCookies();
         String cookie = CookieManager.getInstance().getCookie(FpApiClient.DIALOG_URL);
+
+        if(cookie == null) return null;
+
         Pattern regex = Pattern.compile("session=\"(.*)\"");
         Matcher match = regex.matcher(cookie);
         if (!match.matches())

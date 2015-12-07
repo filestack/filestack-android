@@ -1,10 +1,12 @@
 package io.filepicker;
 
+import android.app.Fragment;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
@@ -18,7 +20,7 @@ import io.filepicker.utils.SessionUtils;
 public class AuthFragment extends Fragment {
 
     public interface Contract {
-        public void proceedAfterAuth();
+        void proceedAfterAuth();
     }
 
     private String providerUrl;
@@ -53,15 +55,17 @@ public class AuthFragment extends Fragment {
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBarAuth);
         webViewAuth = (WebView) rootView.findViewById(R.id.webViewAuth);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            CookieManager.getInstance().setAcceptThirdPartyCookies(webViewAuth, true);
+        }
+
         return rootView;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-
         webViewAuth.getSettings().setJavaScriptEnabled(true);
         webViewAuth.setWebViewClient(new AuthWebviewClient());
-
         String url = buildServiceAuthUrl();
         webViewAuth.loadUrl(url);
         hideProgressBar();
@@ -92,8 +96,6 @@ public class AuthFragment extends Fragment {
                 return false;
             }
         }
-
-
     }
 
     private void hideProgressBar() {

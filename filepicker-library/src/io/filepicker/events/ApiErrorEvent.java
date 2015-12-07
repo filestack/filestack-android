@@ -11,5 +11,5 @@ public class ApiErrorEvent {
         this.error = error;
     }
 
-    public enum ErrorType { UNAUTHORIZED, NETWORK, WRONG_RESPONSE, INVALID_FILE };
+    public enum ErrorType { UNAUTHORIZED, NETWORK, WRONG_RESPONSE, LOCAL_FILE_PERMISSION_DENIAL, INVALID_FILE };
 }

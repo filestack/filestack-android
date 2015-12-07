@@ -3,13 +3,12 @@
     package="io.filepicker">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application>
         <activity
             android:name=".Filepicker"
-            android:label="@string/title_activity_content"
-            android:theme="@style/FilepickerTheme">
+            android:label="@string/title_activity_content">
         </activity>
 
         <service

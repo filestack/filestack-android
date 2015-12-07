@@ -86,6 +86,14 @@ public class Node implements Parcelable {
     public String deslashedPath() {
         return linkPath.replace("/", "_");
     }
+
+    @Override
+    public String toString() {
+        return "\n************************\n" +
+                "displayName=" + displayName + "\n" +
+                "linkPath=" + linkPath;
+    }
+
     /** Used to give additional hints on how to process the received parcel.*/
     @Override
     public int describeContents() {

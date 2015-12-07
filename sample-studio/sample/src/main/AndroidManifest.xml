@@ -4,10 +4,6 @@
     android:versionCode="1"
     android:versionName="1.1" >
 
-    <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="21" />
-
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -23,5 +19,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>

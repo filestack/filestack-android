@@ -1,6 +1,8 @@
 package io.filepicker.utils;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.widget.Toast;
 
 import java.io.File;
@@ -34,61 +36,32 @@ public class Utils {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
-    // Get providers
-    public static ArrayList<Node> getProviders(String[] providersCodes) {
-        if(providersCodes == null || !(providersCodes.length > 0)) {
-            return getProvidersAsNodes();
-        }
+    public static ArrayList<Node> getProvidersNodes(Context context, String[] selectedProviders, boolean exportableOnly) {
+        ArrayList<Node> providersNodes = new ArrayList<>();
 
-        ArrayList<Node> selectedProviders = new ArrayList<>();
+        boolean userChosenProviders = (selectedProviders != null && selectedProviders.length > 0);
 
-        for (String code : providersCodes) {
-            for (Provider provider : Constants.PROVIDERS_LIST) {
-                if (provider.code.equals(code)) {
-                    selectedProviders.add(provider);
-                }
-            }
-        }
-
-        return selectedProviders;
-    }
-
-    // Get providers which allows saving
-    public static ArrayList<Node> getExportableProviders(String[] providersCodes) {
-        if(providersCodes == null || !(providersCodes.length > 0)) {
-            return getExportableProvidersAsNodes();
-        }
-
-        ArrayList<Node> exportableProviders = new ArrayList<>();
-
-        for (Node node : getProviders(providersCodes)) {
-            Provider provider = (Provider) node;
-            if (provider.exportSupported) {
-                exportableProviders.add(provider);
-            }
-        }
-
-        return exportableProviders;
-    }
-
-    private static ArrayList<Node> getProvidersAsNodes() {
-        ArrayList<Node> nodesList = new ArrayList<Node>();
         for(Provider provider : Constants.PROVIDERS_LIST) {
-            nodesList.add(provider);
-        }
+            boolean codeConditionMet = !userChosenProviders || providerSelected(provider, selectedProviders);
+            boolean exportConditionMet = !exportableOnly || provider.exportSupported;
 
-        return nodesList;
-    }
-
-    private static ArrayList<Node> getExportableProvidersAsNodes() {
-        ArrayList<Node> nodesList = new ArrayList<Node>();
-        for(Provider provider : Constants.PROVIDERS_LIST) {
-            if(provider.exportSupported) {
-                nodesList.add(provider);
+            if(codeConditionMet && exportConditionMet) {
+                providersNodes.add(provider);
             }
         }
 
-        return nodesList;
+        return providersNodes;
+    }
+
+    private static boolean providerSelected(Provider provider, String[] selectedCodes) {
+        if(provider == null || provider.code == null || selectedCodes == null) return false;
+
+        for(int i = 0; i < selectedCodes.length; i++) {
+            if(provider.matchedCode(selectedCodes[i]))
+                return true;
+        }
+
+        return false;
     }
 
     public static boolean isProvider(Node node) {

@@ -169,29 +169,45 @@ public class ContentService extends IntentService {
     }
 
     private void handleActionUploadFile(final Uri uri) {
-        TypedFile typedFile = FilesUtils.getTypedFileFromUri(this, uri);
+        ApiErrorEvent.ErrorType errorType = null;
+        TypedFile typedFile = null;
 
-        if(typedFile == null) {
-            EventBus.getDefault().post(new UploadFileErrorEvent(uri, ApiErrorEvent.ErrorType.INVALID_FILE));
+        try {
+            typedFile = FilesUtils.getTypedFileFromUri(this, uri);
+        } catch (SecurityException e) {
+            errorType = ApiErrorEvent.ErrorType.LOCAL_FILE_PERMISSION_DENIAL;
+        }
+
+        if(typedFile == null && errorType == null) {
+            errorType = ApiErrorEvent.ErrorType.INVALID_FILE;
+        }
+
+        if(errorType != null) {
+            EventBus.getDefault().post(new UploadFileErrorEvent(uri, errorType));
             return;
         }
 
-        FpApiClient.getFpApiClient(this)
-                .uploadFile(Utils.getUploadedFilename(typedFile.mimeType()),
-                        FpApiClient.getJsSession(this),
-                        typedFile,
-                        new Callback<UploadLocalFileResponse>() {
-                            @Override
-                            public void success(UploadLocalFileResponse object, retrofit.client.Response response) {
-                                onFileUploadSuccess(object, uri);
-                            }
+        FpApiClient.getFpApiClient(this).uploadFile(
+                Utils.getUploadedFilename(typedFile.mimeType()),
+                FpApiClient.getJsSession(this),
+                typedFile,
+                uploadLocalFileCallback(uri)
+        );
+    }
 
-                            @Override
-                            public void failure(RetrofitError error) {
-                                ApiErrorEvent.ErrorType errorType = getErrorType(error);
-                                EventBus.getDefault().post(new UploadFileErrorEvent(uri, errorType));
-                            }
-                        });
+    private Callback<UploadLocalFileResponse> uploadLocalFileCallback(final Uri uri) {
+        return new Callback<UploadLocalFileResponse>() {
+            @Override
+            public void success(UploadLocalFileResponse object, retrofit.client.Response response) {
+                onFileUploadSuccess(object, uri);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                ApiErrorEvent.ErrorType errorType = getErrorType(error);
+                EventBus.getDefault().post(new UploadFileErrorEvent(uri, errorType));
+            }
+        };
     }
 
     private void onFileUploadSuccess(UploadLocalFileResponse response, Uri fileUri) {
