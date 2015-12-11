@@ -1,6 +1,11 @@
+Version 3.9.10 *(2015-12-11)*
+----------------------------
+  * New: Add callback for uploading local files
+  * Fix: Bug fixes
+
 Version 3.8.17 *(2015-12-07)*
 ----------------------------
-  * Fix: Add single-service scenario
+  * New: Add single-service scenario
 
 Version 3.8.16 *(2015-12-07)*
 ----------------------------

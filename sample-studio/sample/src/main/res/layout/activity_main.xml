@@ -37,6 +37,24 @@
         android:onClick="getFromCamera"
         android:layout_marginBottom="10dp" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Get multiple"
+        android:textColor="#ffffff"
+        android:background="#0099CC"
+        android:onClick="getMultiple"
+        android:layout_marginBottom="10dp" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Upload local file"
+        android:textColor="#ffffff"
+        android:background="#0099CC"
+        android:onClick="uploadLocalFile"
+        android:layout_marginBottom="10dp" />
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

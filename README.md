@@ -23,14 +23,14 @@ If you use Maven, you can include this library as a dependency:
 <dependency>
   <groupId>io.filepicker</groupId>
   <artifactId>filepicker-android</artifactId>
-  <version>3.8.17</version>
+  <version>3.9.0</version>
 </dependency>
 ```
 
 For Gradle users:
 
 ```xml
-compile 'io.filepicker:filepicker-android:3.8.17’
+compile 'io.filepicker:filepicker-android:3.9.0’
 ```
 
 ProGuard
@@ -230,6 +230,39 @@ Local files can be uploaded using the library without making the user go through
 
 ```java
 Filepicker.uploadLocalFile(uriToLocalFile, context);
+```
+
+If the information about the success, error and progress of this operation is needed, the callback can be provided.
+
+```java
+final String url = "PUT PATH TO LOCAL FILE HERE - something like content://...";
+
+Filepicker.uploadLocalFile(Uri.parse(url), this, new FilepickerCallback() {
+    @Override
+    public void onFileUploadSuccess(FPFile fpFile) {
+      // Do something on success
+    }
+
+    @Override
+    public void onFileUploadError(Throwable error) {
+      // Do something on error
+    }
+
+    @Override
+    public void onFileUploadProgress(Uri uri, float progress) {
+      // Do something on progress
+    }
+});
+```
+
+If the callback is registered then the activity must unregister callbacks onDestroy
+
+```java
+@Override
+protected void onDestroy() {
+    Filepicker.unregistedLocalFileUploadCallbacks();
+    super.onDestroy();
+}
 ```
 
 The set of arguments is the same as specified in [docs](https://developers.filepicker.io/docs/security/).

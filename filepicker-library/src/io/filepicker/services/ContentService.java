@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import io.filepicker.api.FpApiClient;
@@ -52,6 +53,11 @@ public class ContentService extends IntentService {
 
     // Used for upload file action and uri looks like content://<path to local file>
     private static final String EXTRA_FILE_URI = "io.filepicker.services.extra.file_uri";
+
+    FilepickerListener filepickerListener;
+    public interface FilepickerListener {
+        void onLocalFileUploaded(List<FPFile> files);
+    }
 
     public ContentService() {
         super("ContentService");
@@ -243,7 +249,6 @@ public class ContentService extends IntentService {
      filename - new filename given by user
     */
     private void handleActionExportFile(Node node, Uri fileUri, String filename) {
-
         String fileExtension = FilesUtils.getFileExtension(this, fileUri);
         final String path = FilesUtils.getFilePath(node, filename, fileExtension);
         TypedFile content = FilesUtils.buildTypedFile(this, fileUri);

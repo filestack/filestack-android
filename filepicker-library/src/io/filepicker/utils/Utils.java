@@ -1,8 +1,6 @@
 package io.filepicker.utils;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.widget.Toast;
 
 import java.io.File;

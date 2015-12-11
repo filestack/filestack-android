@@ -12,6 +12,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import io.filepicker.Filepicker;
+import io.filepicker.FilepickerCallback;
 import io.filepicker.models.FPFile;
 
 public class MainActivity extends Activity {
@@ -53,6 +54,39 @@ public class MainActivity extends Activity {
         intent.putExtra("services", services);
 
         startActivityForResult(intent, Filepicker.REQUEST_CODE_GETFILE);
+    }
+
+    public void getMultiple(View view) {
+        Intent intent = new Intent(this, Filepicker.class);
+        intent.putExtra("multiple", true);
+        startActivityForResult(intent, Filepicker.REQUEST_CODE_GETFILE);
+    }
+
+    public void uploadLocalFile(View view) {
+        final String url = "PUT PATH TO LOCAL FILE HERE - something like content://...";
+
+        Filepicker.uploadLocalFile(Uri.parse(url), this, new FilepickerCallback() {
+            @Override
+            public void onFileUploadSuccess(FPFile fpFile) {
+                // Do something on success
+            }
+
+            @Override
+            public void onFileUploadError(Throwable error) {
+                // Do something on error
+            }
+
+            @Override
+            public void onFileUploadProgress(Uri uri, float progress) {
+                // Do something on progress
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        Filepicker.unregistedLocalFileUploadCallbacks();
+        super.onDestroy();
     }
 
     @Override

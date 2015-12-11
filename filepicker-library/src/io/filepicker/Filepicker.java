@@ -1,5 +1,6 @@
 package io.filepicker;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.ActivityNotFoundException;
@@ -122,6 +123,8 @@ public class Filepicker extends Activity
     private ProgressBar mProgressBar;
     private static Uri mFileToExport;
 
+    private static FilepickerCallbackHandler sFilepickerCallbackHandler = new FilepickerCallbackHandler();
+
     public static void setKey(String apiKey) {
         if(API_KEY.isEmpty()) {
             API_KEY = apiKey;
@@ -146,8 +149,22 @@ public class Filepicker extends Activity
         ContentService.uploadFile(context, uri);
     }
 
+    public static void uploadLocalFile(Uri uri, Context context, FilepickerCallback filepickerCallback) {
+        if(uri == null || context == null) return;
+
+        if(filepickerCallback != null) {
+            sFilepickerCallbackHandler.addCallback(uri, filepickerCallback);
+        }
+
+        uploadLocalFile(uri, context);
+    }
+
     public static void cancelLocalFileUploading() {
         ContentService.cancelAll();
+    }
+
+    public static void unregistedLocalFileUploadCallbacks() {
+        sFilepickerCallbackHandler.unregister();
     }
 
     @Override
@@ -167,8 +184,9 @@ public class Filepicker extends Activity
             mNodeContentList = new ArrayList<>();
         }
 
-        if(getActionBar() != null) {
-            getActionBar().setDisplayHomeAsUpEnabled(true);
+        final ActionBar actionBar = getActionBar();
+        if(actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
         validateApiKey();
@@ -434,6 +452,7 @@ public class Filepicker extends Activity
         return contentFragment;
     }
 
+    @SuppressWarnings("unused")
     public void onEvent(GotContentEvent event) {
         if(!mIsWaitingForContent) {
             return;
@@ -464,6 +483,7 @@ public class Filepicker extends Activity
                 .commit();
     }
 
+    @SuppressWarnings("unused")
     public void onEvent(FpFilesReceivedEvent event) {
         ArrayList<FPFile> fpFiles = event.fpFiles;
 
@@ -473,6 +493,7 @@ public class Filepicker extends Activity
         finish();
     }
 
+    @SuppressWarnings("unused")
     public void onEvent(ApiErrorEvent event) {
         PreferencesUtils prefs = PreferencesUtils.newInstance(this);
 
@@ -505,11 +526,13 @@ public class Filepicker extends Activity
         Utils.showQuickToast(this, errorMessage);
     }
 
+    @SuppressWarnings("unused")
     public void onEvent(SignedOutEvent event) {
         clearSession(this);
         showProvidersList();
     }
 
+    @SuppressWarnings("unused")
     public void onEvent(FileExportedEvent event) {
         String message = "File " + event.fpFile.getFilename() +
                 " was exported to " + event.path.split("/")[0];
