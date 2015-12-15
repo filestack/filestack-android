@@ -286,6 +286,10 @@ public class ContentService extends IntentService {
             }
         }
 
+        if(errorType == null) {
+            errorType = ApiErrorEvent.ErrorType.UNKNOWN_ERROR;
+        }
+
         return errorType;
     }
 
