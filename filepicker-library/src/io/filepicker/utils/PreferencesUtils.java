@@ -53,7 +53,10 @@ public final class PreferencesUtils {
 
     // String
     private void setStringValue(String key, String value){
-        getSharedPreferences().edit().putString(key, value).apply();
+        if (value != null)
+            getSharedPreferences().edit().putString(key, value).apply();
+        else
+            getSharedPreferences().edit().remove(key).apply();
     }
 
     private String getStringValue(String key){
