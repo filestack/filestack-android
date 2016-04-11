@@ -44,8 +44,36 @@ public class FilesUtils {
 
         String path = getPath(context, uri);
         // File path and mimetype are required
-        if(path == null)
+        if(path == null) {
+            InputStream in = null;
+            try {
+                in = context.getContentResolver().openInputStream(uri);
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+
+            Bitmap bitmap = BitmapFactory.decodeStream(in);
+            if (bitmap != null){
+                File file = new File(context.getCacheDir(), "image");
+                try {
+                    OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                    os.close();
+                }
+                catch (FileNotFoundException e){
+                    e.printStackTrace();
+                }
+                catch (IOException e){
+                    e.printStackTrace();
+                }
+
+                return new TypedFile(mimetype, file);
+            }
+
             return null;
+        }
 
         File file = new File(path);
 
