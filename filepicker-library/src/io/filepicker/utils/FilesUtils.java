@@ -20,14 +20,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import io.filepicker.models.Node;
-import retrofit.mime.TypedFile;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 /**
  * Created by maciejwitowski on 11/5/14.
  */
 public class FilesUtils {
 
-    public static TypedFile getTypedFileFromUri(Context context, Uri uri) {
+    public static RequestBody getRequestBodyFromUri(Context context, Uri uri) {
         String mimetype;
         if("content".equalsIgnoreCase(uri.getScheme())) {
             mimetype = context.getContentResolver().getType(uri);
@@ -49,7 +50,9 @@ public class FilesUtils {
 
         File file = new File(path);
 
-        return new TypedFile(mimetype, file);
+
+
+        return RequestBody.create(MediaType.parse(mimetype), file);
     }
 
     public static String getFileExtension(Context context, Uri uri) {
@@ -215,8 +218,8 @@ public class FilesUtils {
      * @param fileUri - uri of file to save
      * @return - built TypedFile
      */
-    public static TypedFile buildTypedFile(Context context, Uri fileUri) {
-        TypedFile typedFile = null;
+    public static RequestBody buildRequestBody(Context context, Uri fileUri) {
+        RequestBody typedFile = null;
         ContentResolver cr = context.getContentResolver();
 
         try {
@@ -236,7 +239,7 @@ public class FilesUtils {
                 os.write(buffer, 0, length);
             }
 
-            typedFile = new TypedFile(cr.getType(fileUri), outputFile);
+            typedFile = RequestBody.create(MediaType.parse(cr.getType(fileUri)), outputFile);
             os.close();
 
         } catch (IOException e) {

@@ -13,4 +13,3 @@
         android:visibility="gone"
         android:layout_centerInParent="true" />
 </RelativeLayout>
-<!-- From: file:/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/layout/activity_filepicker.xml -->

@@ -69,6 +69,7 @@ public class Filepicker extends Activity
     private static final String MAX_FILES_EXTRA = "maxFiles";
     private static final String MAX_SIZE_EXTRA = "maxSize";
     private static final String SHOW_ERROR_TOAST_EXTRA = "showErrorToast";
+    private static final String FILE_UPLOADED_PREFIX = "fileUploadedPrefix";
 
     // Security extras
     private static final String SECRET_EXTRA = "app_secret";
@@ -301,6 +302,12 @@ public class Filepicker extends Activity
             prefs.setMaxSize(intent.getIntExtra(MAX_SIZE_EXTRA, -1));
         } else {
             prefs.clearMaxSize();
+        }
+
+        if (intent.hasExtra(FILE_UPLOADED_PREFIX)){
+            prefs.setFileUploadedPrefix(intent.getStringExtra(FILE_UPLOADED_PREFIX));
+        } else {
+            prefs.setFileUploadedPrefix("file_");
         }
 
         // Init providers
