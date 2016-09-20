@@ -15,11 +15,12 @@ import io.filepicker.models.FPFile;
  * Created by maciejwitowski on 12/10/15.
  */
 public class FilepickerCallbackHandler {
+
     Map<Uri, FilepickerCallback> callbacksMap = new HashMap<>();
 
     public void addCallback(Uri uri, FilepickerCallback filepickerCallback) {
         // First callback so the handler must be registered in EventBus
-        if(callbacksMap.size() == 0) {
+        if (callbacksMap.size() == 0) {
             register();
         }
 
@@ -28,22 +29,26 @@ public class FilepickerCallbackHandler {
 
     @SuppressWarnings("unused")
     public void onEvent(FpFilesReceivedEvent event) {
-        if(event == null) return;
+        if (event == null) {
+            return;
+        }
 
         FPFile file = event.fpFiles.get(0);
 
         FilepickerCallback callback = callbacksMap.get(Uri.parse(file.getLocalPath()));
-        if(callback != null) {
+        if (callback != null) {
             callback.onFileUploadSuccess(file);
         }
     }
 
     @SuppressWarnings("unused")
     public void onEvent(UploadFileErrorEvent event) {
-        if(event == null) return;
+        if (event == null) {
+            return;
+        }
 
         FilepickerCallback callback = callbacksMap.get(event.getUri());
-        if(callback != null) {
+        if (callback != null) {
             callback.onFileUploadError(new Exception(
                     "Uri: " + event.getUri() + ", Error: " + event.error
             ));
@@ -52,10 +57,12 @@ public class FilepickerCallbackHandler {
 
     @SuppressWarnings("unused")
     public void onEvent(UploadProgressEvent event) {
-        if(event == null) return;
+        if (event == null) {
+            return;
+        }
 
         FilepickerCallback callback = callbacksMap.get(event.uri);
-        if(callback != null) {
+        if (callback != null) {
             callback.onFileUploadProgress(event.uri, event.progress);
         }
     }

@@ -55,8 +55,11 @@ public class ContentService extends IntentService {
     private static final String EXTRA_FILE_URI = "io.filepicker.services.extra.file_uri";
 
     FilepickerListener filepickerListener;
+
     public interface FilepickerListener {
+
         void onLocalFileUploaded(List<FPFile> files);
+
     }
 
     public ContentService() {
@@ -64,7 +67,7 @@ public class ContentService extends IntentService {
     }
 
     public static void getContent(Context context, Node node, boolean backPressed) {
-        if(context == null) {
+        if (context == null) {
             return;
         }
 
@@ -76,7 +79,7 @@ public class ContentService extends IntentService {
     }
 
     public static void pickFiles(Context context, ArrayList<Node> files) {
-        if(context == null) {
+        if (context == null) {
             return;
         }
 
@@ -87,7 +90,7 @@ public class ContentService extends IntentService {
     }
 
     public static void uploadFile(Context context, Uri fileUri) {
-        if(context == null) {
+        if (context == null) {
             return;
         }
 
@@ -98,7 +101,7 @@ public class ContentService extends IntentService {
     }
 
     public static void exportFile(Context context, Node node, Uri fileUri, String filename) {
-        if(context == null) {
+        if (context == null) {
             return;
         }
 
@@ -115,12 +118,12 @@ public class ContentService extends IntentService {
     }
 
     @Override
-    protected  void onHandleIntent(Intent intent) {
-        if(intent != null) {
+    protected void onHandleIntent(Intent intent) {
+        if (intent != null) {
             final String action = intent.getAction();
 
             Node node;
-            switch(action) {
+            switch (action) {
                 case ACTION_GET_CONTENT:
                     node = intent.getParcelableExtra(EXTRA_NODE);
                     boolean backPressed = intent.getBooleanExtra(EXTRA_BACK_PRESSED, false);
@@ -192,11 +195,11 @@ public class ContentService extends IntentService {
             errorType = ApiErrorEvent.ErrorType.LOCAL_FILE_PERMISSION_DENIAL;
         }
 
-        if(typedFile == null && errorType == null) {
+        if (typedFile == null && errorType == null) {
             errorType = ApiErrorEvent.ErrorType.INVALID_FILE;
         }
 
-        if(errorType != null) {
+        if (errorType != null) {
             EventBus.getDefault().post(new UploadFileErrorEvent(uri, errorType));
             return;
         }
@@ -235,7 +238,7 @@ public class ContentService extends IntentService {
         ArrayList<FPFile> fpFiles = new ArrayList<>();
 
         final FPFile fpFile = response.parseToFpFile();
-        if(fpFile != null) {
+        if (fpFile != null) {
             fpFile.setLocalPath(fileUri.toString());
             fpFiles.add(fpFile);
         }
@@ -278,15 +281,15 @@ public class ContentService extends IntentService {
     public ApiErrorEvent.ErrorType getErrorType(RetrofitError error) {
         ApiErrorEvent.ErrorType errorType = null;
 
-        if(error != null) {
-            if(error.getKind().equals(RetrofitError.Kind.NETWORK)) {
+        if (error != null) {
+            if (error.getKind().equals(RetrofitError.Kind.NETWORK)) {
                 errorType = ApiErrorEvent.ErrorType.NETWORK;
-            } else if(error.getResponse().getStatus() == 401){
+            } else if (error.getResponse().getStatus() == 401) {
                 errorType = ApiErrorEvent.ErrorType.UNAUTHORIZED;
             }
         }
 
-        if(errorType == null) {
+        if (errorType == null) {
             errorType = ApiErrorEvent.ErrorType.UNKNOWN_ERROR;
         }
 

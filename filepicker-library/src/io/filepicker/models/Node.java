@@ -42,10 +42,9 @@ public class Node implements Parcelable {
     }
 
     public int getImageResource() {
-        if(imageResource != 0) {
+        if (imageResource != 0) {
             return imageResource;
-        }
-        else {
+        } else {
             if (isDir) {
                 return R.drawable.glyphicons_144_folder_open;
             } else {
@@ -55,11 +54,12 @@ public class Node implements Parcelable {
     }
 
     public boolean isImage() {
-        if(linkPath == null || linkPath.equals(""))
+        if (linkPath == null || linkPath.equals("")) {
             return false;
+        }
 
         // Facebook is special case since its linkPath doesn't contain file name
-        if(Utils.belongsToImageOnlyProvider(this)) {
+        if (Utils.belongsToImageOnlyProvider(this)) {
             return true;
         }
 
@@ -68,7 +68,7 @@ public class Node implements Parcelable {
     }
 
     public boolean isCamera() {
-        return this instanceof  Provider && this.displayName.equals("Camera");
+        return this instanceof Provider && this.displayName.equals("Camera");
     }
 
     public boolean isGallery() {
@@ -109,6 +109,7 @@ public class Node implements Parcelable {
 
     /** Static field userd to regenerate object, individually or as arrays */
     public static final Creator<Node> CREATOR = new Creator<Node>() {
+
         @Override
         public Node createFromParcel(Parcel source) {
             return new Node(source);
@@ -128,9 +129,9 @@ public class Node implements Parcelable {
 
     public static boolean nameExists(ArrayList<Node> nodes, String value) {
         boolean exists = false;
-        for(Node node : nodes) {
-            if(!node.isDir) {
-                if(node.displayName.equals(value)) {
+        for (Node node : nodes) {
+            if (!node.isDir) {
+                if (node.displayName.equals(value)) {
                     exists = true;
                     break;
                 }

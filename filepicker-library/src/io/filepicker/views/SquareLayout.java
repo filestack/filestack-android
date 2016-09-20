@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
  * Created by maciejwitowski on 10/24/14.
  */
 public class SquareLayout extends LinearLayout {
+
     public SquareLayout(Context context) {
         super(context);
     }

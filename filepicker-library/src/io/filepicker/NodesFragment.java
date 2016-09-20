@@ -38,7 +38,7 @@ public class NodesFragment extends Fragment {
     }
 
     private static final String KEY_NODES = "nodes";
-    private  static final String KEY_PARENT_NODE = "parent_node";
+    private static final String KEY_PARENT_NODE = "parent_node";
     private static final String KEY_VIEW_TYPE = "viewType";
 
     private static final String PARENT_NODE_STATE = "parent_node_state";
@@ -70,7 +70,7 @@ public class NodesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             viewType = savedInstanceState.getString(VIEW_TYPE_STATE);
             nodes = savedInstanceState.getParcelableArrayList(NODES_STATE);
             parentNode = savedInstanceState.getParcelable(PARENT_NODE_STATE);
@@ -86,10 +86,10 @@ public class NodesFragment extends Fragment {
             }
         }
 
-        if(nodes == null) {
+        if (nodes == null) {
             nodes = new ArrayList<>();
         }
-        if(parentNode == null){
+        if (parentNode == null) {
             setHasOptionsMenu(true);
         }
     }
@@ -102,9 +102,9 @@ public class NodesFragment extends Fragment {
         mProgressBar = (ProgressBar) view.findViewById(R.id.progressBarNode);
         mUploadFilesButton = (Button) view.findViewById(R.id.btnUploadFiles);
 
-        if(viewType.equals(Constants.LIST_VIEW)) {
+        if (viewType.equals(Constants.LIST_VIEW)) {
             currentView = (ListView) view.findViewById(R.id.listView);
-        } else if(viewType.equals(Constants.THUMBNAILS_VIEW)) {
+        } else if (viewType.equals(Constants.THUMBNAILS_VIEW)) {
             currentView = (GridView) view.findViewById(R.id.gridView);
         } else {
             showEmptyView(view);
@@ -118,13 +118,15 @@ public class NodesFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if(currentView == null)
+        if (currentView == null) {
             return;
+        }
 
         NodesAdapter nodesAdapter = new NodesAdapter(getActivity(), nodes, pickedFiles);
 
-        if(viewType.equals(Constants.THUMBNAILS_VIEW))
+        if (viewType.equals(Constants.THUMBNAILS_VIEW)) {
             nodesAdapter.setThumbnail(true);
+        }
 
         currentView.setAdapter(nodesAdapter);
 
@@ -142,7 +144,7 @@ public class NodesFragment extends Fragment {
                     // Proceed single file
                     PickedFile pickedFile = new PickedFile(node, position);
 
-                    if(canPickMultiple()) {
+                    if (canPickMultiple()) {
                         updatePickedList(view, pickedFile);
                         setUploadButton();
                     } else {
@@ -158,7 +160,7 @@ public class NodesFragment extends Fragment {
         mUploadFilesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(pickedFiles.size() > 0) {
+                if (pickedFiles.size() > 0) {
                     showProgress();
                     getContract().pickFiles(PickedFile.getNodes(pickedFiles));
                 }
@@ -175,7 +177,7 @@ public class NodesFragment extends Fragment {
             mUploadFilesButton.setVisibility(View.VISIBLE);
 
             String btnText;
-            if(pickedFiles.size() == 1) {
+            if (pickedFiles.size() == 1) {
                 btnText = "Upload 1 file";
             } else {
                 btnText = "Upload " + pickedFiles.size() + " files";
@@ -204,7 +206,7 @@ public class NodesFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if(id == R.id.action_logout) {
+        if (id == R.id.action_logout) {
             getContract().logoutUser();
         }
 
@@ -225,7 +227,7 @@ public class NodesFragment extends Fragment {
     }
 
     private void openDir(Node node) {
-        if(node.isGallery()){
+        if (node.isGallery()) {
             getContract().openGallery();
         } else if (node.isCamera()) {
             getContract().openCamera();
@@ -246,7 +248,7 @@ public class NodesFragment extends Fragment {
     }
 
     private void updatePickedList(View view, PickedFile pickedFile) {
-        if (PickedFile.containsPosition(pickedFiles, pickedFile.position)){
+        if (PickedFile.containsPosition(pickedFiles, pickedFile.position)) {
             PickedFile.removeAtPosition(pickedFiles, pickedFile.position);
             view.setAlpha(1);
         } else {

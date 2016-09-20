@@ -18,8 +18,7 @@ public final class Provider extends Node {
     public final boolean exportSupported;
     public final String code;
 
-    public Provider(String displayName, String path, String mimetypes,
-                   int drawable, boolean saveSupported, String code) {
+    public Provider(String displayName, String path, String mimetypes, int drawable, boolean saveSupported, String code) {
         super(displayName, path, true, drawable);
         this.mimetypes = mimetypes;
         this.exportSupported = saveSupported;

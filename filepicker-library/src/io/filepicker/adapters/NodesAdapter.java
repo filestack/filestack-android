@@ -47,13 +47,13 @@ public class NodesAdapter<T> extends ArrayAdapter<T> {
         ImageView icon;
 
         void setName(String value) {
-            if(name != null) {
+            if (name != null) {
                 this.name.setText(value);
             }
         }
 
         void setIcon(int res) {
-            if(icon != null) {
+            if (icon != null) {
                 icon.setImageResource(res);
             }
         }
@@ -64,7 +64,7 @@ public class NodesAdapter<T> extends ArrayAdapter<T> {
         View row = convertView;
         ViewHolder viewHolder;
 
-        if(row == null) {
+        if (row == null) {
             viewHolder = new ViewHolder();
             LayoutInflater inflater = context.getLayoutInflater();
 
@@ -104,7 +104,7 @@ public class NodesAdapter<T> extends ArrayAdapter<T> {
                 break;
             default:
                 viewHolder.setName(node.displayName);
-                if(!node.isDir && node.hasThumbnail()) {
+                if (!node.isDir && node.hasThumbnail()) {
                     ImageLoader.getImageLoader(context).load(node.getThumbnailUrl()).into(viewHolder.icon);
                 } else {
                     viewHolder.setIcon(node.getImageResource());
@@ -129,12 +129,11 @@ public class NodesAdapter<T> extends ArrayAdapter<T> {
     public int getItemViewType(int position) {
         Node node = (Node) nodes.get(position);
 
-        if(thumbnail) {
+        if (thumbnail) {
             // Directories and files with names (not images)
-            if(node.isDir || !node.isImage()) {
+            if (node.isDir || !node.isImage()) {
                 return TYPE_THUMUBNAIL_NAMED_IMAGE;
-            }
-            else {
+            } else {
                 return TYPE_THUMUBNAIL_IMAGE;
             }
         } else {

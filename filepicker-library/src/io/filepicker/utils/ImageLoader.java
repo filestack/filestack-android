@@ -53,8 +53,7 @@ public class ImageLoader {
             Request request = chain.request();
 
             Request sessionedRequest = request.newBuilder()
-                    .header("Cookie", "session=" +
-                            PreferencesUtils.newInstance(mContext).getSessionCookie())
+                    .header("Cookie", "session=" + PreferencesUtils.newInstance(mContext).getSessionCookie())
                     .build();
             return chain.proceed(sessionedRequest);
         }

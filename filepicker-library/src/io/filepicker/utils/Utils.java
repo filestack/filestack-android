@@ -21,12 +21,12 @@ public class Utils {
 
     private Utils() {}
 
-    public static String getShortName(String name){
+    public static String getShortName(String name) {
         return (name.length() > 25) ? name.substring(0, 25) + "..." : name;
     }
 
     // Show Toast
-    public static void showQuickToast(Context context, int resId ){
+    public static void showQuickToast(Context context, int resId ) {
         Toast.makeText(context, resId, Toast.LENGTH_SHORT).show();
     }
 
@@ -39,11 +39,11 @@ public class Utils {
 
         boolean userChosenProviders = (selectedProviders != null && selectedProviders.length > 0);
 
-        for(Provider provider : Constants.PROVIDERS_LIST) {
+        for (Provider provider : Constants.PROVIDERS_LIST) {
             boolean codeConditionMet = !userChosenProviders || providerSelected(provider, selectedProviders);
             boolean exportConditionMet = !exportableOnly || provider.exportSupported;
 
-            if(codeConditionMet && exportConditionMet) {
+            if (codeConditionMet && exportConditionMet) {
                 providersNodes.add(provider);
             }
         }
@@ -52,23 +52,28 @@ public class Utils {
     }
 
     private static boolean providerSelected(Provider provider, String[] selectedCodes) {
-        if(provider == null || provider.code == null || selectedCodes == null) return false;
+        if (provider == null || provider.code == null || selectedCodes == null) {
+            return false;
+        }
 
-        for(int i = 0; i < selectedCodes.length; i++) {
-            if(provider.matchedCode(selectedCodes[i]))
+        for (int i = 0; i < selectedCodes.length; i++) {
+            if (provider.matchedCode(selectedCodes[i])) {
                 return true;
+            }
         }
 
         return false;
     }
 
     public static boolean isProvider(Node node) {
-        if(!(node instanceof Provider)) return false;
+        if (!(node instanceof Provider)) {
+            return false;
+        }
 
         boolean isProvider = false;
 
-        for(int i = 0; i < Constants.PROVIDERS_LIST.size(); i++ ) {
-            if(node.displayName.equals(Constants.PROVIDERS_LIST.get(i).displayName)) {
+        for (int i = 0; i < Constants.PROVIDERS_LIST.size(); i++ ) {
+            if (node.displayName.equals(Constants.PROVIDERS_LIST.get(i).displayName)) {
                 isProvider = true;
                 break;
             }
@@ -109,8 +114,8 @@ public class Utils {
     }
 
     public static void clearCachedFiles(Context context) {
-        for(File file : context.getCacheDir().listFiles()) {
-            if(file.getName().contains(Constants.CACHED_FILES_PREFIX)) {
+        for (File file : context.getCacheDir().listFiles()) {
+            if (file.getName().contains(Constants.CACHED_FILES_PREFIX)) {
                 file.delete();
             }
         }
@@ -118,7 +123,7 @@ public class Utils {
 
     public static boolean isImage(String extension) {
         return extension.equals(Constants.EXTENSION_JPEG) ||
-                extension.equals(Constants.EXTENSION_JPG)  ||
+                extension.equals(Constants.EXTENSION_JPG) ||
                 extension.equals(Constants.EXTENSION_PNG);
     }
 
@@ -133,7 +138,7 @@ public class Utils {
     public static String bytesToHex(byte[] bytes) {
         char[] hexArray = "0123456789ABCDEF".toCharArray();
         char[] hexChars = new char[bytes.length * 2];
-        for ( int j = 0; j < bytes.length; j++ ) {
+        for (int j = 0; j < bytes.length; j++) {
             int v = bytes[j] & 0xFF;
             hexChars[j * 2] = hexArray[v >>> 4];
             hexChars[j * 2 + 1] = hexArray[v & 0x0F];

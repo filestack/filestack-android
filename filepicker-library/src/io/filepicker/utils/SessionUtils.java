@@ -17,14 +17,14 @@ import io.filepicker.api.FpApiClient;
 // Setting, getting and clearing session cookie
 public class SessionUtils {
 
-    private SessionUtils(){}
+    private SessionUtils() {}
 
     public static void setSessionCookie(Context context) {
         String sessionCookie = getSessionCookie();
 
-        if(sessionCookie != null && !sessionCookie.isEmpty())
+        if (sessionCookie != null && !sessionCookie.isEmpty()) {
             PreferencesUtils.newInstance(context).setSessionCookie(sessionCookie);
-
+        }
 
         // Set FpApiClient which will use the cookie
         FpApiClient.setFpApiClient(context);
@@ -35,7 +35,7 @@ public class SessionUtils {
         PreferencesUtils.newInstance(context).clearSessionCookie();
 
         // Remove cookies from CookieManager
-        if(Build.VERSION.SDK_INT >= 21) {
+        if (Build.VERSION.SDK_INT >= 21) {
             CookieManager.getInstance().removeAllCookies(null);
         } else {
             CookieSyncManager.createInstance(context);
@@ -52,12 +52,15 @@ public class SessionUtils {
         boolean has = cm.hasCookies();
         String cookie = CookieManager.getInstance().getCookie(FpApiClient.DIALOG_URL);
 
-        if(cookie == null) return null;
+        if (cookie == null) {
+            return null;
+        }
 
         Pattern regex = Pattern.compile("session=\"(.*)\"");
         Matcher match = regex.matcher(cookie);
-        if (!match.matches())
+        if (!match.matches()) {
             return null;
+        }
 
         return match.group(1);
     }

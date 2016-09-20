@@ -40,7 +40,7 @@ public class AuthFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(false);
 
@@ -87,7 +87,7 @@ public class AuthFragment extends Fragment {
             if (url.contains(AUTH_OPEN)) {
                SessionUtils.setSessionCookie(getActivity());
 
-               if(getContract() != null) {
+               if (getContract() != null) {
                    getContract().proceedAfterAuth();
                }
 
@@ -99,7 +99,8 @@ public class AuthFragment extends Fragment {
     }
 
     private void hideProgressBar() {
-        if(mProgressBar != null)
+        if (mProgressBar != null) {
             mProgressBar.setVisibility(View.GONE);
+        }
     }
 }

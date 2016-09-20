@@ -28,8 +28,9 @@ import retrofit.mime.TypedFile;
 public class FilesUtils {
 
     public static TypedFile getTypedFileFromUri(Context context, Uri uri) {
+
         String mimetype;
-        if("content".equalsIgnoreCase(uri.getScheme())) {
+        if ("content".equalsIgnoreCase(uri.getScheme())) {
             mimetype = context.getContentResolver().getType(uri);
         } else {
             String path = uri.getPath();
@@ -38,14 +39,15 @@ public class FilesUtils {
             mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
         }
 
-        if(mimetype == null) {
+        if (mimetype == null) {
             return null;
         }
 
         String path = getPath(context, uri);
         // File path and mimetype are required
-        if(path == null)
+        if (path == null) {
             return null;
+        }
 
         File file = new File(path);
 
@@ -77,7 +79,6 @@ public class FilesUtils {
             }
             // DownloadsProvider
             else if (isDownloadsDocument(uri)) {
-
                 final String id = DocumentsContract.getDocumentId(uri);
                 final Uri contentUri = ContentUris.withAppendedId(
                         Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
@@ -111,8 +112,9 @@ public class FilesUtils {
         else if ("content".equalsIgnoreCase(uri.getScheme())) {
 
             // Return the remote address
-            if (isGooglePhotosUri(uri))
+            if (isGooglePhotosUri(uri)) {
                 return uri.getLastPathSegment();
+            }
 
             return getDataColumn(context, uri, null, null);
         }
@@ -144,8 +146,7 @@ public class FilesUtils {
         };
 
         try {
-            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
-                    null);
+            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
             if (cursor != null && cursor.moveToFirst()) {
                 final int column_index = cursor.getColumnIndexOrThrow(column);
                 return cursor.getString(column_index);
@@ -153,8 +154,9 @@ public class FilesUtils {
         } catch(IllegalArgumentException e) {
             e.printStackTrace();
         } finally {
-            if (cursor != null)
+            if (cursor != null) {
                 cursor.close();
+            }
         }
         return null;
     }
@@ -201,11 +203,10 @@ public class FilesUtils {
      */
     public static String getFilePath(Node node, String filename, String fileExtension) {
         String path = node.linkPath;
-        if(!path.endsWith("/"))
+        if (!path.endsWith("/")) {
             path += "/";
-
+        }
         path += filename + "." + fileExtension;
-
         return path;
     }
 
@@ -228,11 +229,10 @@ public class FilesUtils {
 
             outputFile.setWritable(true);
 
-
             byte[] buffer = new byte[1024];
             int length;
 
-            while((length = is.read(buffer)) > 0){
+            while((length = is.read(buffer)) > 0) {
                 os.write(buffer, 0, length);
             }
 

@@ -40,41 +40,41 @@ public final class PreferencesUtils {
     }
 
     public static PreferencesUtils newInstance(Context context) {
-        if(prefUtils == null) {
+        if (prefUtils == null) {
             prefUtils = new PreferencesUtils(context);
         }
 
         return prefUtils;
     }
 
-    private SharedPreferences getSharedPreferences(){
+    private SharedPreferences getSharedPreferences() {
         return context.getSharedPreferences(KEY_PREFERENCES, Context.MODE_PRIVATE);
     }
 
     // String
-    private void setStringValue(String key, String value){
+    private void setStringValue(String key, String value) {
         getSharedPreferences().edit().putString(key, value).apply();
     }
 
-    private String getStringValue(String key){
+    private String getStringValue(String key) {
         return getSharedPreferences().getString(key, null);
     }
 
     // Boolean
-    private void setBooleanValue(String key, Boolean value){
+    private void setBooleanValue(String key, Boolean value) {
         getSharedPreferences().edit().putBoolean(key, value).apply();
     }
 
-    private Boolean getBooleanValue(String key){
+    private Boolean getBooleanValue(String key) {
         return getSharedPreferences().getBoolean(key, false);
     }
 
     // Int
-    private void setIntValue(String key, int value){
+    private void setIntValue(String key, int value) {
         getSharedPreferences().edit().putInt(key, value).apply();
     }
 
-    private int getIntValue(String key){
+    private int getIntValue(String key) {
         return getSharedPreferences().getInt(key, 0);
     }
 
@@ -107,10 +107,12 @@ public final class PreferencesUtils {
 
     // Gets array of mimetypes and saves it as String
     public void setMimetypes(String[] mimetypes) {
-        if(mimetypes == null) return;
+        if (mimetypes == null) {
+            return;
+        }
 
         StringBuilder mimetypesString = new StringBuilder();
-        for(String mimetype : mimetypes) {
+        for (String mimetype : mimetypes) {
             mimetypesString.append(mimetype).append(",");
         }
 
@@ -121,7 +123,7 @@ public final class PreferencesUtils {
     public String[] getMimetypes() {
         String[] mimetypes = null;
 
-        if(getStringValue(KEY_MIMETYPES) != null) {
+        if (getStringValue(KEY_MIMETYPES) != null) {
             mimetypes = getStringValue(KEY_MIMETYPES).split(",");
         }
 
@@ -129,10 +131,12 @@ public final class PreferencesUtils {
     }
 
     public void setPolicyCalls(String[] policyCalls) {
-        if(policyCalls == null) return;
+        if (policyCalls == null) {
+            return;
+        }
 
         StringBuilder policyCallsString = new StringBuilder();
-        for(String policyCall : policyCalls) {
+        for (String policyCall : policyCalls) {
             policyCallsString.append(policyCall).append(",");
         }
 
@@ -143,7 +147,7 @@ public final class PreferencesUtils {
     public String[] getPolicyCalls() {
         String[] policyCalls = null;
 
-        if(getStringValue(KEY_POLICY_CALLS) != null) {
+        if (getStringValue(KEY_POLICY_CALLS) != null) {
             policyCalls = getStringValue(KEY_POLICY_CALLS).split(",");
         }
 
@@ -153,7 +157,7 @@ public final class PreferencesUtils {
     public boolean isMimetypeSet(String baseType) {
         String[] mimetypes = getMimetypes();
 
-        if(mimetypes != null) {
+        if (mimetypes != null) {
             for (String mimetype : mimetypes) {
                 if (mimetype.contains(baseType)) {
                     return true;

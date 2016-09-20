@@ -11,7 +11,7 @@ import io.filepicker.models.Provider;
  */
 public class Constants {
 
-    private Constants(){}
+    private Constants() {}
 
     public static final float ALPHA_NORMAL = 1f;
     public static final float ALPHA_FADED = 0.2f;

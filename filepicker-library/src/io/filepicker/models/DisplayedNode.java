@@ -8,9 +8,9 @@ import android.os.Parcelable;
  */
 // Node with a view type indicating how to display it
 public class DisplayedNode implements Parcelable {
+
     public Node node;
     public String viewType;
-
 
     @Override
     public int describeContents() {
@@ -34,6 +34,7 @@ public class DisplayedNode implements Parcelable {
     }
 
     public static final Parcelable.Creator<DisplayedNode> CREATOR = new Parcelable.Creator<DisplayedNode>() {
+
         public DisplayedNode createFromParcel(Parcel source) {
             return new DisplayedNode(source);
         }

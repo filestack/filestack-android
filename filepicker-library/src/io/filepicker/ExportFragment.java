@@ -86,14 +86,14 @@ public class ExportFragment extends Fragment {
         viewType = bundle.getString(KEY_VIEW_TYPE);
 
         nodes = bundle.getParcelableArrayList(KEY_NODES);
-        if(nodes == null) {
+        if (nodes == null) {
             nodes = new ArrayList<>();
         }
 
         parentNode = bundle.getParcelable(KEY_PARENT_NODE);
 
         // If we're in provider root folder (first folder in given provider)
-        if(parentNode != null && Utils.isProvider(parentNode)){
+        if (parentNode != null && Utils.isProvider(parentNode)) {
             setHasOptionsMenu(true);
         }
     }
@@ -120,7 +120,7 @@ public class ExportFragment extends Fragment {
         }
 
         // Show edit text for filename and save button if we're in content (not in providers list)
-        if(parentNode != null) {
+        if (parentNode != null) {
             LinearLayout exportForm = (LinearLayout) view.findViewById(R.id.exportForm);
             ViewUtils.show(exportForm);
         }
@@ -133,13 +133,15 @@ public class ExportFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if(currentView == null)
+        if (currentView == null) {
             return;
+        }
 
         NodesAdapter nodesAdapter = new NodesAdapter(getActivity(), nodes, pickedFiles);
 
-        if(viewType.equals(THUMBNAILS_VIEW))
+        if (viewType.equals(THUMBNAILS_VIEW)) {
             nodesAdapter.setThumbnail(true);
+        }
 
         currentView.setAdapter(nodesAdapter);
 
@@ -164,7 +166,7 @@ public class ExportFragment extends Fragment {
     }
 
     private void initForm() {
-        if(parentNode != null) {
+        if (parentNode != null) {
             Uri fileUri = getContract().getFileToExport();
 
             mFileType.setText("." + FilesUtils.getFileExtension(getActivity(),fileUri));
@@ -196,7 +198,7 @@ public class ExportFragment extends Fragment {
         mBtnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(etFilename.getText().length() > 0) {
+                if (etFilename.getText().length() > 0) {
                     currentView.setEnabled(false);
                     currentView.setAlpha(Constants.ALPHA_FADED);
                     etFilename.setEnabled(false);
@@ -215,7 +217,7 @@ public class ExportFragment extends Fragment {
         int textRes;
         int backgroundColor;
 
-        if(Node.nameExists(nodes, value)) {
+        if (Node.nameExists(nodes, value)) {
             textRes = R.string.override;
             backgroundColor = R.color.yellow;
         } else {

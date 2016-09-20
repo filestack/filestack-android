@@ -47,7 +47,7 @@ public class FpApiClient {
     private static FpApiInterface fpApiInterface;
     private static ExecutorService executor;
 
-    public static FpApiInterface getFpApiClient( Context context ) {
+    public static FpApiInterface getFpApiClient(Context context) {
         if (fpApiInterface == null) {
             setFpApiClient(context);
         }
@@ -74,7 +74,6 @@ public class FpApiClient {
     public static void cancelAll() {
         if (executor != null) {
                 executor.shutdownNow();
-
                 executor = null;
                 fpApiInterface = null;
         }
@@ -152,7 +151,7 @@ public class FpApiClient {
         String[] mimetypes = PreferencesUtils.newInstance(context).getMimetypes();
 
         String res = gson.toJson(new JsSession(apikey, context));
-        if(mimetypes == null) {
+        if (mimetypes == null) {
             return gson.toJson(new JsSession(apikey, context));
         } else {
             return gson.toJson(new MimetypeSession(apikey, mimetypes, context));
@@ -191,7 +190,7 @@ public class FpApiClient {
             String[] policyCalls = prefs.getPolicyCalls();
             int expiry = prefs.getPolicyExpiry();
 
-            if(secretKey == null || secretKey.isEmpty() || policyCalls == null || policyCalls.length == 0 || expiry <= 0) {
+            if (secretKey == null || secretKey.isEmpty() || policyCalls == null || policyCalls.length == 0 || expiry <= 0) {
                 return;
             }
 
@@ -202,27 +201,27 @@ public class FpApiClient {
             jsonPolicy.put("expiry", fpExpiry);
 
             String handle = prefs.getPolicyHandle();
-            if(handle != null && !handle.isEmpty()) {
+            if (handle != null && !handle.isEmpty()) {
                 jsonPolicy.put("handle",handle);
             }
 
             int maxSize = prefs.getPolicyMaxSize();
-            if(maxSize > 0) {
+            if (maxSize > 0) {
                 jsonPolicy.put("maxSize", maxSize);
             }
 
             int minSize = prefs.getPolicyMinSize();
-            if(minSize > 0) {
+            if (minSize > 0) {
                 jsonPolicy.put("minSize", minSize);
             }
 
             String path = prefs.getPolicyPath();
-            if(path != null && !path.isEmpty()) {
+            if (path != null && !path.isEmpty()) {
                 jsonPolicy.put("path", path);
             }
 
             String container = prefs.getPolicyContainer();
-            if(container != null && !container.isEmpty()) {
+            if (container != null && !container.isEmpty()) {
                 jsonPolicy.put("container", path);
             }
 
