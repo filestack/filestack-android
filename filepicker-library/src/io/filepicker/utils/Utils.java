@@ -56,8 +56,8 @@ public class Utils {
             return false;
         }
 
-        for (int i = 0; i < selectedCodes.length; i++) {
-            if (provider.matchedCode(selectedCodes[i])) {
+        for (String selectedCode : selectedCodes) {
+            if (provider.matchedCode(selectedCode)) {
                 return true;
             }
         }
@@ -70,30 +70,22 @@ public class Utils {
             return false;
         }
 
-        boolean isProvider = false;
-
-        for (int i = 0; i < Constants.PROVIDERS_LIST.size(); i++ ) {
-            if (node.displayName.equals(Constants.PROVIDERS_LIST.get(i).displayName)) {
-                isProvider = true;
-                break;
+        for (Provider provider : Constants.PROVIDERS_LIST) {
+            if (node.displayName.equals(provider.displayName)) {
+                return true;
             }
         }
 
-        return isProvider;
+        return false;
     }
 
     public static boolean belongsToImageOnlyProvider(Node node) {
-        boolean belongsToImageOnlyProvider = false;
         for (Provider provider : Constants.PROVIDERS_LIST) {
-            if (provider.mimetypes.equals(Constants.MIMETYPE_IMAGE) &&
-                    node.linkPath.contains(provider.linkPath)) {
-
-                belongsToImageOnlyProvider = true;
-                break;
+            if (provider.mimetypes.equals(Constants.MIMETYPE_IMAGE) && node.linkPath.contains(provider.linkPath)) {
+                return true;
             }
         }
-
-        return belongsToImageOnlyProvider;
+        return false;
     }
 
     public static String getUploadedFilename(String mimetype) {

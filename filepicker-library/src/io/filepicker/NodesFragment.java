@@ -28,15 +28,6 @@ import io.filepicker.utils.PreferencesUtils;
  */
 public class NodesFragment extends Fragment {
 
-    // Activity needs to implement these methods
-    public interface Contract {
-        public void openCamera();
-        public void openGallery();
-        public void pickFiles(ArrayList<Node> node);
-        public void showNextNode(Node node);
-        public void logoutUser();
-    }
-
     private static final String KEY_NODES = "nodes";
     private static final String KEY_PARENT_NODE = "parent_node";
     private static final String KEY_VIEW_TYPE = "viewType";
@@ -76,7 +67,6 @@ public class NodesFragment extends Fragment {
             parentNode = savedInstanceState.getParcelable(PARENT_NODE_STATE);
         } else {
             Bundle bundle = getArguments();
-
             if (bundle == null) {
                 getActivity().finish();
             } else {
@@ -96,22 +86,23 @@ public class NodesFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_nodes, container, false);
 
         mProgressBar = (ProgressBar) view.findViewById(R.id.progressBarNode);
         mUploadFilesButton = (Button) view.findViewById(R.id.btnUploadFiles);
 
-        if (viewType.equals(Constants.LIST_VIEW)) {
-            currentView = (ListView) view.findViewById(R.id.listView);
-        } else if (viewType.equals(Constants.THUMBNAILS_VIEW)) {
-            currentView = (GridView) view.findViewById(R.id.gridView);
-        } else {
-            showEmptyView(view);
+        switch (viewType) {
+            case Constants.LIST_VIEW:
+                currentView = (ListView) view.findViewById(R.id.listView);
+                break;
+            case Constants.THUMBNAILS_VIEW:
+                currentView = (GridView) view.findViewById(R.id.gridView);
+                break;
+            default:
+                showEmptyView(view);
+                break;
         }
-
         return view;
-
     }
 
     @Override
@@ -123,13 +114,11 @@ public class NodesFragment extends Fragment {
         }
 
         NodesAdapter nodesAdapter = new NodesAdapter(getActivity(), nodes, pickedFiles);
-
         if (viewType.equals(Constants.THUMBNAILS_VIEW)) {
             nodesAdapter.setThumbnail(true);
         }
 
         currentView.setAdapter(nodesAdapter);
-
         currentView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -143,7 +132,6 @@ public class NodesFragment extends Fragment {
                 } else {
                     // Proceed single file
                     PickedFile pickedFile = new PickedFile(node, position);
-
                     if (canPickMultiple()) {
                         updatePickedList(view, pickedFile);
                         setUploadButton();
@@ -160,7 +148,7 @@ public class NodesFragment extends Fragment {
         mUploadFilesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (pickedFiles.size() > 0) {
+                if (!pickedFiles.isEmpty()) {
                     showProgress();
                     getContract().pickFiles(PickedFile.getNodes(pickedFiles));
                 }
@@ -173,16 +161,10 @@ public class NodesFragment extends Fragment {
     }
 
     private void setUploadButton() {
-        if (pickedFiles.size() > 0 && (maxFiles() < 0 || pickedFiles.size() <= maxFiles())) {
+        if (!pickedFiles.isEmpty() && (maxFiles() < 0 || pickedFiles.size() <= maxFiles())) {
             mUploadFilesButton.setVisibility(View.VISIBLE);
 
-            String btnText;
-            if (pickedFiles.size() == 1) {
-                btnText = "Upload 1 file";
-            } else {
-                btnText = "Upload " + pickedFiles.size() + " files";
-            }
-
+            String btnText = (pickedFiles.size() == 1) ? "Upload 1 file" : "Upload " + pickedFiles.size() + " files";
             mUploadFilesButton.setText(btnText);
         } else {
             mUploadFilesButton.setVisibility(View.GONE);
@@ -193,7 +175,6 @@ public class NodesFragment extends Fragment {
     public void onPause() {
         pickedFiles.clear();
         mUploadFilesButton.setVisibility(View.GONE);
-
         super.onPause();
     }
 
@@ -205,11 +186,9 @@ public class NodesFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
         if (id == R.id.action_logout) {
             getContract().logoutUser();
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -267,6 +246,20 @@ public class NodesFragment extends Fragment {
 
     Contract getContract() {
         return (Contract) getActivity();
+    }
+
+    // Activity needs to implement these methods
+    public interface Contract {
+
+        void openCamera();
+
+        void openGallery();
+
+        void pickFiles(ArrayList<Node> node);
+
+        void showNextNode(Node node);
+
+        void logoutUser();
     }
 
 }

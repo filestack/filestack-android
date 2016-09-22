@@ -28,17 +28,7 @@ import retrofit.mime.TypedFile;
 public class FilesUtils {
 
     public static TypedFile getTypedFileFromUri(Context context, Uri uri) {
-
-        String mimetype;
-        if ("content".equalsIgnoreCase(uri.getScheme())) {
-            mimetype = context.getContentResolver().getType(uri);
-        } else {
-            String path = uri.getPath();
-            path = path.replaceAll("[^a-zA-Z_0-9\\.\\-\\(\\)\\%]", "");
-            String extension = MimeTypeMap.getFileExtensionFromUrl(path);
-            mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-        }
-
+        String mimetype = getMimeType(context, uri);
         if (mimetype == null) {
             return null;
         }
@@ -49,20 +39,28 @@ public class FilesUtils {
             return null;
         }
 
-        File file = new File(path);
+        return new TypedFile(mimetype, new File(path));
+    }
 
-        return new TypedFile(mimetype, file);
+    private static String getMimeType(Context context, Uri uri) {
+        if ("content".equalsIgnoreCase(uri.getScheme())) {
+            return context.getContentResolver().getType(uri);
+        } else {
+            String path = uri.getPath();
+            path = path.replaceAll("[^a-zA-Z_0-9\\.\\-\\(\\)\\%]", "");
+            String extension = MimeTypeMap.getFileExtensionFromUrl(path);
+            return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
     }
 
     public static String getFileExtension(Context context, Uri uri) {
-        ContentResolver cR = context.getContentResolver();
+        ContentResolver resolver = context.getContentResolver();
         MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType(cR.getType(uri));
+        return mime.getExtensionFromMimeType(resolver.getType(uri));
     }
 
     @SuppressWarnings("NewApi")
     private static String getPath(final Context context, final Uri uri) {
-
         final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
 
         // DocumentProvider
@@ -91,20 +89,10 @@ public class FilesUtils {
                 final String[] split = docId.split(":");
                 final String type = split[0];
 
-                Uri contentUri = null;
-                if ("image".equals(type)) {
-                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                } else if ("video".equals(type)) {
-                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-                } else if ("audio".equals(type)) {
-                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-                }
+                Uri contentUri = getContentUri(type);
 
                 final String selection = "_id=?";
-                final String[] selectionArgs = new String[] {
-                        split[1]
-                };
-
+                final String[] selectionArgs = new String[] { split[1] };
                 return getDataColumn(context, contentUri, selection, selectionArgs);
             }
         }
@@ -126,6 +114,18 @@ public class FilesUtils {
         return null;
     }
 
+    private static Uri getContentUri(String type) {
+        switch (type) {
+            case "image":
+                return MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+            case "video":
+                return MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+            case "audio":
+                return MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        }
+        return null;
+    }
+
     /**
      * Get the value of the data column for this Uri. This is useful for
      * MediaStore Uris, and other file-based ContentProviders.
@@ -136,14 +136,10 @@ public class FilesUtils {
      * @param selectionArgs (Optional) Selection arguments used in the query.
      * @return The value of the _data column, which is typically a file path.
      */
-    private static String getDataColumn(Context context, Uri uri, String selection,
-                                       String[] selectionArgs) {
-
+    private static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
         Cursor cursor = null;
         final String column = "_data";
-        final String[] projection = {
-                column
-        };
+        final String[] projection = { column };
 
         try {
             cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
@@ -238,7 +234,6 @@ public class FilesUtils {
 
             typedFile = new TypedFile(cr.getType(fileUri), outputFile);
             os.close();
-
         } catch (IOException e) {
             e.printStackTrace();
         }

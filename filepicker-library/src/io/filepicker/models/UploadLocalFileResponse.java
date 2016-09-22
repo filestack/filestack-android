@@ -10,29 +10,16 @@ public class UploadLocalFileResponse {
     public ArrayList<Data> data;
 
     public Data getFirstData() {
-        Data firstData = null;
-
-        if (data != null && data.size() > 0) {
-            firstData = data.get(0);
-        }
-
-        return firstData;
+        return (data != null && !data.isEmpty()) ? data.get(0) : null;
     }
 
     public FPFile parseToFpFile() {
         Data data = getFirstData();
-        FPFile fpFile = null;
-
         if (data != null) {
-            String url = data.url;
-
-            FpFileData fpFileData = data.data;
-
-            fpFile = new FPFile(fpFileData.container, url, fpFileData.filename, fpFileData.key,
-                                fpFileData.type, fpFileData.size);
+            FpFileData fileData = data.data;
+            return new FPFile(fileData.container, data.url, fileData.filename, fileData.key, fileData.type, fileData.size);
         }
-
-        return fpFile;
+        return null;
     }
 
     // Help classes for parsing response

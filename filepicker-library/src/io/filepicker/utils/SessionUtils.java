@@ -47,9 +47,6 @@ public class SessionUtils {
 
     // Get session cookie from CookieManager
     private static String getSessionCookie() {
-        CookieManager cm = CookieManager.getInstance();
-
-        boolean has = cm.hasCookies();
         String cookie = CookieManager.getInstance().getCookie(FpApiClient.DIALOG_URL);
 
         if (cookie == null) {

@@ -23,7 +23,6 @@ public class FilepickerCallbackHandler {
         if (callbacksMap.size() == 0) {
             register();
         }
-
         callbacksMap.put(uri, filepickerCallback);
     }
 
@@ -34,7 +33,6 @@ public class FilepickerCallbackHandler {
         }
 
         FPFile file = event.fpFiles.get(0);
-
         FilepickerCallback callback = callbacksMap.get(Uri.parse(file.getLocalPath()));
         if (callback != null) {
             callback.onFileUploadSuccess(file);

@@ -24,9 +24,9 @@ public class NodesAdapter<T> extends ArrayAdapter<T> {
 
     private static final int VIEW_TYPE_COUNT = 3;
 
-    private static final int TYPE_THUMUBNAIL_NAMED_IMAGE = 0;
-    private static final int TYPE_THUMUBNAIL_IMAGE = 1;
-    private static final int TYPE_LIST_ITEM         = 2;
+    private static final int TYPE_THUMBNAIL_NAMED_IMAGE = 0;
+    private static final int TYPE_THUMBNAIL_IMAGE = 1;
+    private static final int TYPE_LIST_ITEM = 2;
 
     private boolean thumbnail = false;
 
@@ -42,23 +42,6 @@ public class NodesAdapter<T> extends ArrayAdapter<T> {
         this.pickedFiles = pickedFiles;
     }
 
-    static class ViewHolder {
-        TextView name;
-        ImageView icon;
-
-        void setName(String value) {
-            if (name != null) {
-                this.name.setText(value);
-            }
-        }
-
-        void setIcon(int res) {
-            if (icon != null) {
-                icon.setImageResource(res);
-            }
-        }
-    }
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View row = convertView;
@@ -69,12 +52,12 @@ public class NodesAdapter<T> extends ArrayAdapter<T> {
             LayoutInflater inflater = context.getLayoutInflater();
 
             switch (getItemViewType(position)) {
-                case TYPE_THUMUBNAIL_NAMED_IMAGE:
+                case TYPE_THUMBNAIL_NAMED_IMAGE:
                     row = inflater.inflate(R.layout.thumbnail_item_image_named_image, null);
                     viewHolder.icon = (ImageView) row.findViewById(R.id.imageFolder);
                     viewHolder.name = (TextView) row.findViewById(R.id.tvFolderName);
                     break;
-                case TYPE_THUMUBNAIL_IMAGE:
+                case TYPE_THUMBNAIL_IMAGE:
                     row = inflater.inflate(R.layout.thumbnail_item_node, null);
                     viewHolder.icon = (ImageView) row.findViewById(R.id.thumbNode);
                     break;
@@ -93,11 +76,11 @@ public class NodesAdapter<T> extends ArrayAdapter<T> {
         Node node = (Node) nodes.get(position);
 
         switch (getItemViewType(position)) {
-            case TYPE_THUMUBNAIL_NAMED_IMAGE:
+            case TYPE_THUMBNAIL_NAMED_IMAGE:
                 viewHolder.setName(Utils.getShortName(node.displayName));
                 viewHolder.setIcon(node.getImageResource());
                 break;
-            case TYPE_THUMUBNAIL_IMAGE:
+            case TYPE_THUMBNAIL_IMAGE:
                 ImageLoader.getImageLoader(context)
                         .load(node.getThumbnailUrl())
                         .into(viewHolder.icon);
@@ -132,9 +115,9 @@ public class NodesAdapter<T> extends ArrayAdapter<T> {
         if (thumbnail) {
             // Directories and files with names (not images)
             if (node.isDir || !node.isImage()) {
-                return TYPE_THUMUBNAIL_NAMED_IMAGE;
+                return TYPE_THUMBNAIL_NAMED_IMAGE;
             } else {
-                return TYPE_THUMUBNAIL_IMAGE;
+                return TYPE_THUMBNAIL_IMAGE;
             }
         } else {
             return TYPE_LIST_ITEM;
@@ -143,5 +126,22 @@ public class NodesAdapter<T> extends ArrayAdapter<T> {
 
     public void setThumbnail(boolean thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    static class ViewHolder {
+        TextView name;
+        ImageView icon;
+
+        void setName(String value) {
+            if (name != null) {
+                this.name.setText(value);
+            }
+        }
+
+        void setIcon(int res) {
+            if (icon != null) {
+                icon.setImageResource(res);
+            }
+        }
     }
 }

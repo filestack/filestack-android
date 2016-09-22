@@ -35,13 +35,6 @@ import io.filepicker.utils.ViewUtils;
  */
 public class ExportFragment extends Fragment {
 
-    // Activity needs to implement these methods
-    public interface Contract {
-        public void showNextNode(Node node);
-        public void exportFile(String fileName);
-        public Uri getFileToExport();
-    }
-
     private static final String KEY_NODES = "nodes";
     private static final String KEY_PARENT_NODE = "parent_node";
     private static final String KEY_VIEW_TYPE = "viewType";
@@ -77,7 +70,6 @@ public class ExportFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         Bundle bundle = getArguments();
-
         if (bundle == null) {
             getActivity().finish();
             return;
@@ -89,7 +81,6 @@ public class ExportFragment extends Fragment {
         if (nodes == null) {
             nodes = new ArrayList<>();
         }
-
         parentNode = bundle.getParcelable(KEY_PARENT_NODE);
 
         // If we're in provider root folder (first folder in given provider)
@@ -100,7 +91,6 @@ public class ExportFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_export, container, false);
 
         mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
@@ -126,7 +116,6 @@ public class ExportFragment extends Fragment {
         }
 
         return view;
-
     }
 
     @Override
@@ -144,11 +133,9 @@ public class ExportFragment extends Fragment {
         }
 
         currentView.setAdapter(nodesAdapter);
-
         currentView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
                 // Clicked node object
                 Node node = (Node) parent.getAdapter().getItem(position);
 
@@ -240,5 +227,16 @@ public class ExportFragment extends Fragment {
 
     private String typeOfExportFile() {
         return FilesUtils.getFileExtension(getActivity(), getContract().getFileToExport());
+    }
+
+    // Activity needs to implement these methods
+    public interface Contract {
+
+        void showNextNode(Node node);
+
+        void exportFile(String fileName);
+
+        Uri getFileToExport();
+
     }
 }

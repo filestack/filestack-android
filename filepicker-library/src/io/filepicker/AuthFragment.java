@@ -19,15 +19,11 @@ import io.filepicker.utils.SessionUtils;
  */
 public class AuthFragment extends Fragment {
 
-    public interface Contract {
-        void proceedAfterAuth();
-    }
+    private static final String AUTH_OPEN = "open/?auth=true";
 
     private String providerUrl;
     private WebView webViewAuth;
     private ProgressBar mProgressBar;
-
-    private static final String AUTH_OPEN = "open/?auth=true";
 
     public static AuthFragment newInstance(String providerUrl) {
         AuthFragment frag = new AuthFragment();
@@ -48,8 +44,7 @@ public class AuthFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_auth, container, false);
 
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBarAuth);
@@ -72,8 +67,7 @@ public class AuthFragment extends Fragment {
     }
 
     private String buildServiceAuthUrl() {
-        return FpApiClient.DIALOG_ENDPOINT + FpApiClient.API_CLIENT_URL +
-                providerUrl + FpApiClient.AUTH_OPEN_URL;
+        return FpApiClient.DIALOG_ENDPOINT + FpApiClient.API_CLIENT_URL + providerUrl + FpApiClient.AUTH_OPEN_URL;
     }
 
     Contract getContract() {
@@ -103,4 +97,11 @@ public class AuthFragment extends Fragment {
             mProgressBar.setVisibility(View.GONE);
         }
     }
+
+    public interface Contract {
+
+        void proceedAfterAuth();
+
+    }
+
 }

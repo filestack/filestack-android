@@ -43,9 +43,9 @@ public class FpApiClient {
     public static final String API_PATH_COMPUTER_URL = "/api/path/computer";
     public static final String AUTH_OPEN_URL = "/auth/open";
 
-
     private static FpApiInterface fpApiInterface;
     private static ExecutorService executor;
+
 
     public static FpApiInterface getFpApiClient(Context context) {
         if (fpApiInterface == null) {
@@ -150,7 +150,6 @@ public class FpApiClient {
 
         String[] mimetypes = PreferencesUtils.newInstance(context).getMimetypes();
 
-        String res = gson.toJson(new JsSession(apikey, context));
         if (mimetypes == null) {
             return gson.toJson(new JsSession(apikey, context));
         } else {
@@ -160,6 +159,7 @@ public class FpApiClient {
 
     /** JsSession query param class */
     static class JsBaseSession {
+
         final String storeLocation;
         final String storePath;
         final String storeContainer;
@@ -174,7 +174,7 @@ public class FpApiClient {
         JsBaseSession(String apikey, Context context) {
             PreferencesUtils prefs = PreferencesUtils.newInstance(context);
 
-            this.apikey=apikey;
+            this.apikey = apikey;
             this.storeLocation = prefs.getLocation();
             this.storePath = prefs.getPath();
             this.storeContainer = prefs.getContainer();
@@ -239,6 +239,7 @@ public class FpApiClient {
     }
 
     static class JsSession extends JsBaseSession {
+
         final String mimetypes;
 
         JsSession(String apikey, Context context) {
@@ -248,6 +249,7 @@ public class FpApiClient {
     }
 
     static class MimetypeSession extends JsBaseSession{
+
         final String[] mimetypes;
 
         MimetypeSession(String apikey, String[] mimetypes, Context context) {

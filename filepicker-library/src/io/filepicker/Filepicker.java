@@ -48,8 +48,7 @@ import io.filepicker.utils.SessionUtils;
 import io.filepicker.utils.Utils;
 
 
-public class Filepicker extends Activity
-        implements AuthFragment.Contract, NodesFragment.Contract, ExportFragment.Contract {
+public class Filepicker extends Activity implements AuthFragment.Contract, NodesFragment.Contract, ExportFragment.Contract {
 
     private static final String LOG_TAG = Filepicker.class.getSimpleName();
 
@@ -89,12 +88,6 @@ public class Filepicker extends Activity
     private static final String IS_USER_AUTHORIZED_STATE = "is_user_authorized_state";
     private static final String FOLDER_CLIENT_CODE_STATE = "folder_client_code_state";
 
-    private boolean mIsLoading = false;
-    private boolean mIsWaitingForContent = false;
-
-    private static String API_KEY = "";
-    private static String APP_NAME = "";
-
     public static final int REQUEST_CODE_GETFILE = 601;
     public static final int REQUEST_CODE_TAKE_PICTURE = 602;
     public static final int REQUEST_CODE_GET_LOCAL_FILE = 603;
@@ -103,6 +96,12 @@ public class Filepicker extends Activity
 
     // Action used by clients to indicate they want to export file
     public static final String ACTION_EXPORT_FILE = "export_file";
+
+    private boolean mIsLoading = false;
+    private boolean mIsWaitingForContent = false;
+
+    private static String apiKey = "";
+    private static String appName = "";
 
     // List which will be traversed while the user goes in the folders tree
     private ArrayList<DisplayedNode> mDisplayedNodesList;
@@ -125,24 +124,24 @@ public class Filepicker extends Activity
 
     private static FilepickerCallbackHandler sFilepickerCallbackHandler = new FilepickerCallbackHandler();
 
+    static boolean mExport = false;
+
     public static void setKey(String apiKey) {
-        if (API_KEY.isEmpty()) {
-            API_KEY = apiKey;
+        if (Filepicker.apiKey.isEmpty()) {
+            Filepicker.apiKey = apiKey;
         }
     }
 
-    static boolean mExport = false;
-
     public static String getApiKey() {
-        return API_KEY;
+        return apiKey;
     }
 
     public static void setAppName(String appName) {
-        APP_NAME = appName;
+        Filepicker.appName = appName;
     }
 
     public static String getAppName() {
-        return APP_NAME;
+        return appName;
     }
 
     public static void uploadLocalFile(Uri uri, Context context) {
@@ -200,7 +199,7 @@ public class Filepicker extends Activity
             if (mProviders.size() == 1) {
                 handleSingleProviderScenario();
             } else {
-                setTitle(APP_NAME);
+                setTitle(appName);
                 showProvidersList();
             }
         } else {
@@ -215,7 +214,7 @@ public class Filepicker extends Activity
     }
 
     private void handleSingleProviderScenario() {
-        Node providerNode= mProviders.get(0);
+        Node providerNode = mProviders.get(0);
 
         if (providerNode.isCamera()) {
             openCamera();
@@ -352,14 +351,12 @@ public class Filepicker extends Activity
     @Override
     protected void onResume() {
         super.onResume();
-
         EventBus.getDefault().register(this);
     }
 
     @Override
     protected void onPause() {
         EventBus.getDefault().unregister(this);
-
         super.onPause();
     }
 
@@ -368,10 +365,10 @@ public class Filepicker extends Activity
         // In case content is being loaded, we are not waiting for it
         mIsWaitingForContent = false;
 
-        if (mDisplayedNodesList != null && mDisplayedNodesList.size() > 0) {
+        if (mDisplayedNodesList != null && !mDisplayedNodesList.isEmpty()) {
             removeLastNode();
 
-            if (mDisplayedNodesList.size() > 0) {
+            if (!mDisplayedNodesList.isEmpty()) {
                 mCurrentDisplayedNode = mDisplayedNodesList.get(mDisplayedNodesList.size() - 1);
                 setTitle(mCurrentDisplayedNode.node.displayName);
 
@@ -404,41 +401,31 @@ public class Filepicker extends Activity
     public void getContent(Node node, boolean backPressed) {
         mIsWaitingForContent = true;
         showLoading();
-
         ContentService.getContent(this, node, backPressed);
     }
 
     private void showFolderContent(Folder folder, boolean backPressed) {
         mCurrentDisplayedNode.viewType = folder.view;
-
         mNodeContentList = new ArrayList<>(Arrays.asList(folder.nodes));
 
         // Cache items
         new CacheGotItemsTask(this, mCurrentDisplayedNode.node).execute(mNodeContentList);
-
         refreshFragment(backPressed);
     }
 
     private void refreshFragment(boolean backPressed) {
         hideLoading();
-
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, getContentFragment())
                 .commit();
     }
 
     private Fragment getContentFragment() {
-        Fragment contentFragment;
-
         if (mExport) {
-            contentFragment = ExportFragment.newInstance(mCurrentDisplayedNode.node,
-                    mNodeContentList, mCurrentDisplayedNode.viewType);
+            return ExportFragment.newInstance(mCurrentDisplayedNode.node, mNodeContentList, mCurrentDisplayedNode.viewType);
         } else {
-            contentFragment = NodesFragment.newInstance(mCurrentDisplayedNode.node,
-                    mNodeContentList, mCurrentDisplayedNode.viewType);
+            return NodesFragment.newInstance(mCurrentDisplayedNode.node, mNodeContentList, mCurrentDisplayedNode.viewType);
         }
-
-        return contentFragment;
     }
 
     private void showProvidersList() {
@@ -448,17 +435,11 @@ public class Filepicker extends Activity
     }
 
     private Fragment getProvidersFragment() {
-        Fragment contentFragment;
-
         if (mExport) {
-            contentFragment = ExportFragment.newInstance(null, mProviders,
-                    Constants.LIST_VIEW);
+            return ExportFragment.newInstance(null, mProviders, Constants.LIST_VIEW);
         } else {
-            contentFragment = NodesFragment.newInstance(null, mProviders,
-                    Constants.LIST_VIEW);
+            return NodesFragment.newInstance(null, mProviders, Constants.LIST_VIEW);
         }
-
-        return contentFragment;
     }
 
     @SuppressWarnings("unused")
@@ -467,7 +448,7 @@ public class Filepicker extends Activity
             return;
         }
 
-        Folder folder= event.folder;
+        Folder folder = event.folder;
         mIsUserAuthorized = folder.auth;
         mFolderClientCode = event.folder.client;
 
@@ -519,16 +500,17 @@ public class Filepicker extends Activity
     }
 
     private void showErrorMessage(ApiErrorEvent.ErrorType errorType) {
-        int errorMessage;
-
-        if (errorType.equals(ApiErrorEvent.ErrorType.NETWORK)) {
-            errorMessage = R.string.error_connection;
-        } else if (errorType.equals(ApiErrorEvent.ErrorType.UNAUTHORIZED)) {
-            errorMessage = R.string.error_authorization;
-        } else if (errorType.equals(ApiErrorEvent.ErrorType.INVALID_FILE)) {
-            errorMessage = R.string.error_invalid_file;
-        } else {
-            errorMessage = R.string.error_unexpected;
+        int errorMessage = R.string.error_unexpected;
+        switch (errorType) {
+            case NETWORK:
+                errorMessage = R.string.error_connection;
+                break;
+            case UNAUTHORIZED:
+                errorMessage = R.string.error_authorization;
+                break;
+            case INVALID_FILE:
+                errorMessage = R.string.error_invalid_file;
+                break;
         }
 
         Utils.showQuickToast(this, errorMessage);
@@ -542,9 +524,7 @@ public class Filepicker extends Activity
 
     @SuppressWarnings("unused")
     public void onEvent(FileExportedEvent event) {
-        String message = "File " + event.fpFile.getFilename() +
-                " was exported to " + event.path.split("/")[0];
-
+        String message = "File " + event.fpFile.getFilename() + " was exported to " + event.path.split("/")[0];
         Utils.showQuickToast(this, message);
 
         Intent resultIntent = new Intent();
@@ -562,7 +542,7 @@ public class Filepicker extends Activity
     }
 
     private void validateApiKey() {
-        if (API_KEY.isEmpty() || !API_KEY.startsWith("A") || !API_KEY.endsWith("z") || API_KEY.length() != 22) {
+        if (apiKey.isEmpty() || !apiKey.startsWith("A") || !apiKey.endsWith("z") || apiKey.length() != 22) {
             Toast.makeText(this, R.string.apikey_missing, Toast.LENGTH_SHORT).show();
             setResult(RESULT_CANCELED);
             finish();
@@ -588,14 +568,12 @@ public class Filepicker extends Activity
     @Override
     public void showNextNode(Node newNode) {
         mCurrentDisplayedNode = new DisplayedNode(newNode, Constants.LIST_VIEW); // Default view is listview
-
         mDisplayedNodesList.add(mCurrentDisplayedNode);
         refreshCurrentlyDisplayedNode(mCurrentDisplayedNode, false);
     }
 
     private void refreshCurrentlyDisplayedNode(DisplayedNode displayedNode, boolean isBackPressed) {
         setTitle(displayedNode.node.displayName);
-
         getContent(displayedNode.node, isBackPressed);
     }
 
@@ -762,16 +740,12 @@ public class Filepicker extends Activity
                     Log.d(LOG_TAG, "Reading from file " + nodeCachedData.getAbsolutePath());
                     BufferedReader br = new BufferedReader(new FileReader(nodeCachedData));
                     String line;
-
                     while ((line = br.readLine()) != null) {
                         for (Node node :  new Gson().fromJson(line, Node[].class)) {
                             mNodeContentList.add(node);
                         }
-
                     }
                     br.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -807,7 +781,7 @@ public class Filepicker extends Activity
         @Override
         protected Void doInBackground(ArrayList<Node>... params) {
             final ArrayList<Node> nodes = params[0];
-            if (nodes != null && nodes.size() > 0 && mLastNode != null) {
+            if (nodes != null && !nodes.isEmpty() && mLastNode != null) {
                 Gson gson = new Gson();
                 JsonElement jsonElement = new JsonParser().parse(gson.toJson(nodes));
                 String result = gson.toJson(jsonElement);
@@ -831,7 +805,6 @@ public class Filepicker extends Activity
 
     private boolean isOnlyVideoCamera() {
         PreferencesUtils prefs = PreferencesUtils.newInstance(this);
-
         return prefs.isMimetypeSet("video") && !prefs.isMimetypeSet("image");
     }
 }

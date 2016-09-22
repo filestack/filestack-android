@@ -11,7 +11,7 @@ public final class Folder {
     public String client;
     public String view;
     public boolean auth = true;
-
     @SerializedName(value="contents")
     public Node[] nodes;
+
 }

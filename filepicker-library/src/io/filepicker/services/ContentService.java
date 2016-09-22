@@ -279,30 +279,19 @@ public class ContentService extends IntentService {
     }
 
     public ApiErrorEvent.ErrorType getErrorType(RetrofitError error) {
-        ApiErrorEvent.ErrorType errorType = null;
-
         if (error != null) {
             if (error.getKind().equals(RetrofitError.Kind.NETWORK)) {
-                errorType = ApiErrorEvent.ErrorType.NETWORK;
+                return ApiErrorEvent.ErrorType.NETWORK;
             } else if (error.getResponse().getStatus() == 401) {
-                errorType = ApiErrorEvent.ErrorType.UNAUTHORIZED;
+                return ApiErrorEvent.ErrorType.UNAUTHORIZED;
             }
         }
-
-        if (errorType == null) {
-            errorType = ApiErrorEvent.ErrorType.UNKNOWN_ERROR;
-        }
-
-        return errorType;
+        return ApiErrorEvent.ErrorType.UNKNOWN_ERROR;
     }
 
     private static class ProgressTypedFile extends TypedFile {
 
         private static final int BUFFER_SIZE = 4096;
-
-        interface Listener {
-            void onProgress(float progress);
-        }
 
         private final Listener mListener;
 
@@ -329,6 +318,12 @@ public class ContentService extends IntentService {
             } finally {
                 in.close();
             }
+        }
+
+        interface Listener {
+
+            void onProgress(float progress);
+
         }
 
     }

@@ -41,6 +41,12 @@ public class Node implements Parcelable {
         this.imageResource = imageResource;
     }
 
+    /** Creator for Parcel, reads back fields in the order they were written */
+    public Node(Parcel pc) {
+        displayName = pc.readString();
+        linkPath    = pc.readString();
+    }
+
     public int getImageResource() {
         if (imageResource != 0) {
             return imageResource;
@@ -121,23 +127,12 @@ public class Node implements Parcelable {
         }
     };
 
-    /** Creator for Parcel, reads back fields in the order they were written */
-    public Node(Parcel pc) {
-        displayName = pc.readString();
-        linkPath    = pc.readString();
-    }
-
     public static boolean nameExists(ArrayList<Node> nodes, String value) {
-        boolean exists = false;
         for (Node node : nodes) {
-            if (!node.isDir) {
-                if (node.displayName.equals(value)) {
-                    exists = true;
-                    break;
-                }
+            if (!node.isDir && node.displayName.equals(value)) {
+                return true;
             }
         }
-
-        return exists;
+        return false;
     }
 }
