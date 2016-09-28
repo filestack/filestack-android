@@ -235,7 +235,7 @@ Filepicker.uploadLocalFile(uriToLocalFile, context);
 If the information about the success, error and progress of this operation is needed, the callback can be provided.
 
 ```java
-final String url = "PUT PATH TO LOCAL FILE HERE - something like content://...";
+final String url = "PUT PATH TO LOCAL FILE HERE - something like content://com.android.providers.media.documents/document/image%3A64";
 
 Filepicker.uploadLocalFile(Uri.parse(url), this, new FilepickerCallback() {
     @Override
