@@ -20,6 +20,7 @@ public final class PreferencesUtils {
     private static final String KEY_MAX_FILES = "maxFiles";
     private static final String KEY_MAX_SIZE = "maxSize";
     private static final String KEY_SHOW_ERROR_TOAST = "showErrorToast";
+    private static final String KEY_FILE_UPLOADED_PREFIX = "fileUploadedPrefix";
 
     private static final String KEY_SECRET = "app_secret";
     private static final String KEY_POLICY_CALLS = "policy_calls";
@@ -287,4 +288,14 @@ public final class PreferencesUtils {
     public String getPolicyContainer() {
         return getStringValue(KEY_POLICY_CONTAINER);
     }
+
+    public void setFileUploadedPrefix(String uploadedFilePrefix) {
+        setStringValue(KEY_FILE_UPLOADED_PREFIX, uploadedFilePrefix);
+    }
+
+    public String getFileUploadedPrefix() {
+        return getStringValue(KEY_FILE_UPLOADED_PREFIX);
+    }
+
+
 }

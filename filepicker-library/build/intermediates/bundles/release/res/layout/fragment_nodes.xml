@@ -1,7 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
     <include layout="@layout/nodes_lists"/>
 
@@ -20,18 +20,14 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Upload"
+            android:text="@string/upload"
             android:textColor="@color/white"
             android:background="@color/blue"
             android:id="@+id/btnUploadFiles"
             android:padding="5dp"
             android:layout_margin="10dp"
-            android:visibility="gone"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="false"
-            android:layout_alignParentRight="true" />
+            android:visibility="gone" />
 
     </LinearLayout>
 
 </RelativeLayout>
-<!-- From: file:/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/layout/fragment_nodes.xml -->

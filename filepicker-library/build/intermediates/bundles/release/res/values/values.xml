@@ -1,33 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/values/colors.xml -->
-    <eat-comment/>
     <color name="background_dark">#2f3840</color>
     <color name="blue">#0099CC</color>
+    <color name="light_gray">#ECEDEC</color>
+    <color name="primary_text">#212121</color>
     <color name="white">#ffffff</color>
     <color name="yellow">#FFBB33</color>
-    <!-- From: file:/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/values/dimens.xml -->
-    <eat-comment/>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="elevation_default">6dp</dimen>
     <dimen name="padding_large">16dp</dimen>
     <dimen name="padding_medium">8dp</dimen>
+    <dimen name="padding_micro">4dp</dimen>
     <dimen name="padding_provider_icon">6dp</dimen>
     <dimen name="padding_providers_list">16dp</dimen>
     <dimen name="padding_small">8dp</dimen>
-    <dimen name="text_size_normal">16dp</dimen>
-    <!-- From: file:/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/values/strings.xml -->
-    <eat-comment/>
+    <dimen name="padding_xsmall">6dp</dimen>
+    <dimen name="single_line_icon_image">40dp</dimen>
+    <dimen name="single_line_icon_list_height">56dp</dimen>
+    <dimen name="single_line_icon_list_padding_horizontal">16dp</dimen>
+    <dimen name="single_line_icon_list_padding_vertical">8dp</dimen>
+    <dimen name="single_line_icon_list_text_size">16sp</dimen>
+    <dimen name="text_size_large">22sp</dimen>
+    <dimen name="text_size_medium">18sp</dimen>
+    <dimen name="text_size_micro">12sp</dimen>
+    <dimen name="text_size_normal">18sp</dimen>
+    <dimen name="text_size_small">14sp</dimen>
+    <dimen name="text_size_xlarge">48sp</dimen>
+    <dimen name="text_size_xxxlarge">72sp</dimen>
     <string name="action_logout">Logout</string>
     <string name="apikey_missing">API Key is missing</string>
+    <string name="camera_not_found">Camera not found.</string>
     <string name="empty_list_text">This folder is empty.</string>
+    <string name="error_authorization">Error with authorization.</string>
+    <string name="error_connection">Error with network connection.</string>
+    <string name="error_invalid_file">The file you chose is invalid..</string>
+    <string name="error_unexpected">Unexpected error has occurred. Please try again.</string>
     <string name="file_picker_animation_duration">400</string>
-    <string name="no_internet">Unexpected error occured. Are you connected to internet?</string>
+    <string name="filename">Filename</string>
     <string name="override">Override</string>
     <string name="save">Save</string>
+    <string name="saving_file">Saving file…</string>
     <string name="title_activity_content">Filepicker</string>
-    <string name="uploading_image">Uploading image...</string>
-    <!-- From: file:/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/values/styles.xml -->
-    <eat-comment/>
-    <style name="AppTheme" parent="android:Theme.Light"/>
+    <string name="upload">Upload</string>
+    <string name="uploading_image">Uploading image…</string>
 </resources>

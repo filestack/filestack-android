@@ -8,67 +8,81 @@
 package io.filepicker;
 
 public final class R {
-    public static final class anim {
-        public static int right_slide_in=0x7f040000;
-        public static int right_slide_in_back=0x7f040001;
-        public static int right_slide_out=0x7f040002;
-        public static int right_slide_out_back=0x7f040003;
-    }
     public static final class attr {
     }
     public static final class color {
         public static int background_dark=0x7f050000;
         public static int blue=0x7f050001;
-        public static int white=0x7f050002;
-        public static int yellow=0x7f050003;
+        public static int light_gray=0x7f050002;
+        public static int primary_text=0x7f050003;
+        public static int white=0x7f050004;
+        public static int yellow=0x7f050005;
     }
     public static final class dimen {
-        public static int activity_horizontal_margin=0x7f060000;
-        public static int activity_vertical_margin=0x7f060001;
-        public static int padding_large=0x7f060002;
-        public static int padding_medium=0x7f060003;
-        public static int padding_provider_icon=0x7f060004;
-        public static int padding_providers_list=0x7f060005;
-        public static int padding_small=0x7f060006;
-        public static int text_size_normal=0x7f060007;
+        public static int activity_horizontal_margin=0x7f040000;
+        public static int activity_vertical_margin=0x7f040001;
+        public static int elevation_default=0x7f040002;
+        public static int padding_large=0x7f040003;
+        public static int padding_medium=0x7f040004;
+        public static int padding_micro=0x7f040005;
+        public static int padding_provider_icon=0x7f040006;
+        public static int padding_providers_list=0x7f040007;
+        public static int padding_small=0x7f040008;
+        public static int padding_xsmall=0x7f040009;
+        public static int single_line_icon_image=0x7f04000a;
+        public static int single_line_icon_list_height=0x7f04000b;
+        public static int single_line_icon_list_padding_horizontal=0x7f04000c;
+        public static int single_line_icon_list_padding_vertical=0x7f04000d;
+        public static int single_line_icon_list_text_size=0x7f04000e;
+        public static int text_size_large=0x7f04000f;
+        public static int text_size_medium=0x7f040010;
+        public static int text_size_micro=0x7f040011;
+        public static int text_size_normal=0x7f040012;
+        public static int text_size_small=0x7f040013;
+        public static int text_size_xlarge=0x7f040014;
+        public static int text_size_xxxlarge=0x7f040015;
     }
     public static final class drawable {
-        public static int gdrive=0x7f020000;
-        public static int glyphicons_008_film=0x7f020001;
-        public static int glyphicons_011_camera=0x7f020002;
-        public static int glyphicons_036_file=0x7f020003;
-        public static int glyphicons_144_folder_open=0x7f020004;
-        public static int glyphicons_154_show_big_thumbnails=0x7f020005;
-        public static int glyphicons_361_dropbox=0x7f020006;
-        public static int glyphicons_366_picasa=0x7f020007;
-        public static int glyphicons_381_github=0x7f020008;
-        public static int glyphicons_390_facebook=0x7f020009;
-        public static int glyphicons_395_flickr=0x7f02000a;
-        public static int glyphicons_399_email=0x7f02000b;
-        public static int instagram=0x7f02000c;
-        public static int select=0x7f02000d;
+        public static int evernote=0x7f020000;
+        public static int gdrive=0x7f020001;
+        public static int glyphicons_008_film=0x7f020002;
+        public static int glyphicons_011_camera=0x7f020003;
+        public static int glyphicons_036_file=0x7f020004;
+        public static int glyphicons_144_folder_open=0x7f020005;
+        public static int glyphicons_154_show_big_thumbnails=0x7f020006;
+        public static int glyphicons_361_dropbox=0x7f020007;
+        public static int glyphicons_366_picasa=0x7f020008;
+        public static int glyphicons_381_github=0x7f020009;
+        public static int glyphicons_390_facebook=0x7f02000a;
+        public static int glyphicons_395_flickr=0x7f02000b;
+        public static int glyphicons_399_email=0x7f02000c;
+        public static int ic_amazon_cloud_drive=0x7f02000d;
+        public static int instagram=0x7f02000e;
+        public static int onedrive=0x7f02000f;
+        public static int select=0x7f020010;
     }
     public static final class id {
-        public static int action_logout=0x7f0a0013;
-        public static int btnSave=0x7f0a0007;
-        public static int btnUploadFiles=0x7f0a0009;
-        public static int container=0x7f0a0000;
-        public static int emptylistView=0x7f0a000e;
-        public static int etFilename=0x7f0a0005;
-        public static int exportForm=0x7f0a0004;
-        public static int fileType=0x7f0a0006;
-        public static int fpProgressBar=0x7f0a0001;
-        public static int gridView=0x7f0a000d;
-        public static int imageFolder=0x7f0a0010;
-        public static int imageNode=0x7f0a000a;
-        public static int listView=0x7f0a000c;
-        public static int progressBarAuth=0x7f0a0003;
-        public static int progressBarNode=0x7f0a0008;
-        public static int textView=0x7f0a000f;
-        public static int thumbNode=0x7f0a0012;
-        public static int tvFolderName=0x7f0a0011;
-        public static int tvNodeName=0x7f0a000b;
-        public static int webViewAuth=0x7f0a0002;
+        public static int action_logout=0x7f080014;
+        public static int btnSave=0x7f080008;
+        public static int btnUploadFiles=0x7f08000a;
+        public static int container=0x7f080000;
+        public static int emptylistView=0x7f08000f;
+        public static int etFilename=0x7f080006;
+        public static int exportForm=0x7f080005;
+        public static int fileType=0x7f080007;
+        public static int fpProgressBar=0x7f080001;
+        public static int gridView=0x7f08000e;
+        public static int imageFolder=0x7f080011;
+        public static int imageNode=0x7f08000b;
+        public static int listView=0x7f08000d;
+        public static int progressBar=0x7f080004;
+        public static int progressBarAuth=0x7f080003;
+        public static int progressBarNode=0x7f080009;
+        public static int textView=0x7f080010;
+        public static int thumbNode=0x7f080013;
+        public static int tvFolderName=0x7f080012;
+        public static int tvNodeName=0x7f08000c;
+        public static int webViewAuth=0x7f080002;
     }
     public static final class layout {
         public static int activity_filepicker=0x7f030000;
@@ -77,24 +91,28 @@ public final class R {
         public static int fragment_nodes=0x7f030003;
         public static int list_item_node=0x7f030004;
         public static int nodes_lists=0x7f030005;
-        public static int thumbnail_item_folder=0x7f030006;
+        public static int thumbnail_item_image_named_image=0x7f030006;
         public static int thumbnail_item_node=0x7f030007;
     }
     public static final class menu {
-        public static int filepicker=0x7f090000;
+        public static int filepicker=0x7f070000;
     }
     public static final class string {
-        public static int action_logout=0x7f070000;
-        public static int apikey_missing=0x7f070001;
-        public static int empty_list_text=0x7f070002;
-        public static int file_picker_animation_duration=0x7f070003;
-        public static int no_internet=0x7f070004;
-        public static int override=0x7f070005;
-        public static int save=0x7f070006;
-        public static int title_activity_content=0x7f070007;
-        public static int uploading_image=0x7f070008;
-    }
-    public static final class style {
-        public static int AppTheme=0x7f080000;
+        public static int action_logout=0x7f060000;
+        public static int apikey_missing=0x7f060001;
+        public static int camera_not_found=0x7f060002;
+        public static int empty_list_text=0x7f060003;
+        public static int error_authorization=0x7f060004;
+        public static int error_connection=0x7f060005;
+        public static int error_invalid_file=0x7f060006;
+        public static int error_unexpected=0x7f060007;
+        public static int file_picker_animation_duration=0x7f060008;
+        public static int filename=0x7f060009;
+        public static int override=0x7f06000a;
+        public static int save=0x7f06000b;
+        public static int saving_file=0x7f06000c;
+        public static int title_activity_content=0x7f06000d;
+        public static int upload=0x7f06000e;
+        public static int uploading_image=0x7f06000f;
     }
 }

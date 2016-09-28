@@ -35,6 +35,7 @@ public class ImageLoader {
 
         OkHttpClient fpHttpClient = new OkHttpClient();
         fpHttpClient.networkInterceptors().add(new FpSessionedInterceptor(context));
+
         builder.downloader(new OkHttpDownloader(fpHttpClient));
         return builder.build();
     }

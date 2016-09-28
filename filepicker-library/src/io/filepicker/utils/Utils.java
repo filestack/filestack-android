@@ -7,6 +7,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -91,13 +92,14 @@ public class Utils {
         return belongsToImageOnlyProvider;
     }
 
-    public static String getUploadedFilename(String mimetype) {
+    public static String getUploadedFilename(String prefix, String fileName) {
         Date date = new Date();
-        SimpleDateFormat ft = new SimpleDateFormat("dd MMMM yyyy hh:mm a");
+        SimpleDateFormat ft = new SimpleDateFormat("ddMMMMyyyyhh:mma", Locale.getDefault());
 
-        String basename = (mimetype.contains("video") ? "Video " : "Image ");
-        String extension = (mimetype.contains("video") ? ".mp4" : ".jpg");
-        return basename + ft.format(date) + extension;
+        int extIndex = fileName.lastIndexOf(".");
+        String extension = fileName.substring(extIndex, fileName.length());
+
+        return prefix + ft.format(date) + extension;
     }
 
     public static String filenameWithoutExtension(String filename) {

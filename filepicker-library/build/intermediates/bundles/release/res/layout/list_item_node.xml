@@ -2,20 +2,22 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="@dimen/padding_providers_list"
+    android:layout_height="@dimen/single_line_icon_list_height"
     android:gravity="center_vertical">
 
     <io.filepicker.views.SquareImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/single_line_icon_image"
+        android:layout_height="@dimen/single_line_icon_image"
         android:id="@+id/imageNode"
-        android:padding="@dimen/padding_provider_icon"/>
+        android:scaleType="centerCrop"
+        android:layout_marginBottom="@dimen/single_line_icon_list_padding_vertical"
+        android:layout_marginTop="@dimen/single_line_icon_list_padding_vertical"
+        android:layout_marginLeft="@dimen/single_line_icon_list_padding_horizontal"
+        android:layout_marginRight="@dimen/single_line_icon_list_padding_horizontal"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Text"
         android:id="@+id/tvNodeName"
         android:textSize="@dimen/text_size_normal"/>
-</LinearLayout><!-- From: file:/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/layout/list_item_node.xml -->
+</LinearLayout>
