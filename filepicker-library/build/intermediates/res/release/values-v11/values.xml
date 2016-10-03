@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- From: file:/Users/maciejwitowski/Documents/filepicker-android/filepicker-library/res/values-v11/styles.xml -->
-    <eat-comment/>
-    <style name="AppTheme" parent="android:Theme.Holo.Light"/>
-</resources>
