@@ -9,6 +9,7 @@
 /build
 gradle.properties
 maven_push.gradle
+.gradle
 
 # Mac OS X files
 .DS_Store
