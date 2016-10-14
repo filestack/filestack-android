@@ -20,26 +20,26 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import io.filepicker.models.Node;
-import retrofit.mime.TypedFile;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 /**
  * Created by maciejwitowski on 11/5/14.
  */
 public class FilesUtils {
 
-    public static TypedFile getTypedFileFromUri(Context context, Uri uri) {
+    public static RequestBody getRequestBodyFromUri(Context context, String path, Uri uri) {
         String mimetype = getMimeType(context, uri);
         if (mimetype == null) {
             return null;
         }
 
-        String path = getPath(context, uri);
         // File path and mimetype are required
         if (path == null) {
             return null;
         }
 
-        return new TypedFile(mimetype, new File(path));
+        return RequestBody.create(MediaType.parse(mimetype), new File(path));
     }
 
     private static String getMimeType(Context context, Uri uri) {
@@ -60,7 +60,7 @@ public class FilesUtils {
     }
 
     @SuppressWarnings("NewApi")
-    private static String getPath(final Context context, final Uri uri) {
+    public static String getPath(final Context context, final Uri uri) {
         final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
 
         // DocumentProvider
@@ -212,8 +212,8 @@ public class FilesUtils {
      * @param fileUri - uri of file to save
      * @return - built TypedFile
      */
-    public static TypedFile buildTypedFile(Context context, Uri fileUri) {
-        TypedFile typedFile = null;
+    public static RequestBody buildRequestBody(Context context, Uri fileUri) {
+        RequestBody typedFile = null;
         ContentResolver cr = context.getContentResolver();
 
         try {
@@ -232,7 +232,7 @@ public class FilesUtils {
                 os.write(buffer, 0, length);
             }
 
-            typedFile = new TypedFile(cr.getType(fileUri), outputFile);
+            typedFile = RequestBody.create(MediaType.parse(cr.getType(fileUri)), outputFile);
             os.close();
         } catch (IOException e) {
             e.printStackTrace();

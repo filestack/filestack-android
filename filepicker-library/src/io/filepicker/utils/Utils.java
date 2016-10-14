@@ -7,6 +7,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -18,6 +19,8 @@ import io.filepicker.models.Provider;
  * Created by maciejwitowski on 10/23/14.
  */
 public class Utils {
+
+    private static final SimpleDateFormat DATE_SUFFIX_FORMAT = new SimpleDateFormat("_dd_MM_yyyy_HH_mm", Locale.ENGLISH);
 
     private Utils() {}
 
@@ -88,13 +91,15 @@ public class Utils {
         return false;
     }
 
-    public static String getUploadedFilename(String mimetype) {
-        Date date = new Date();
-        SimpleDateFormat ft = new SimpleDateFormat("dd MMMM yyyy hh:mm a");
-
-        String basename = (mimetype.contains("video") ? "Video " : "Image ");
-        String extension = (mimetype.contains("video") ? ".mp4" : ".jpg");
-        return basename + ft.format(date) + extension;
+    public static String getUploadedFilename(String fileName) {
+        String timeSuffix = DATE_SUFFIX_FORMAT.format(new Date());
+        int extIndex = fileName.lastIndexOf(".");
+        if (extIndex != -1) {
+            String extension = fileName.substring(extIndex);
+            return fileName.replace(extension, timeSuffix + extension);
+        } else {
+            return fileName + timeSuffix;
+        }
     }
 
     public static String filenameWithoutExtension(String filename) {

@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
@@ -23,7 +24,6 @@ import com.google.gson.JsonParser;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -414,7 +414,15 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
     }
 
     private void refreshFragment(boolean backPressed) {
-        hideLoading();
+        final Context context = getApplicationContext();
+        if (context != null) {
+            new Handler(context.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    hideLoading();
+                }
+            });
+        }
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, getContentFragment())
                 .commit();
@@ -460,11 +468,16 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
     }
 
     private void showAuthFragment() {
-        Context context = getApplicationContext();
+        final Context context = getApplicationContext();
         if (context != null) {
-            Toast.makeText(this,
-                    "Connecting to " + mCurrentDisplayedNode.node.displayName + " ...",
-                    Toast.LENGTH_SHORT).show();
+            new Handler(context.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(context,
+                        "Connecting to " + mCurrentDisplayedNode.node.displayName + " ...",
+                        Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
         getFragmentManager().beginTransaction()
