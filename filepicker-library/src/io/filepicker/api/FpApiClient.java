@@ -8,6 +8,7 @@ import com.google.gson.GsonBuilder;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,18 +19,21 @@ import io.filepicker.models.Folder;
 import io.filepicker.models.UploadLocalFileResponse;
 import io.filepicker.utils.PreferencesUtils;
 import io.filepicker.utils.Utils;
-import retrofit.Callback;
-import retrofit.RequestInterceptor;
-import retrofit.RestAdapter;
-import retrofit.android.MainThreadExecutor;
-import retrofit.http.Body;
-import retrofit.http.GET;
-import retrofit.http.Header;
-import retrofit.http.Headers;
-import retrofit.http.POST;
-import retrofit.http.Path;
-import retrofit.http.Query;
-import retrofit.mime.TypedFile;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import retrofit2.Call;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.Headers;
+import retrofit2.http.POST;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 /**
  * Created by maciejwitowski on 10/23/14.
@@ -43,6 +47,9 @@ public class FpApiClient {
     public static final String API_PATH_COMPUTER_URL = "/api/path/computer";
     public static final String AUTH_OPEN_URL = "/auth/open";
 
+    private static Gson gson = new GsonBuilder()
+            .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+            .create();
     private static FpApiInterface fpApiInterface;
     private static ExecutorService executor;
 
@@ -56,7 +63,7 @@ public class FpApiClient {
 
     public static void setFpApiClient(Context context) {
         final PreferencesUtils prefs = PreferencesUtils.newInstance(context);
-        RestAdapter restAdapter;
+        Retrofit restAdapter;
 
         executor = Executors.newCachedThreadPool();
 
@@ -79,65 +86,68 @@ public class FpApiClient {
         }
     }
 
-    public static RestAdapter getRestAdapter() {
-        return new RestAdapter.Builder()
-                .setEndpoint(DIALOG_ENDPOINT)
-                .setExecutors(executor, new MainThreadExecutor())
-                .build();
+    public static Retrofit getRestAdapter() {
+        return new Retrofit.Builder()
+            .baseUrl(DIALOG_ENDPOINT)
+            .callbackExecutor(executor)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build();
     }
 
-    public static RestAdapter getCookieRestAdapter(final String session) {
-        return new RestAdapter.Builder()
-                .setRequestInterceptor(new RequestInterceptor() {
+    public static Retrofit getCookieRestAdapter(final String session) {
+        OkHttpClient defaultHttpClient = new OkHttpClient.Builder()
+            .addInterceptor(
+                new Interceptor() {
                     @Override
-                    public void intercept(RequestFacade request) {
-                        request.addHeader("Cookie", "session=" + session);
+                    public Response intercept(Chain chain) throws IOException {
+                        Request request = chain.request().newBuilder()
+                            .addHeader("Cookie", "session=" + session)
+                            .build();
+                        return chain.proceed(request);
                     }
-                })
-                .setEndpoint(DIALOG_ENDPOINT)
-                .setExecutors(executor, new MainThreadExecutor())
-                .build();
+                }).build();
+
+        return new Retrofit.Builder().client(defaultHttpClient)
+            .baseUrl(DIALOG_ENDPOINT)
+            .callbackExecutor(executor)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build();
     }
 
     public interface FpApiInterface {
+
         @Headers("User-Agent: Mobile-Android")
         @GET(API_PATH_URL + "{provider}")
-        void getFolder(
+        Call<Folder> getFolder(
                 @Path("provider") String provider,
                 @Query("format") String format,
-                @Query("js_session") String jsSession,
-                Callback<Folder> folder
-                );
+                @Query("js_session") String jsSession);
 
         @Headers("User-Agent: Mobile-Android")
         @GET(API_PATH_URL + "{filePath}")
-        FPFile pickFile(
+        Call<FPFile> pickFile(
                 @Path("filePath") String filePath,
                 @Query("format") String format,
-                @Query("js_session") String jsSession
-        );
+                @Query("js_session") String jsSession);
 
         @Headers({
                 "User-Agent: Mobile-Android",
                 "Content-Type:application/octet-stream"
         })
         @POST(API_PATH_COMPUTER_URL)
-        void uploadFile(
+        Call<UploadLocalFileResponse> uploadFile(
                 @Header("X-File-Name") String filename,
                 @Query("js_session") String jsSession,
-                @Body TypedFile file,
-                Callback<UploadLocalFileResponse> response
-        );
+                @Body RequestBody file);
 
         @Headers({
                 "User-Agent: Mobile-Android",
                 "Content-Type:application/octet-stream"
         })
         @POST(API_PATH_URL + "{path}")
-        void exportFile(@Path("path") String path,
-                        @Query("js_session") String jsSession,
-                        @Body TypedFile file,
-                        Callback<FPFile> response);
+        Call<FPFile> exportFile(@Path("path") String path,
+                                @Query("js_session") String jsSession,
+                                @Body RequestBody file);
     }
 
     public static String getJsSession(Context context) {

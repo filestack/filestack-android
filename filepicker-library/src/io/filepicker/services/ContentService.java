@@ -5,10 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +28,15 @@ import io.filepicker.models.Node;
 import io.filepicker.models.UploadLocalFileResponse;
 import io.filepicker.utils.FilesUtils;
 import io.filepicker.utils.Utils;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
-import retrofit.mime.TypedFile;
+
+import java.util.concurrent.CountDownLatch;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okio.BufferedSink;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 /**
@@ -151,60 +157,82 @@ public class ContentService extends IntentService {
 
     private void handleActionGetContent(Node node, final boolean backPressed) {
         FpApiClient.getFpApiClient(this)
-                .getFolder(node.linkPath, "info",
-                    FpApiClient.getJsSession(this),
-                    new Callback<Folder>() {
-                        @Override
-                        public void success(Folder folder, retrofit.client.Response response) {
-                            EventBus.getDefault().post(new GotContentEvent(folder, backPressed));
-                        }
+            .getFolder(node.linkPath, "info", FpApiClient.getJsSession(this))
+            .enqueue(new Callback<Folder>() {
+                @Override
+                public void onResponse(Call<Folder> call, Response<Folder> response) {
+                    if (response.isSuccessful()) {
+                        EventBus.getDefault().post(new GotContentEvent(response.body(), backPressed));
+                    } else {
+                        handleApiError(getErrorType(response));
+                    }
+                }
 
-                        @Override
-                        public void failure(RetrofitError error) {
-                            handleError(error);
-                        }
-                    });
+                @Override
+                public void onFailure(Call<Folder> call, Throwable throwable) {
+                    handleApiError(ApiErrorEvent.ErrorType.UNKNOWN_ERROR);
+                }
+        });
     }
 
     private void handleActionPickFiles(ArrayList<Node> nodes) {
         final ArrayList<FPFile> results = new ArrayList<>();
 
         try {
+            final CountDownLatch countDownLatch = new CountDownLatch(nodes.size());
             for (Node node : nodes) {
-                FPFile result = FpApiClient.getFpApiClient(this).pickFile(
-                        URLDecoder.decode(node.linkPath, "utf-8"),
-                        "fpurl",
-                        FpApiClient.getJsSession(this));
+                FpApiClient.getFpApiClient(this)
+                    .pickFile(URLDecoder.decode(node.linkPath, "utf-8"), "fpurl", FpApiClient.getJsSession(this))
+                    .enqueue(new Callback<FPFile>() {
+                        @Override
+                        public void onResponse(Call<FPFile> call, Response<FPFile> response) {
+                            if (response.isSuccessful()) {
+                                results.add(response.body());
+                            } else {
+                                Log.w(LOG_TAG, "Error: " + response.code());
+                            }
+                            countDownLatch.countDown();
+                        }
 
-                results.add(result);
+                        @Override
+                        public void onFailure(Call<FPFile> call, Throwable throwable) {
+                            Log.e(LOG_TAG, "Error", throwable);
+                            countDownLatch.countDown();
+                        }
+                });
+
+
             }
 
+            countDownLatch.await();
             EventBus.getDefault().post(new FpFilesReceivedEvent(results));
         } catch (Exception syntaxException) {
-            EventBus.getDefault().post(new ApiErrorEvent(ApiErrorEvent.ErrorType.WRONG_RESPONSE));
+            handleApiError(ApiErrorEvent.ErrorType.WRONG_RESPONSE);
         }
     }
 
     private void handleActionUploadFile(final Uri uri) {
         ApiErrorEvent.ErrorType errorType = null;
-        TypedFile typedFile = null;
+        RequestBody requestBody = null;
 
+        String filePath = FilesUtils.getPath(this, uri);
         try {
-            typedFile = FilesUtils.getTypedFileFromUri(this, uri);
+            requestBody = FilesUtils.getRequestBodyFromUri(this, filePath, uri);
         } catch (SecurityException e) {
             errorType = ApiErrorEvent.ErrorType.LOCAL_FILE_PERMISSION_DENIAL;
         }
 
-        if (typedFile == null && errorType == null) {
+        if (requestBody == null && errorType == null) {
             errorType = ApiErrorEvent.ErrorType.INVALID_FILE;
         }
 
         if (errorType != null) {
-            EventBus.getDefault().post(new UploadFileErrorEvent(uri, errorType));
+            handleUploadFileError(uri, errorType);
             return;
         }
 
-        typedFile = new ProgressTypedFile(typedFile, new ProgressTypedFile.Listener() {
+        File file = new File(filePath);
+        requestBody = new ProgressRequestBody(file, uri.getPath(), new ProgressRequestBody.Listener() {
             @Override
             public void onProgress(float progress) {
                 EventBus.getDefault().post(new UploadProgressEvent(uri, progress));
@@ -212,24 +240,26 @@ public class ContentService extends IntentService {
         });
 
         FpApiClient.getFpApiClient(this).uploadFile(
-                Utils.getUploadedFilename(typedFile.mimeType()),
+                Utils.getUploadedFilename(file.getName()),
                 FpApiClient.getJsSession(this),
-                typedFile,
-                uploadLocalFileCallback(uri)
-        );
+                requestBody
+        ).enqueue(uploadLocalFileCallback(uri));
     }
 
     private Callback<UploadLocalFileResponse> uploadLocalFileCallback(final Uri uri) {
         return new Callback<UploadLocalFileResponse>() {
             @Override
-            public void success(UploadLocalFileResponse object, retrofit.client.Response response) {
-                onFileUploadSuccess(object, uri);
+            public void onResponse(Call<UploadLocalFileResponse> call, Response<UploadLocalFileResponse> response) {
+                if (response.isSuccessful()) {
+                    onFileUploadSuccess(response.body(), uri);
+                } else {
+                    handleUploadFileError(uri, getErrorType(response));
+                }
             }
 
             @Override
-            public void failure(RetrofitError error) {
-                ApiErrorEvent.ErrorType errorType = getErrorType(error);
-                EventBus.getDefault().post(new UploadFileErrorEvent(uri, errorType));
+            public void onFailure(Call<UploadLocalFileResponse> call, Throwable throwable) {
+                handleUploadFileError(uri, ApiErrorEvent.ErrorType.UNKNOWN_ERROR);
             }
         };
     }
@@ -254,66 +284,81 @@ public class ContentService extends IntentService {
     private void handleActionExportFile(Node node, Uri fileUri, String filename) {
         String fileExtension = FilesUtils.getFileExtension(this, fileUri);
         final String path = FilesUtils.getFilePath(node, filename, fileExtension);
-        TypedFile content = FilesUtils.buildTypedFile(this, fileUri);
+        RequestBody content = FilesUtils.buildRequestBody(this, fileUri);
 
         FpApiClient.getFpApiClient(this)
-            .exportFile(path, FpApiClient.getJsSession(this), content,
-                    new Callback<FPFile>() {
-                        @Override
-                        public void success(FPFile fpFile, Response response) {
-                            EventBus.getDefault().post(new FileExportedEvent(path, fpFile));
-                            Log.d(LOG_TAG, "success");
-                        }
+            .exportFile(path, FpApiClient.getJsSession(this), content)
+            .enqueue(new Callback<FPFile>() {
+                @Override
+                public void onResponse(Call<FPFile> call, Response<FPFile> response) {
+                    if (response.isSuccessful()) {
+                        EventBus.getDefault().post(new FileExportedEvent(path, response.body()));
+                        Log.d(LOG_TAG, "success");
+                    } else {
+                        Log.d(LOG_TAG, "failure");
+                    }
+                }
 
-                        @Override
-                        public void failure(RetrofitError error) {
-                            Log.d(LOG_TAG, "failure");
-                        }
-                    });
+                @Override
+                public void onFailure(Call<FPFile> call, Throwable throwable) {
+                    Log.e(LOG_TAG, "failure", throwable);
+                }
+            });
     }
 
-    private void handleError(RetrofitError error) {
-        ApiErrorEvent.ErrorType errorType = getErrorType(error);
-        ApiErrorEvent apiErrorEvent = new ApiErrorEvent(errorType);
-        EventBus.getDefault().post(apiErrorEvent);
+    private void handleApiError(ApiErrorEvent.ErrorType errorType) {
+        EventBus.getDefault().post(new ApiErrorEvent(errorType));
     }
 
-    public ApiErrorEvent.ErrorType getErrorType(RetrofitError error) {
+    private void handleUploadFileError(Uri uri, ApiErrorEvent.ErrorType errorType) {
+        EventBus.getDefault().post(new UploadFileErrorEvent(uri, errorType));
+    }
+
+    public ApiErrorEvent.ErrorType getErrorType(Response error) {
         if (error != null) {
-            if (error.getKind().equals(RetrofitError.Kind.NETWORK)) {
-                return ApiErrorEvent.ErrorType.NETWORK;
-            } else if (error.getResponse().getStatus() == 401) {
-                return ApiErrorEvent.ErrorType.UNAUTHORIZED;
-            }
+            return ApiErrorEvent.ErrorType.UNAUTHORIZED;
         }
         return ApiErrorEvent.ErrorType.UNKNOWN_ERROR;
     }
 
-    private static class ProgressTypedFile extends TypedFile {
+    private static class ProgressRequestBody extends RequestBody {
 
         private static final int BUFFER_SIZE = 4096;
 
+        private File mFile;
+        private String mPath;
         private final Listener mListener;
 
-        public ProgressTypedFile(TypedFile typedFile, Listener listener) {
-            super(typedFile.mimeType(), typedFile.file());
+        public ProgressRequestBody(File file, String path, Listener listener) {
+            mFile = file;
+            mPath = path;
             mListener = listener;
         }
 
         @Override
-        public void writeTo(OutputStream out) throws IOException {
+        public MediaType contentType() {
+            String extension = MimeTypeMap.getFileExtensionFromUrl(mPath);
+            String type = "";
+            if (extension != null) {
+                 type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+            }
+            return MediaType.parse(type);
+        }
+
+        @Override
+        public void writeTo(BufferedSink sink) throws IOException {
+            long fileLength = mFile.length();
             byte[] buffer = new byte[BUFFER_SIZE];
-            FileInputStream in = new FileInputStream(file());
-            float written = 0;
+            FileInputStream in = new FileInputStream(mFile);
+            long uploaded = 0;
 
             try {
                 int read;
-                long length = length();
 
                 while ((read = in.read(buffer)) != -1 && !Thread.interrupted()) {
-                    out.write(buffer, 0, read);
-                    written += read;
-                    mListener.onProgress(written / length);
+                    uploaded += read;
+                    sink.write(buffer, 0, read);
+                    mListener.onProgress(((float) uploaded) / fileLength);
                 }
             } finally {
                 in.close();
