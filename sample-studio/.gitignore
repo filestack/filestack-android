@@ -5,6 +5,7 @@
 .classpath
 .project
 .settings/
+*.iml
 
 # Mac OS X files
 .DS_Store
