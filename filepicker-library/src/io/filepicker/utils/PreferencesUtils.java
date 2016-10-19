@@ -30,55 +30,53 @@ public final class PreferencesUtils {
     private static final String KEY_POLICY_PATH = "policy_path";
     private static final String KEY_POLICY_CONTAINER = "policy_container";
 
-    private final Context context;
+    private final SharedPreferences sharedPreferences;
 
-    private static PreferencesUtils prefUtils = null;
-    private Integer maxFiles;
-
-    private PreferencesUtils(Context context) {
-        this.context = context;
-    }
+    private static PreferencesUtils instance = null;
 
     public static PreferencesUtils newInstance(Context context) {
-        if (prefUtils == null) {
-            prefUtils = new PreferencesUtils(context);
+        if (instance == null) {
+            instance = new PreferencesUtils(context.getSharedPreferences(KEY_PREFERENCES, Context.MODE_PRIVATE));
         }
-
-        return prefUtils;
+        return instance;
     }
 
-    private SharedPreferences getSharedPreferences() {
-        return context.getSharedPreferences(KEY_PREFERENCES, Context.MODE_PRIVATE);
+    private PreferencesUtils(SharedPreferences sharedPreferences) {
+        this.sharedPreferences = sharedPreferences;
     }
 
     // String
     private void setStringValue(String key, String value) {
-        getSharedPreferences().edit().putString(key, value).apply();
+        sharedPreferences.edit().putString(key, value).apply();
     }
 
     private String getStringValue(String key) {
-        return getSharedPreferences().getString(key, null);
+        return sharedPreferences.getString(key, null);
     }
 
     // Boolean
     private void setBooleanValue(String key, Boolean value) {
-        getSharedPreferences().edit().putBoolean(key, value).apply();
+        sharedPreferences.edit().putBoolean(key, value).apply();
     }
 
     private Boolean getBooleanValue(String key) {
-        return getSharedPreferences().getBoolean(key, false);
+        return sharedPreferences.getBoolean(key, false);
     }
 
     // Int
     private void setIntValue(String key, int value) {
-        getSharedPreferences().edit().putInt(key, value).apply();
+        sharedPreferences.edit().putInt(key, value).apply();
     }
 
     private int getIntValue(String key) {
-        return getSharedPreferences().getInt(key, 0);
+        return sharedPreferences.getInt(key, 0);
     }
 
-    public void setSessionCookie(String sessionCookie) {
+    private void removeValue(String key) {
+        sharedPreferences.edit().remove(key).apply();
+    }
+
+    public void setSessionCookie(Context context, String sessionCookie) {
         setStringValue(KEY_SESSION_COOKIE, sessionCookie);
 
         // Whenever session cookie is changed we need to update our ImageLoader
@@ -90,7 +88,7 @@ public final class PreferencesUtils {
     }
 
     public void clearSessionCookie() {
-        getSharedPreferences().edit().remove(KEY_SESSION_COOKIE).commit();
+        removeValue(KEY_SESSION_COOKIE);
     }
 
     public void setMultiple(boolean allowMultiple) {
@@ -102,7 +100,7 @@ public final class PreferencesUtils {
     }
 
     public void clearMultiple() {
-        setBooleanValue(KEY_MULTIPLE, false);
+        removeValue(KEY_MULTIPLE);
     }
 
     // Gets array of mimetypes and saves it as String
@@ -121,13 +119,8 @@ public final class PreferencesUtils {
 
     // Returns array of mimetypes Strings
     public String[] getMimetypes() {
-        String[] mimetypes = null;
-
-        if (getStringValue(KEY_MIMETYPES) != null) {
-            mimetypes = getStringValue(KEY_MIMETYPES).split(",");
-        }
-
-        return mimetypes;
+        String mimeTypes = getStringValue(KEY_MIMETYPES);
+        return mimeTypes != null ? mimeTypes.split(",") : null;
     }
 
     public void setPolicyCalls(String[] policyCalls) {
@@ -145,13 +138,8 @@ public final class PreferencesUtils {
 
     // Returns array of mimetypes Strings
     public String[] getPolicyCalls() {
-        String[] policyCalls = null;
-
-        if (getStringValue(KEY_POLICY_CALLS) != null) {
-            policyCalls = getStringValue(KEY_POLICY_CALLS).split(",");
-        }
-
-        return policyCalls;
+        String policyCalls = getStringValue(KEY_POLICY_CALLS);
+        return policyCalls != null ? policyCalls.split(",") : null;
     }
 
     public boolean isMimetypeSet(String baseType) {
@@ -169,7 +157,7 @@ public final class PreferencesUtils {
     }
 
     public void clearMimetypes() {
-        setStringValue(KEY_MIMETYPES, null);
+        removeValue(KEY_MIMETYPES);
     }
 
     public void setLocation(String location) {
@@ -225,7 +213,7 @@ public final class PreferencesUtils {
     }
 
     public void clearMaxSize() {
-        setIntValue(KEY_MAX_SIZE, 0);
+        removeValue(KEY_MAX_SIZE);
     }
 
     public void setAccess(String access) {

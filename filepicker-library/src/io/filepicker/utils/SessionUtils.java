@@ -23,7 +23,7 @@ public class SessionUtils {
         String sessionCookie = getSessionCookie();
 
         if (sessionCookie != null && !sessionCookie.isEmpty()) {
-            PreferencesUtils.newInstance(context).setSessionCookie(sessionCookie);
+            PreferencesUtils.newInstance(context).setSessionCookie(context, sessionCookie);
         }
 
         // Set FpApiClient which will use the cookie
