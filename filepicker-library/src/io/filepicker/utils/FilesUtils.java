@@ -17,7 +17,6 @@ import android.webkit.MimeTypeMap;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,8 +62,19 @@ public class FilesUtils {
         return mime.getExtensionFromMimeType(resolver.getType(uri));
     }
 
-    @SuppressWarnings("NewApi")
     public static String getPath(final Context context, final Uri uri) {
+        String path = readPathFromUri(context, uri);
+        if (path == null || path.startsWith("http")) {
+            File cachedFile = cacheRemoteFile(context, uri);
+            if (cachedFile != null && cachedFile.exists()) {
+                path = cachedFile.getPath();
+            }
+        }
+        return path;
+    }
+
+    @SuppressWarnings("NewApi")
+    private static String readPathFromUri(Context context, Uri uri) {
         final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
 
         // DocumentProvider
@@ -102,20 +112,11 @@ public class FilesUtils {
         }
         // MediaStore (and general)
         else if ("content".equalsIgnoreCase(uri.getScheme())) {
-
             // Return the remote address
             if (isGooglePhotosUri(uri)) {
                 return uri.getLastPathSegment();
             }
-
-            String path = getDataColumn(context, uri, null, null);
-            if (path != null && path.startsWith("http")) {
-                File cachedFile = cacheRemoteFile(context, uri);
-                if (cachedFile != null && cachedFile.exists()) {
-                    path = cachedFile.getPath();
-                }
-            }
-            return path;
+            return getDataColumn(context, uri, null, null);
         }
         // File
         else if ("file".equalsIgnoreCase(uri.getScheme())) {
