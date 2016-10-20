@@ -1,6 +1,7 @@
 package io.filepicker.utils;
 
 import android.content.Context;
+import android.os.Handler;
 import android.widget.Toast;
 
 import java.io.File;
@@ -29,12 +30,21 @@ public class Utils {
     }
 
     // Show Toast
-    public static void showQuickToast(Context context, int resId ) {
-        Toast.makeText(context, resId, Toast.LENGTH_SHORT).show();
+    public static void showQuickToast(Context context, int resId) {
+        if (context != null) {
+           showQuickToast(context, context.getString(resId));
+        }
     }
 
-    public static void showQuickToast(Context context, String message) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    public static void showQuickToast(final Context context, final String message) {
+        if (context != null) {
+            new Handler(context.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     public static ArrayList<Node> getProvidersNodes(Context context, String[] selectedProviders, boolean exportableOnly) {
