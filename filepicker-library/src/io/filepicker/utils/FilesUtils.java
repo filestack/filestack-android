@@ -4,6 +4,8 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -12,8 +14,10 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.webkit.MimeTypeMap;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -104,7 +108,14 @@ public class FilesUtils {
                 return uri.getLastPathSegment();
             }
 
-            return getDataColumn(context, uri, null, null);
+            String path = getDataColumn(context, uri, null, null);
+            if (path != null && path.startsWith("http")) {
+                File cachedFile = cacheRemoteFile(context, uri);
+                if (cachedFile != null && cachedFile.exists()) {
+                    path = cachedFile.getPath();
+                }
+            }
+            return path;
         }
         // File
         else if ("file".equalsIgnoreCase(uri.getScheme())) {
@@ -153,6 +164,23 @@ public class FilesUtils {
             if (cursor != null) {
                 cursor.close();
             }
+        }
+        return null;
+    }
+
+    private static File cacheRemoteFile(Context context, Uri uri) {
+        try {
+            InputStream in = context.getContentResolver().openInputStream(uri);
+            Bitmap bitmap = BitmapFactory.decodeStream(in);
+            if (bitmap != null) {
+                File file = new File(context.getCacheDir(), "image");
+                OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                os.close();
+                return file;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return null;
     }
