@@ -205,7 +205,12 @@ public class ContentService extends IntentService {
             }
 
             countDownLatch.await();
-            EventBus.getDefault().post(new FpFilesReceivedEvent(results));
+            if (results.isEmpty()) {
+                Log.e(LOG_TAG, "handleActionPickFiles: Failed to retrieve FpFiles from the response");
+                handleApiError(ApiErrorEvent.ErrorType.UNKNOWN_ERROR);
+            } else {
+                EventBus.getDefault().post(new FpFilesReceivedEvent(results));
+            }
         } catch (Exception syntaxException) {
             handleApiError(ApiErrorEvent.ErrorType.WRONG_RESPONSE);
         }
@@ -265,15 +270,16 @@ public class ContentService extends IntentService {
     }
 
     private void onFileUploadSuccess(UploadLocalFileResponse response, Uri fileUri) {
-        ArrayList<FPFile> fpFiles = new ArrayList<>();
-
         final FPFile fpFile = response.parseToFpFile();
         if (fpFile != null) {
             fpFile.setLocalPath(fileUri.toString());
+            ArrayList<FPFile> fpFiles = new ArrayList<>();
             fpFiles.add(fpFile);
+            EventBus.getDefault().post(new FpFilesReceivedEvent(fpFiles));
+        } else {
+            Log.e(LOG_TAG, "onFileUploadSuccess: Failed to retrieve FpFile from the response");
+            handleApiError(ApiErrorEvent.ErrorType.UNKNOWN_ERROR);
         }
-
-        EventBus.getDefault().post(new FpFilesReceivedEvent(fpFiles));
     }
 
     /** Exports file to service
