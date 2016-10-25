@@ -59,6 +59,8 @@ public class ContentService extends IntentService {
 
     // Used for upload file action and uri looks like content://<path to local file>
     private static final String EXTRA_FILE_URI = "io.filepicker.services.extra.file_uri";
+    private static final int RETRY_COUNT = 10;
+    private static final int RETRY_INTERVAL = 2000;
 
     FilepickerListener filepickerListener;
 
@@ -221,6 +223,7 @@ public class ContentService extends IntentService {
         RequestBody requestBody = null;
 
         String filePath = FilesUtils.getPath(this, uri);
+        waitForFile(filePath);
         try {
             requestBody = FilesUtils.getRequestBodyFromUri(this, filePath, uri);
         } catch (SecurityException e) {
@@ -249,6 +252,17 @@ public class ContentService extends IntentService {
                 FpApiClient.getJsSession(this),
                 requestBody
         ).enqueue(uploadLocalFileCallback(uri));
+    }
+
+    private static void waitForFile(String filePath) {
+        int retires = RETRY_COUNT;
+        while (new File(filePath).length() == 0 && retires-- > 0) {
+            try {
+                Thread.sleep(RETRY_INTERVAL);
+            } catch (InterruptedException e) {
+                Log.e(LOG_TAG, "Error while waiting for the local file", e);
+            }
+        }
     }
 
     private Callback<UploadLocalFileResponse> uploadLocalFileCallback(final Uri uri) {
