@@ -6,6 +6,7 @@ import android.util.Base64;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.util.concurrent.TimeUnit;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -46,6 +47,7 @@ public class FpApiClient {
     public static final String API_CLIENT_URL = "/api/client/";
     public static final String API_PATH_COMPUTER_URL = "/api/path/computer";
     public static final String AUTH_OPEN_URL = "/auth/open";
+    private static final int CONNECTION_TIMEOUT = 60;
 
     private static Gson gson = new GsonBuilder()
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
@@ -91,11 +93,17 @@ public class FpApiClient {
             .baseUrl(DIALOG_ENDPOINT)
             .callbackExecutor(executor)
             .addConverterFactory(GsonConverterFactory.create(gson))
+            .client(new OkHttpClient.Builder()
+                .readTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
+                .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
+                .build())
             .build();
     }
 
     public static Retrofit getCookieRestAdapter(final String session) {
         OkHttpClient defaultHttpClient = new OkHttpClient.Builder()
+            .readTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
+            .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
             .addInterceptor(
                 new Interceptor() {
                     @Override
