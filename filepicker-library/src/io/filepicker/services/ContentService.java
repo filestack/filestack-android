@@ -223,6 +223,10 @@ public class ContentService extends IntentService {
         RequestBody requestBody = null;
 
         String filePath = FilesUtils.getPath(this, uri);
+        if (filePath == null) {
+            handleUploadFileError(uri, ApiErrorEvent.ErrorType.INVALID_FILE);
+            return;
+        }
         waitForFile(filePath);
         try {
             requestBody = FilesUtils.getRequestBodyFromUri(this, filePath, uri);

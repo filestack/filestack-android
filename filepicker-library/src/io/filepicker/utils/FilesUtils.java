@@ -12,6 +12,7 @@ import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import java.io.BufferedOutputStream;
@@ -30,6 +31,8 @@ import okhttp3.RequestBody;
  * Created by maciejwitowski on 11/5/14.
  */
 public class FilesUtils {
+
+    private static final String TAG = FilesUtils.class.getSimpleName();
 
     public static RequestBody getRequestBodyFromUri(Context context, String path, Uri uri) {
         String mimetype = getMimeType(context, uri);
@@ -181,7 +184,7 @@ public class FilesUtils {
                 return file;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.w(TAG, "Remote file not found: " + uri.getPath());
         }
         return null;
     }
