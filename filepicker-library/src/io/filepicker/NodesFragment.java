@@ -207,7 +207,7 @@ public class NodesFragment extends Fragment {
 
     private void openDir(Node node) {
         if (node.isGallery()) {
-            getContract().openGallery();
+            getContract().openGallery(canPickMultiple());
         } else if (node.isCamera()) {
             getContract().openCamera();
         } else {
@@ -253,7 +253,7 @@ public class NodesFragment extends Fragment {
 
         void openCamera();
 
-        void openGallery();
+        void openGallery(boolean allowMultiple);
 
         void pickFiles(ArrayList<Node> node);
 

@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
@@ -125,6 +126,7 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
     private static FilepickerCallbackHandler sFilepickerCallbackHandler = new FilepickerCallbackHandler();
 
     static boolean mExport = false;
+    private boolean allowMultiple = false;
 
     public static void setKey(String apiKey) {
         if (Filepicker.apiKey.isEmpty()) {
@@ -219,7 +221,7 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
         if (providerNode.isCamera()) {
             openCamera();
         } else if (providerNode.isGallery()) {
-            openGallery();
+            openGallery(allowMultiple);
         } else {
             showNextNode(providerNode);
         }
@@ -249,7 +251,8 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
 
         // Init Multiple option
         if (intent.hasExtra(MULTIPLE_EXTRA)) {
-            prefs.setMultiple(intent.getBooleanExtra(MULTIPLE_EXTRA, false));
+            allowMultiple = intent.getBooleanExtra(MULTIPLE_EXTRA, false);
+            prefs.setMultiple(allowMultiple);
         } else {
             prefs.clearMultiple();
         }
@@ -641,10 +644,13 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
     }
 
     @Override
-    public void openGallery() {
+    public void openGallery(boolean allowMultiple) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType(isOnlyVideoCamera() ? Constants.MIMETYPE_VIDEO : Constants.MIMETYPE_IMAGE);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
+        }
         startActivityForResult(intent, REQUEST_CODE_GET_LOCAL_FILE);
     }
 
