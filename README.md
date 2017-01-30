@@ -30,7 +30,7 @@ If you use Maven, you can include this library as a dependency:
 For Gradle users:
 
 ```xml
-compile 'io.filepicker:filepicker-android:3.9.0’
+compile 'io.filepicker:filepicker-android:3.9.0'
 ```
 
 ProGuard
