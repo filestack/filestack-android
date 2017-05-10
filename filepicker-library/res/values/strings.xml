@@ -26,6 +26,15 @@
     <string name="override">Override</string>
 
     <string name="saving_file">Saving file…</string>
+    <string name="google_drive_connection_error">Connection to Google Drive was no Resolved!</string>
+    <string name="error_no_connection_available">Your Device is not connected</string>
+    <string name="message_dialog_select_format">Select a format for this file:</string>
+
+    <string name="error_no_google_services">This app requires Google Play Services. Please install Google Play Services on your device and relaunch this app.</string>
+    <string name="error_permission_denied">Please grant this permission in order to use FileStack features</string>
+    <string name="error_request_canceled">Request cancelled.</string>
+    <string name="message_contact_permission_needed">This app needs to access your Google account (via Contacts).</string>
+
 
 
 </resources>

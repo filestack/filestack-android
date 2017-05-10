@@ -8,33 +8,31 @@ import java.util.ArrayList;
 public final class PickedFile {
 
     public final Node node;
-    public final int position;
 
-    public PickedFile(Node node, int position) {
+    public PickedFile(Node node) {
         this.node = node;
-        this.position = position;
     }
 
     public static ArrayList<Node> getNodes(ArrayList<PickedFile> pickedFiles) {
-        ArrayList<Node> nodes = new ArrayList<>(pickedFiles.size());
+        ArrayList<Node> nodes = new ArrayList<>();
         for (PickedFile file : pickedFiles) {
             nodes.add(file.node);
         }
         return nodes;
     }
 
-    public static void removeAtPosition(ArrayList<PickedFile> pickedFiles, int position) {
+    public static void removeNode(ArrayList<PickedFile> pickedFiles, Node node) {
         for (PickedFile file : pickedFiles) {
-            if (file.position == position) {
+            if (file.node == node) {
                 pickedFiles.remove(file);
                 break;
             }
         }
     }
 
-    public static boolean containsPosition(ArrayList<PickedFile> pickedFiles, int position) {
+    public static boolean containsNode(ArrayList<PickedFile> pickedFiles, Node node) {
         for (PickedFile file : pickedFiles) {
-            if (file.position == position) {
+            if (file.node == node) {
                 return true;
             }
         }

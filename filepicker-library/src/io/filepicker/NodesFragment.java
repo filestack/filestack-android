@@ -1,26 +1,36 @@
 package io.filepicker;
 
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.GridView;
-import android.widget.ListView;
+import android.widget.ListAdapter;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import de.greenrobot.event.EventBus;
 import io.filepicker.adapters.NodesAdapter;
+import io.filepicker.models.GoogleDriveNode;
 import io.filepicker.models.Node;
 import io.filepicker.models.PickedFile;
 import io.filepicker.utils.Constants;
+import io.filepicker.utils.EndlessRecyclerViewScrollListener;
+import io.filepicker.utils.LoadMoreEvent;
 import io.filepicker.utils.PreferencesUtils;
 
 /**
@@ -40,14 +50,17 @@ public class NodesFragment extends Fragment {
     private ArrayList<Node> nodes;
     private Node parentNode;
 
+    private NodesAdapter nodesAdapter;
+
     // Used when user can pick many files at once
     private final ArrayList<PickedFile> pickedFiles = new ArrayList<>();
 
-    private AbsListView currentView;
+    //private  currentView;
+    private RecyclerView recyclerView;
     private ProgressBar mProgressBar;
     private Button mUploadFilesButton;
 
-    public static NodesFragment newInstance(Node parentNode, ArrayList<Node> nodes, String viewType) {
+    public static NodesFragment newInstance(Node parentNode, ArrayList<? extends Node> nodes, String viewType) {
         NodesFragment frag = new NodesFragment();
         Bundle args = new Bundle();
         args.putParcelable(KEY_PARENT_NODE, parentNode);
@@ -87,20 +100,53 @@ public class NodesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_nodes, container, false);
+        RecyclerView.LayoutManager layoutManager = null;
 
         mProgressBar = (ProgressBar) view.findViewById(R.id.progressBarNode);
         mUploadFilesButton = (Button) view.findViewById(R.id.btnUploadFiles);
 
+        recyclerView = (RecyclerView)view.findViewById(R.id.recycler_list);
+        recyclerView.setHasFixedSize(true);
+
+
         switch (viewType) {
             case Constants.LIST_VIEW:
-                currentView = (ListView) view.findViewById(R.id.listView);
+                recyclerView .setLayoutManager(layoutManager = new LinearLayoutManager(getActivity()));
+
+                DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                        ((LinearLayoutManager)recyclerView.getLayoutManager()).getOrientation());
+                recyclerView.addItemDecoration(dividerItemDecoration);
                 break;
             case Constants.THUMBNAILS_VIEW:
-                currentView = (GridView) view.findViewById(R.id.gridView);
+                recyclerView.setLayoutManager(layoutManager = new GridLayoutManager(getActivity(),3,GridLayoutManager.VERTICAL,false));
                 break;
             default:
                 showEmptyView(view);
                 break;
+        }
+
+        if(layoutManager != null) {
+            if(layoutManager instanceof LinearLayoutManager) {
+                recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener((LinearLayoutManager) layoutManager) {
+                    @Override
+                    public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                        EventBus.getDefault().post(new LoadMoreEvent());
+                    }
+                });
+            }
+
+            if(layoutManager instanceof  GridLayoutManager){
+                recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener((GridLayoutManager) layoutManager) {
+                    @Override
+                    public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                        EventBus.getDefault().post(new LoadMoreEvent());
+                    }
+                });
+            }
+        }
+
+        if(nodes.size() <=0 ){
+            showEmptyView(view);
         }
         return view;
     }
@@ -109,41 +155,54 @@ public class NodesFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (currentView == null) {
-            return;
-        }
-
-        NodesAdapter nodesAdapter = new NodesAdapter(getActivity(), nodes, pickedFiles);
+        nodesAdapter = new NodesAdapter(getActivity(), nodes, pickedFiles);
         if (viewType.equals(Constants.THUMBNAILS_VIEW)) {
             nodesAdapter.setThumbnail(true);
         }
 
-        currentView.setAdapter(nodesAdapter);
-        currentView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        recyclerView.setAdapter(nodesAdapter);
+        nodesAdapter.setNodeClickListener(new NodesAdapter.OnNodeClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                // Clicked node object
-                Node node = (Node) parent.getAdapter().getItem(position);
-
+            public void onNodeClick(Node node) {
                 // If node is dir then open it
                 if (node.isDir) {
                     openDir(node);
                 } else {
                     // Proceed single file
-                    PickedFile pickedFile = new PickedFile(node, position);
-                    if (canPickMultiple()) {
-                        updatePickedList(view, pickedFile);
-                        setUploadButton();
-                    } else {
-                        view.setAlpha(Constants.ALPHA_FADED);
-                        uploadSingleFile(pickedFile);
+                    if(node instanceof GoogleDriveNode){
+                        GoogleDriveNode gNode = (GoogleDriveNode)node;
+                        if(gNode.driveType.equals(Constants.TYPE_DRIVE)){
+                            if(Filepicker.getDriveAbout() != null) {
+                                if (Filepicker.getDriveAbout().getExportFormats().containsKey(gNode.mimeType)) {
+                                    List<String> formats = Filepicker.getDriveAbout().getExportFormats().get(gNode.mimeType);
+                                    if (formats.size() == 1) {
+                                        gNode.exportFormat = formats.get(0);
+                                        selectFileNode(node);
+                                    } else {
+                                        selectFormat(gNode, formats);
+                                    }
+                                } else {
+                                    if(gNode.mimeType.contains("google-apps")){
+                                        Toast.makeText(getActivity(),"This File cannot be exported",Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                    gNode.exportFormat = gNode.mimeType;
+                                    selectFileNode(node);
+                                }
+                            }else{
+                                Toast.makeText(getActivity(),"Export formats not Available",Toast.LENGTH_SHORT).show();
+                            }
+                        }else{
+                            selectFileNode(gNode);
+                        }
+                    }else{
+                        selectFileNode(node);
                     }
+
                 }
+
             }
         });
-
-        currentView.setVisibility(View.VISIBLE);
 
         mUploadFilesButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -154,6 +213,47 @@ public class NodesFragment extends Fragment {
                 }
             }
         });
+    }
+
+    private void selectFormat(final GoogleDriveNode node, List<String> formatList){
+
+        ArrayAdapter<Constants.ExportObject> adapter  =
+                new ArrayAdapter<>(getActivity(),
+                        android.R.layout.select_dialog_singlechoice);
+        final ArrayList<String> formatFilterList = new ArrayList<>();
+
+        for(String format : formatList){
+            if(Constants.exportMap.get(format) != null) {
+                formatFilterList.add(format);
+                adapter.add(Constants.exportMap.get(format));
+            }
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.message_dialog_select_format).setAdapter(adapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                node.exportFormat = formatFilterList.get(which);
+                selectFileNode(node);
+            }
+        });
+
+        builder.show();
+
+    }
+
+    private void selectFileNode(Node node){
+        PickedFile pickedFile = new PickedFile(node);
+        if (canPickMultiple()) {
+            updatePickedList(pickedFile);
+            setUploadButton();
+        } else {
+            // updatePickedList(pickedFile);
+            uploadSingleFile(pickedFile);
+        }
+
+        nodesAdapter.notifyDataSetChanged();
+
     }
 
     private void showProgressBar() {
@@ -223,16 +323,14 @@ public class NodesFragment extends Fragment {
 
     private void showProgress() {
         showProgressBar();
-        currentView.setEnabled(false);
+        recyclerView.setEnabled(false);
     }
 
-    private void updatePickedList(View view, PickedFile pickedFile) {
-        if (PickedFile.containsPosition(pickedFiles, pickedFile.position)) {
-            PickedFile.removeAtPosition(pickedFiles, pickedFile.position);
-            view.setAlpha(1);
+    private void updatePickedList(PickedFile pickedFile) {
+        if (PickedFile.containsNode(pickedFiles, pickedFile.node)) {
+            PickedFile.removeNode(pickedFiles, pickedFile.node);
         } else {
             pickedFiles.add(pickedFile);
-            view.setAlpha(Constants.ALPHA_FADED);
         }
     }
 

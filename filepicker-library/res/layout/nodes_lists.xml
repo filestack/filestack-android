@@ -2,9 +2,15 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </android.support.v7.widget.RecyclerView>
+
+    <!--<ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,7 +28,7 @@
         android:horizontalSpacing="0dp"
         android:stretchMode="columnWidth"
         android:numColumns="3"
-        android:visibility="gone"/>
+        android:visibility="gone"/>-->
 
     <LinearLayout
         android:orientation="horizontal"
@@ -41,4 +47,12 @@
             android:text="@string/empty_list_text"
             android:id="@+id/textView" />
     </LinearLayout>
+    <ProgressBar
+        android:id="@+id/progress_more"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="2dp"/>
 </RelativeLayout>
