@@ -2,11 +2,6 @@ package io.filepicker.events;
 
 import io.filepicker.models.GoogleDriveNode;
 
-/**
- * Created by Raúl Acevedo - SWEB
- * on 25/04/2017.
- */
-
 public class GoogleDriveUploadProgressEvent {
 
     private GoogleDriveNode node;

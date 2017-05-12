@@ -9,11 +9,6 @@ import com.google.gson.annotations.SerializedName;
 import io.filepicker.utils.Constants;
 import io.filepicker.utils.Utils;
 
-/**
- * Created by Raúl Acevedo - SWEB
- * on 19/04/2017.
- */
-
 public class GoogleDriveNode extends Node implements Parcelable {
 
     @SerializedName(value="mime_type")

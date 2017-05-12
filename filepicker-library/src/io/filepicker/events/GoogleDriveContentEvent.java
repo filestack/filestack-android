@@ -4,11 +4,6 @@ import java.util.ArrayList;
 
 import io.filepicker.models.GoogleDriveNode;
 
-/**
- * Created by Raúl Acevedo - SWEB
- * on 21/04/2017.
- */
-
 public class GoogleDriveContentEvent {
 
     private ArrayList<GoogleDriveNode> googleNodes;
