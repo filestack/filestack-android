@@ -123,7 +123,7 @@ public class Node implements Parcelable {
 
         @Override
         public Node[] newArray(int size) {
-            return new Node[0];
+            return new Node[size];
         }
     };
 

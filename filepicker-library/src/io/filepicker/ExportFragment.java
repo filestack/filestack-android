@@ -4,6 +4,9 @@ import android.app.Fragment;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -21,12 +24,15 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import de.greenrobot.event.EventBus;
 import io.filepicker.adapters.NodesAdapter;
 import io.filepicker.models.FPFile;
 import io.filepicker.models.Node;
 import io.filepicker.models.PickedFile;
 import io.filepicker.utils.Constants;
+import io.filepicker.utils.EndlessRecyclerViewScrollListener;
 import io.filepicker.utils.FilesUtils;
+import io.filepicker.utils.LoadMoreEvent;
 import io.filepicker.utils.Utils;
 import io.filepicker.utils.ViewUtils;
 
@@ -49,13 +55,13 @@ public class ExportFragment extends Fragment {
     // Used when user can pick many files at once
     private final ArrayList<PickedFile> pickedFiles = new ArrayList<>();
 
-    private AbsListView currentView;
+    private RecyclerView recyclerView;
     private ProgressBar mProgressBar;
     private TextView mFileType;
     private EditText etFilename;
     private Button mBtnSave;
 
-    public static ExportFragment newInstance(Node parentNode, ArrayList<Node> nodes, String viewType) {
+    public static ExportFragment newInstance(Node parentNode, ArrayList<? extends Node> nodes, String viewType) {
         ExportFragment frag = new ExportFragment();
         Bundle args = new Bundle();
         args.putParcelable(KEY_PARENT_NODE, parentNode);
@@ -92,21 +98,45 @@ public class ExportFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_export, container, false);
+        RecyclerView.LayoutManager layoutManager = null;
 
         mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
         mFileType = (TextView) view.findViewById(R.id.fileType);
         etFilename = (EditText) view.findViewById(R.id.etFilename);
         mBtnSave = (Button) view.findViewById(R.id.btnSave);
 
+        recyclerView = (RecyclerView)view.findViewById(R.id.recycler_list);
+        recyclerView.setHasFixedSize(true);
+
         switch (viewType) {
             case LIST_VIEW:
-                currentView = (ListView) view.findViewById(R.id.listView);
+                recyclerView .setLayoutManager(layoutManager = new LinearLayoutManager(getActivity()));
                 break;
             case THUMBNAILS_VIEW:
-                currentView = (GridView) view.findViewById(R.id.gridView);
+                recyclerView.setLayoutManager(layoutManager = new GridLayoutManager(getActivity(),3,GridLayoutManager.VERTICAL,false));
                 break;
             default:
                 showEmptyView(view);
+        }
+
+        if(layoutManager != null) {
+            if(layoutManager instanceof LinearLayoutManager) {
+                recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener((LinearLayoutManager) layoutManager) {
+                    @Override
+                    public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                        EventBus.getDefault().post(new LoadMoreEvent());
+                    }
+                });
+            }
+
+            if(layoutManager instanceof  GridLayoutManager){
+                recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener((GridLayoutManager) layoutManager) {
+                    @Override
+                    public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                        EventBus.getDefault().post(new LoadMoreEvent());
+                    }
+                });
+            }
         }
 
         // Show edit text for filename and save button if we're in content (not in providers list)
@@ -115,6 +145,11 @@ public class ExportFragment extends Fragment {
             ViewUtils.show(exportForm);
         }
 
+        if(nodes.size() <=0 ){
+            showEmptyView(view);
+        }
+
+
         return view;
     }
 
@@ -122,31 +157,24 @@ public class ExportFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (currentView == null) {
-            return;
-        }
-
         NodesAdapter nodesAdapter = new NodesAdapter(getActivity(), nodes, pickedFiles);
 
         if (viewType.equals(THUMBNAILS_VIEW)) {
             nodesAdapter.setThumbnail(true);
         }
 
-        currentView.setAdapter(nodesAdapter);
-        currentView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Clicked node object
-                Node node = (Node) parent.getAdapter().getItem(position);
+        recyclerView.setAdapter(nodesAdapter);
+        nodesAdapter.setNodeClickListener(new NodesAdapter.OnNodeClickListener(){
 
+            @Override
+            public void onNodeClick(Node node) {
                 // If node is dir then open it
                 if (node.isDir) {
                     getContract().showNextNode(node);
                 }
+
             }
         });
-
-        currentView.setVisibility(View.VISIBLE);
 
         // Form consists of input for name, text with extension and save button
         initForm();
@@ -186,8 +214,8 @@ public class ExportFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (etFilename.getText().length() > 0) {
-                    currentView.setEnabled(false);
-                    currentView.setAlpha(Constants.ALPHA_FADED);
+                    recyclerView.setEnabled(false);
+                    recyclerView.setAlpha(Constants.ALPHA_FADED);
                     etFilename.setEnabled(false);
                     mBtnSave.setEnabled(false);
                     mBtnSave.setText("Saving file...");

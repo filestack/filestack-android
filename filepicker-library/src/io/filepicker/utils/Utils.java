@@ -1,6 +1,7 @@
 package io.filepicker.utils;
 
 import android.content.Context;
+import android.os.Environment;
 import android.os.Handler;
 import android.widget.Toast;
 
@@ -120,10 +121,29 @@ public class Utils {
         return new File(context.getCacheDir(), "io_filepicker_library_" + path);
     }
 
+    public static File getSDFile(String path) {
+
+        File root = new File(Environment.getExternalStorageDirectory()
+                + File.separator + "FileStack" + File.separator);
+        root.mkdirs();
+
+        return new File(root,path);
+    }
+
     public static void clearCachedFiles(Context context) {
         for (File file : context.getCacheDir().listFiles()) {
             if (file.getName().contains(Constants.CACHED_FILES_PREFIX)) {
                 file.delete();
+            }
+        }
+
+        File root = new File(Environment.getExternalStorageDirectory()
+                + File.separator + "FileStack" + File.separator);
+        if(root.exists()) {
+            if(root.listFiles() != null) {
+                for (File file : root.listFiles()) {
+                    file.delete();
+                }
             }
         }
     }

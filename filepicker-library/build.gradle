@@ -3,27 +3,48 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.android.tools.build:gradle:2.3.2'
         classpath 'com.github.dcendents:android-maven-plugin:1.1'
+        classpath 'com.google.gms:google-services:3.0.0'
     }
 }
 
 apply plugin: 'com.android.library'
+
 dependencies {
     compile 'de.greenrobot:eventbus:2.4.0'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.squareup.picasso:picasso:2.5.0'
     compile 'com.squareup.okhttp:okhttp:2.2.0'
+    compile "com.android.support:recyclerview-v7:25.3.1"
+    compile 'com.google.android.gms:play-services-auth:10.2.4'
+    compile 'pub.devrel:easypermissions:0.2.1'
+
+    compile('com.google.api-client:google-api-client-android:1.22.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+    compile('com.google.apis:google-api-services-drive:v3-rev69-1.22.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+
+    compile('com.google.apis:google-api-services-gmail:v1-rev64-1.22.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+}
+
+configurations {
+    all*.exclude group: 'com.google.firebase', module: 'firebase-core'
+    all*.exclude group: 'com.google.firebase', module: 'firebase-iid'
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '23.0.1'
+    compileSdkVersion 25
+    buildToolsVersion '25.0.2'
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 22
+        targetSdkVersion 25
         versionName project.VERSION_NAME
         versionCode Integer.parseInt(project.VERSION_CODE)
     }

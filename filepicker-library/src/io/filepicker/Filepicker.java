@@ -1,55 +1,88 @@
 package io.filepicker;
 
+import android.Manifest;
+import android.accounts.AccountManager;
 import android.app.ActionBar;
-import android.app.Activity;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
+import com.google.api.client.util.ExponentialBackOff;
+import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.drive.model.About;
+import com.google.api.services.gmail.GmailScopes;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 import de.greenrobot.event.EventBus;
+import io.filepicker.adapters.NodesAdapter;
 import io.filepicker.events.ApiErrorEvent;
 import io.filepicker.events.FileExportedEvent;
 import io.filepicker.events.FpFilesReceivedEvent;
+import io.filepicker.events.GoogleDriveContentEvent;
+import io.filepicker.events.GoogleDriveError;
+import io.filepicker.events.GoogleDriveUploadProgressEvent;
 import io.filepicker.events.GotContentEvent;
 import io.filepicker.events.SignedOutEvent;
 import io.filepicker.events.UploadFileErrorEvent;
 import io.filepicker.models.DisplayedNode;
 import io.filepicker.models.FPFile;
 import io.filepicker.models.Folder;
+import io.filepicker.models.GoogleDriveNode;
 import io.filepicker.models.Node;
+import io.filepicker.models.Provider;
 import io.filepicker.services.ContentService;
 import io.filepicker.utils.Constants;
+import io.filepicker.utils.LoadMoreEvent;
 import io.filepicker.utils.PreferencesUtils;
 import io.filepicker.utils.SessionUtils;
 import io.filepicker.utils.Utils;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
 
 
-public class Filepicker extends Activity implements AuthFragment.Contract, NodesFragment.Contract, ExportFragment.Contract {
+public class Filepicker extends FragmentActivity implements AuthFragment.Contract,
+                                                            NodesFragment.Contract,
+                                                            ExportFragment.Contract,
+                                                            EasyPermissions.PermissionCallbacks{
 
     private static final String LOG_TAG = Filepicker.class.getSimpleName();
 
@@ -95,18 +128,41 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
     public static final int REQUEST_CODE_EXPORT_FILE = 604;
     public static final int REQUEST_CODE_VIDEO = 605;
 
+    static final int REQUEST_ACCOUNT_PICKER = 1000;
+    static final int REQUEST_AUTHORIZATION = 1001;
+    static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
+    static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
+    static final int REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE = 1004;
+
+
+    private static final String PREF_ACCOUNT_NAME = "accountName";
+    private static final String PREF_ACCOUNT_NAME_GMAIL = "accountNameGmail";
+    private static final String PREF_ACCOUNT_NAME_GPHOTOS = "accountNameGPhotos";
+
+    public static final String PREF_PAGINATION = "gPagination";
+    public static final String PREF_DRIVE_PAGE = "gDrivePage";
+    public static final String PREF_GPHOTOS_PAGE = "gPhotosPage";
+
+
+    private static final String[] SCOPES = { DriveScopes.DRIVE_READONLY , DriveScopes.DRIVE_METADATA_READONLY};
+    private static final String[] GMAIL_SCOPES = {GmailScopes.GMAIL_READONLY};
+    private static final String[] GPHOTOS_SCOPES = {DriveScopes.DRIVE_PHOTOS_READONLY};
+
+
+
     // Action used by clients to indicate they want to export file
     public static final String ACTION_EXPORT_FILE = "export_file";
 
     private boolean mIsLoading = false;
     private boolean mIsWaitingForContent = false;
+    private boolean mPendingAbort = false;
 
     private static String apiKey = "";
     private static String appName = "";
 
     // List which will be traversed while the user goes in the folders tree
     private ArrayList<DisplayedNode> mDisplayedNodesList;
-    private DisplayedNode mCurrentDisplayedNode;
+    private DisplayedNode mCurrentDisplayedNode = new DisplayedNode(null,"");
 
     // True is user is authorized to the current node
     private boolean mIsUserAuthorized;
@@ -115,18 +171,21 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
     private String mFolderClientCode;
 
     private ArrayList<Node> mProviders;
-    private ArrayList<Node> mNodeContentList;
+    private ArrayList<? extends Node> mNodeContentList;
 
     // Needed for camera request
     private Uri imageUri;
 
-    private ProgressBar mProgressBar;
+    private View mProgressBar;
+    private TextView progress_text;
     private static Uri mFileToExport;
+    private HashMap<String,String>progressMap;
 
     private static FilepickerCallbackHandler sFilepickerCallbackHandler = new FilepickerCallbackHandler();
 
     static boolean mExport = false;
     private boolean allowMultiple = false;
+    private Node moreNode;
 
     public static void setKey(String apiKey) {
         if (Filepicker.apiKey.isEmpty()) {
@@ -137,24 +196,19 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
     public static String getApiKey() {
         return apiKey;
     }
-
     public static void setAppName(String appName) {
         Filepicker.appName = appName;
     }
-
     public static String getAppName() {
         return appName;
     }
-
     public static void uploadLocalFile(Uri uri, Context context) {
         ContentService.uploadFile(context, uri);
     }
-
     public static void uploadLocalFile(Uri uri, Context context, FilepickerCallback filepickerCallback) {
         if (uri == null || context == null) {
             return;
         }
-
         if (filepickerCallback != null) {
             sFilepickerCallbackHandler.addCallback(uri, filepickerCallback);
         }
@@ -170,13 +224,71 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
         sFilepickerCallbackHandler.unregister();
     }
 
+
+    private static GoogleAccountCredential mCredential = null;
+    private static GoogleAccountCredential gMailCredential = null;
+    private static GoogleAccountCredential gPhotosCredential = null;
+
+    public static GoogleAccountCredential getGPhotosCredential(Context context){
+        if(gPhotosCredential == null){
+            gPhotosCredential = GoogleAccountCredential.usingOAuth2(
+                    context, Arrays.asList(GPHOTOS_SCOPES))
+                    .setBackOff(new ExponentialBackOff());
+        }
+        return gPhotosCredential;
+    }
+
+    private class TerminatedReceiver extends BroadcastReceiver{
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("test","Terminated");
+            if(mPendingAbort) {
+                mPendingAbort = false;
+                onBackPressed();
+            }
+        }
+    }
+    private TerminatedReceiver terminatedReceiver;
+    private TerminatedReceiver getReceiver(){
+        if(terminatedReceiver == null){
+            terminatedReceiver = new TerminatedReceiver();
+        }
+        return terminatedReceiver;
+    }
+
+    public static GoogleAccountCredential getGmailCredential (Context context){
+        if(gMailCredential == null){
+            gMailCredential = GoogleAccountCredential.usingOAuth2(
+                    context, Arrays.asList(GMAIL_SCOPES))
+                    .setBackOff(new ExponentialBackOff());
+        }
+        return gMailCredential;
+    }
+
+    public static GoogleAccountCredential getGoogleCredential(Context context){
+        if(mCredential == null){
+            // Initialize credentials and service object.
+            mCredential = GoogleAccountCredential.usingOAuth2(
+                    context.getApplicationContext(), Arrays.asList(SCOPES))
+                    .setBackOff(new ExponentialBackOff());
+        }
+        return mCredential;
+    }
+
+    private static About driveAbout = null;
+    public static About getDriveAbout() {
+        return driveAbout;
+    }
+    public static void setDriveAbout(About driveAbout) {
+        Filepicker.driveAbout = driveAbout;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filepicker);
-
-        mProgressBar = (ProgressBar) findViewById(R.id.fpProgressBar);
-
+        mProgressBar =  findViewById(R.id.fpProgressBar);
+        progress_text = (TextView) findViewById(R.id.progress_text);
         initSavedState(savedInstanceState);
 
         if (mDisplayedNodesList == null) {
@@ -190,6 +302,20 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
         final ActionBar actionBar = getActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    @AfterPermissionGranted(REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE)
+    private void checkStoragePermission(){
+        if (!EasyPermissions.hasPermissions(
+                this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            // Request the GET_ACCOUNTS permission via a user dialog
+            EasyPermissions.requestPermissions(
+                    this,
+                    "This app needs access to SD Card Storage ",
+                    REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            return;
         }
 
         validateApiKey();
@@ -207,12 +333,21 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
         } else {
             setTitle(mCurrentDisplayedNode.node.displayName);
 
-            if (!mIsUserAuthorized) {
+            if (!mIsUserAuthorized && !(mCurrentDisplayedNode.node instanceof GoogleDriveNode) &&
+                    !Constants.NATIVE_PROVIDERS.contains(((Provider)(mCurrentDisplayedNode.node)).code)) {
                 showAuthFragment();
             } else {
-                refreshFragment(false);
+                refreshFragment();
             }
         }
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        checkStoragePermission();
+
     }
 
     private void handleSingleProviderScenario() {
@@ -248,7 +383,6 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
         Intent intent = getIntent();
 
         PreferencesUtils prefs = PreferencesUtils.newInstance(this);
-
         // Init Multiple option
         if (intent.hasExtra(MULTIPLE_EXTRA)) {
             allowMultiple = intent.getBooleanExtra(MULTIPLE_EXTRA, false);
@@ -317,12 +451,9 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
         if (getIntent().hasExtra(SELECTED_PROVIDERS_EXTRA)) {
             selectedProviders = getIntent().getStringArrayExtra(SELECTED_PROVIDERS_EXTRA);
         }
-
         mProviders = Utils.getProvidersNodes(this, selectedProviders, mExport);
-
         boolean showShowErrorToast = intent.getBooleanExtra(SHOW_ERROR_TOAST_EXTRA, true);
         prefs.setShowErrorToast(showShowErrorToast);
-
         prefs.setSecret(intent.getStringExtra(SECRET_EXTRA));
         prefs.setPolicyCalls(intent.getStringArrayExtra(POLICY_CALLS_EXTRA));
         prefs.setPolicyHandle(intent.getStringExtra(POLICY_HANDLE_EXTRA));
@@ -344,6 +475,7 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
         outState.putString(FOLDER_CLIENT_CODE_STATE, mFolderClientCode);
         outState.putBoolean(IS_USER_AUTHORIZED_STATE, mIsUserAuthorized);
 
+
         if (imageUri != null) {
             outState.putString(IMAGE_URI_STATE, imageUri.toString());
         }
@@ -355,28 +487,44 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
     protected void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ContentService.SERVICE_TERMINATED);
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(getReceiver(),filter);
     }
 
     @Override
     protected void onPause() {
         EventBus.getDefault().unregister(this);
+        LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(getReceiver());
         super.onPause();
     }
 
     @Override
     public void onBackPressed() {
         // In case content is being loaded, we are not waiting for it
-        mIsWaitingForContent = false;
-
+        if(mIsWaitingForContent){
+            mIsWaitingForContent = false;
+            mPendingAbort = true;
+            Intent intent =  new Intent(ContentService.ACTION_GET_CANCEL_OPERATION);
+            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+            progress_text.setText(Constants.TERMINATING);
+            return;
+        }
+        if(mPendingAbort)return;
+        hideLoading();
         if (mDisplayedNodesList != null && !mDisplayedNodesList.isEmpty()) {
-            removeLastNode();
+            if(mDisplayedNodesList.get(mDisplayedNodesList.size() - 1).node != null) {
+                removeLastNode();
+            }else{
+                mDisplayedNodesList.remove(mDisplayedNodesList.size() - 1);
+            }
 
             if (!mDisplayedNodesList.isEmpty()) {
                 mCurrentDisplayedNode = mDisplayedNodesList.get(mDisplayedNodesList.size() - 1);
                 setTitle(mCurrentDisplayedNode.node.displayName);
 
                 Log.d(LOG_TAG, "Get cached data from " + mCurrentDisplayedNode.node.linkPath);
-                File currentFile = Utils.getCacheFile(this, mCurrentDisplayedNode.node.deslashedPath());
+                java.io.File currentFile = Utils.getCacheFile(this, mCurrentDisplayedNode.node.deslashedPath());
 
                 if (currentFile.exists()) {
                     showCachedNode(currentFile);
@@ -384,13 +532,16 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
                     refreshCurrentlyDisplayedNode(mCurrentDisplayedNode, true);
                 }
             } else if (mProviders.size() == 1) {
+                mCurrentDisplayedNode = new DisplayedNode(null,"");
                 super.onBackPressed();
             } else {
+                mCurrentDisplayedNode = new DisplayedNode(null,"");
                 setTitle(getAppName());
                 showProvidersList();
             }
 
         } else {
+            mCurrentDisplayedNode = new DisplayedNode(null,"");
             super.onBackPressed();
         }
     }
@@ -404,30 +555,50 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
     public void getContent(Node node, boolean backPressed) {
         mIsWaitingForContent = true;
         showLoading();
-        ContentService.getContent(this, node, backPressed);
+        mPendingAbort = false;
+        ContentService.getContent(getApplicationContext(), node, backPressed);
     }
 
-    private void showFolderContent(Folder folder, boolean backPressed) {
+    private void showFolderContent(Folder folder) {
         mCurrentDisplayedNode.viewType = folder.view;
         mNodeContentList = new ArrayList<>(Arrays.asList(folder.nodes));
-
-        // Cache items
         new CacheGotItemsTask(this, mCurrentDisplayedNode.node).execute(mNodeContentList);
-        refreshFragment(backPressed);
+        refreshFragment();
     }
 
-    private void refreshFragment(boolean backPressed) {
-        final Context context = getApplicationContext();
-        if (context != null) {
-            new Handler(context.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    hideLoading();
+    private void addFolderContent(ArrayList<GoogleDriveNode>gNodes){
+        RecyclerView recycler = (RecyclerView) findViewById(R.id.recycler_list);
+        mIsWaitingForContent = false;
+        if(recycler != null){
+            NodesAdapter adapter = (NodesAdapter) recycler.getAdapter();
+            if(adapter != null){
+                int startP = adapter.getNodes().size();
+                for (GoogleDriveNode n: gNodes){
+                    adapter.getNodes().add(n);
                 }
-            });
+                adapter.notifyItemRangeInserted(startP,gNodes.size());
+                new CacheGotItemsTask(this, mCurrentDisplayedNode.node).execute(adapter.getNodes());
+            }
         }
+    }
+
+    private void showDriveFolderContent(ArrayList<GoogleDriveNode> gNodes,boolean backPressed) {
+        mCurrentDisplayedNode.viewType = Constants.LIST_VIEW;
+        if(mCurrentDisplayedNode.node instanceof Provider){
+            if (((Provider)(mCurrentDisplayedNode.node)).code.equals(Constants.TYPE_PICASA)){
+                mCurrentDisplayedNode.viewType = Constants.THUMBNAILS_VIEW;
+            }
+        }
+
+        mNodeContentList = gNodes;
+        // Cache items
+        new CacheGotItemsTask(this, mCurrentDisplayedNode.node).execute(mNodeContentList);
+        refreshFragment();
+    }
+
+    private void refreshFragment() {
         getFragmentManager().beginTransaction()
-                .replace(android.R.id.content, getContentFragment())
+                .replace(R.id.picker_content, getContentFragment())
                 .commit();
     }
 
@@ -441,7 +612,7 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
 
     private void showProvidersList() {
         getFragmentManager().beginTransaction()
-                .replace(android.R.id.content, getProvidersFragment())
+                .replace(R.id.picker_content, getProvidersFragment())
                 .commit();
     }
 
@@ -450,23 +621,6 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
             return ExportFragment.newInstance(null, mProviders, Constants.LIST_VIEW);
         } else {
             return NodesFragment.newInstance(null, mProviders, Constants.LIST_VIEW);
-        }
-    }
-
-    @SuppressWarnings("unused")
-    public void onEvent(GotContentEvent event) {
-        if (!mIsWaitingForContent) {
-            return;
-        }
-
-        Folder folder = event.folder;
-        mIsUserAuthorized = folder.auth;
-        mFolderClientCode = event.folder.client;
-
-        if (mIsUserAuthorized) {
-            showFolderContent(folder, event.backPressed);
-        } else {
-            showAuthFragment();
         }
     }
 
@@ -484,14 +638,130 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
         }
 
         getFragmentManager().beginTransaction()
-                .replace(android.R.id.content, AuthFragment.newInstance(mFolderClientCode), AUTH_FRAGMENT_TAG)
+                .replace(R.id.picker_content, AuthFragment.newInstance(mFolderClientCode), AUTH_FRAGMENT_TAG)
                 .commit();
+    }
+
+    private void  showMoreProgress(){
+        new Handler(getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                View v = findViewById(R.id.progress_more);
+                if(v!= null){
+                    v.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+    }
+
+    private void hideMoreProgress(){
+        new Handler(getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                View v = findViewById(R.id.progress_more);
+                if(v!= null){
+                v.setVisibility(View.GONE);
+                }
+
+            }
+        });
+    }
+
+    @SuppressWarnings("unused")
+    public void onEvent(LoadMoreEvent event){
+        if(mCurrentDisplayedNode.node instanceof Provider){
+            if(Constants.NATIVE_PROVIDERS.contains(((Provider)(mCurrentDisplayedNode.node)).code)){
+                SharedPreferences preferences = getSharedPreferences(PREF_PAGINATION,MODE_PRIVATE);
+
+                if(((Provider)(mCurrentDisplayedNode.node)).code.equals(Constants.TYPE_DRIVE)) {
+                    String pageToken = preferences.getString(PREF_DRIVE_PAGE,null);
+                    if(pageToken != null) {
+                        moreNode = mCurrentDisplayedNode.node;
+                        getGoogleDriveContent(mCurrentDisplayedNode.node, false,true);
+                    }
+                    return;
+                }else if(((Provider)(mCurrentDisplayedNode.node)).code.equals(Constants.TYPE_PICASA)){
+                    String pageToken = preferences.getString(PREF_GPHOTOS_PAGE,null);
+                    if(pageToken != null) {
+                        moreNode = mCurrentDisplayedNode.node;
+                        getPicasaContent(mCurrentDisplayedNode.node, false,true);
+                    }
+                    return;
+                }
+
+            }
+        }
+
+        if(mCurrentDisplayedNode.node instanceof GoogleDriveNode){
+            SharedPreferences preferences = getSharedPreferences(PREF_PAGINATION,MODE_PRIVATE);
+            if(((GoogleDriveNode)mCurrentDisplayedNode.node).driveType.equals(Constants.TYPE_DRIVE)) {
+                String pageToken = preferences.getString(PREF_DRIVE_PAGE,null);
+                if(pageToken != null) {
+                    moreNode = mCurrentDisplayedNode.node;
+                    getGoogleDriveContent(mCurrentDisplayedNode.node, false,true);
+                }
+            }
+        }
+
+    }
+
+
+    @SuppressWarnings("unused")
+    public void onEvent(GoogleDriveUploadProgressEvent event){
+        //TODO: HANDLE PROGRESS
+        progressMap.put(event.getNode().displayName,
+                    event.getNode().displayName + "  " + Math.round(event.getProgress()*100) + "%\n");
+
+        String progress = "Uploading: \n";
+
+        for (String ns:progressMap.values()){
+            progress += ns;
+        }
+
+        if(!progress_text.getText().toString().equals(Constants.TERMINATING)) {
+            new Handler(getMainLooper()).post((new Runnable() {
+                private String message;
+
+                public Runnable setEvent(String message) {
+                    this.message = message;
+                    return this;
+                }
+
+                @Override
+                public void run() {
+                    progress_text.setText(message);
+                }
+            }).setEvent(progress));
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public void onEvent(GotContentEvent event) {
+        if (!mIsWaitingForContent) {
+            return;
+        }
+        mIsWaitingForContent = false;
+        hideLoading();
+        hideMoreProgress();
+        Folder folder = event.folder;
+        mIsUserAuthorized = folder.auth;
+        mFolderClientCode = event.folder.client;
+        if (mIsUserAuthorized) {
+            showFolderContent(folder);
+        } else {
+            showAuthFragment();
+        }
     }
 
     @SuppressWarnings("unused")
     public void onEvent(FpFilesReceivedEvent event) {
+        if(!mIsWaitingForContent) {
+            return;
+        }
+        hideLoading();
+        mIsWaitingForContent = false;
         ArrayList<FPFile> fpFiles = event.fpFiles;
-
         Intent resultIntent = new Intent();
         resultIntent.putParcelableArrayListExtra(FPFILES_EXTRA, fpFiles);
         setResult(RESULT_OK, resultIntent);
@@ -501,7 +771,7 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
     @SuppressWarnings("unused")
     public void onEvent(ApiErrorEvent event) {
         PreferencesUtils prefs = PreferencesUtils.newInstance(this);
-
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent(ContentService.SERVICE_TERMINATED));
         if (prefs.shouldShowErrorToast()) {
             showErrorMessage(event.error);
         }
@@ -511,7 +781,6 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
             data.setData(((UploadFileErrorEvent)event).getUri());
             setResult(RESULT_CANCELED, data);
         }
-
         finish();
     }
 
@@ -532,6 +801,7 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
         Utils.showQuickToast(this, errorMessage);
     }
 
+
     @SuppressWarnings("unused")
     public void onEvent(SignedOutEvent event) {
         clearSession(this);
@@ -540,11 +810,14 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
 
     @SuppressWarnings("unused")
     public void onEvent(FileExportedEvent event) {
+        if (!mIsWaitingForContent){
+            return;
+        }
+        hideLoading();
+        mIsWaitingForContent = false;
         String message = "File " + event.fpFile.getFilename() + " was exported to " + event.path.split("/")[0];
         Utils.showQuickToast(this, message);
-
         Intent resultIntent = new Intent();
-
         ArrayList<FPFile> result = new ArrayList<>();
         result.add(event.fpFile);
         resultIntent.putParcelableArrayListExtra(FPFILES_EXTRA, result);
@@ -552,9 +825,56 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
         finish();
     }
 
+
+    @SuppressWarnings("unsused")
+    public void onEvent(GoogleDriveContentEvent driveContent){
+        if (!mIsWaitingForContent) {
+            return;
+        }
+        hideLoading();
+        mIsWaitingForContent = false;
+        hideMoreProgress();
+        if(driveContent.isLoadMore()){
+            if(mCurrentDisplayedNode.node == moreNode)
+                moreNode = null;
+                addFolderContent(driveContent.getGoogleNodes());
+        }else {
+            showDriveFolderContent(driveContent.getGoogleNodes(), driveContent.isBackPresed());
+        }
+    }
+
+
+    @SuppressWarnings("unused")
+    public void onEvent(final GoogleDriveError driveError){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                hideLoading();
+                if (driveError.getException() != null) {
+                    if (driveError.getException() instanceof GooglePlayServicesAvailabilityIOException) {
+                        showGooglePlayServicesAvailabilityErrorDialog(
+                                ((GooglePlayServicesAvailabilityIOException) driveError.getException())
+                                        .getConnectionStatusCode());
+                    } else if (driveError.getException() instanceof UserRecoverableAuthIOException) {
+                        startActivityForResult(
+                                ((UserRecoverableAuthIOException) driveError.getException()).getIntent(), Filepicker.REQUEST_AUTHORIZATION);
+                    } else {
+                        Toast.makeText(getApplicationContext(),"The following error occurred:\n"
+                                + driveError.getException().getMessage(),Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(),R.string.error_request_canceled,Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+
+            }
+        });
+    }
+
     public void proceedAfterAuth() {
-       // Try getting content again
-       getContent(mCurrentDisplayedNode.node, false);
+        // Try getting content again
+        getContent(mCurrentDisplayedNode.node, false);
     }
 
     private void validateApiKey() {
@@ -568,12 +888,16 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
     @Override
     public void pickFiles(ArrayList<Node> pickedFiles) {
         showLoading();
-        ContentService.pickFiles(this, pickedFiles);
+        progressMap = new HashMap<>();
+        mIsWaitingForContent = true;
+        mDisplayedNodesList.add(new DisplayedNode(null,""));
+        mPendingAbort = false;
+        ContentService.pickFiles(getApplicationContext(), pickedFiles);
     }
 
     // Removes currently last node's cached file and the node itself from the list
     private void removeLastNode() {
-        File file = Utils.getCacheFile(this, mCurrentDisplayedNode.node.deslashedPath());
+        java.io.File file = Utils.getCacheFile(this, mCurrentDisplayedNode.node.deslashedPath());
         if (file.exists()) {
             file.delete();
         }
@@ -590,8 +914,266 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
 
     private void refreshCurrentlyDisplayedNode(DisplayedNode displayedNode, boolean isBackPressed) {
         setTitle(displayedNode.node.displayName);
+        if(displayedNode.node instanceof Provider){
+            if(Constants.NATIVE_PROVIDERS.contains(((Provider)(displayedNode.node)).code)){
+                SharedPreferences preferences = getSharedPreferences(PREF_PAGINATION,MODE_PRIVATE);
+
+                if(((Provider)(displayedNode.node)).code.equals(Constants.TYPE_DRIVE)) {
+                    preferences.edit().putString(PREF_DRIVE_PAGE,"").commit();
+                    getGoogleDriveContent(displayedNode.node, isBackPressed,false);
+                    return;
+                }else if(((Provider)(displayedNode.node)).code.equals(Constants.TYPE_GMAIL)){
+                    getGmailContent(displayedNode.node,isBackPressed);
+                    return;
+                }else if(((Provider)(displayedNode.node)).code.equals(Constants.TYPE_PICASA)){
+                    preferences.edit().putString(PREF_GPHOTOS_PAGE,"").commit();
+                    getPicasaContent(displayedNode.node,isBackPressed,false);
+                    return;
+                }
+
+            }
+        }
+
+        if(displayedNode.node instanceof GoogleDriveNode){
+            SharedPreferences preferences = getSharedPreferences(PREF_PAGINATION,MODE_PRIVATE);
+            if(((GoogleDriveNode)displayedNode.node).driveType.equals(Constants.TYPE_DRIVE)) {
+                preferences.edit().putString(PREF_DRIVE_PAGE,"").commit();
+                getGoogleDriveContent(displayedNode.node, isBackPressed,false);
+            }else if(((GoogleDriveNode)displayedNode.node).driveType.equals(Constants.TYPE_GMAIL)){
+                getGmailContent(displayedNode.node,isBackPressed);
+            }
+            return;
+        }
         getContent(displayedNode.node, isBackPressed);
     }
+
+    /**
+     * Attempt to call the API, after verifying that all the preconditions are
+     * satisfied. The preconditions are: Google Play Services installed, an
+     * account was selected and the device currently has online access. If any
+     * of the preconditions are not satisfied, the app will prompt the user as
+     * appropriate.
+     */
+    private void getPicasaContent(Node node, boolean backPressed, boolean isMore){
+        if (! isGooglePlayServicesAvailable()) {
+            acquireGooglePlayServices();
+        } else if (getGPhotosCredential(this).getSelectedAccountName() == null) {
+            chooseAccount();
+        } else if (! isDeviceOnline()) {
+            Toast.makeText(Filepicker.this,R.string.error_no_connection_available,Toast.LENGTH_SHORT).show();
+        } else {
+            mIsWaitingForContent = true;
+            mPendingAbort = false;
+            if(isMore)showMoreProgress(); else showLoading();
+            ContentService.getGPhotosContent(getApplicationContext(),node,backPressed);
+        }
+    }
+
+    /**
+     * Attempt to call the API, after verifying that all the preconditions are
+     * satisfied. The preconditions are: Google Play Services installed, an
+     * account was selected and the device currently has online access. If any
+     * of the preconditions are not satisfied, the app will prompt the user as
+     * appropriate.
+     */
+    private void getGmailContent(Node node, boolean backPressed) {
+        if (! isGooglePlayServicesAvailable()) {
+            acquireGooglePlayServices();
+        } else if (getGmailCredential(this).getSelectedAccountName() == null) {
+            chooseAccount();
+        } else if (! isDeviceOnline()) {
+            Toast.makeText(Filepicker.this,R.string.error_no_connection_available,Toast.LENGTH_SHORT).show();
+        } else {
+            mIsWaitingForContent = true;
+            mPendingAbort = false;
+            showLoading();
+            ContentService.getGMailContent(getApplicationContext(),node,backPressed);
+
+        }
+    }
+
+
+    private void getGoogleDriveContent(Node node, boolean backPressed,boolean isMore) {
+        if (! isGooglePlayServicesAvailable()) {
+            acquireGooglePlayServices();
+        } else if (getGoogleCredential(this).getSelectedAccountName() == null) {
+            chooseAccount();
+        } else if (! isDeviceOnline()) {
+            Toast.makeText(Filepicker.this,R.string.error_no_connection_available,Toast.LENGTH_SHORT).show();
+        } else {
+            mIsWaitingForContent = true;
+            mPendingAbort = false;
+            if(isMore)showMoreProgress(); else showLoading();
+            ContentService.getGoogleDriveContent(getApplicationContext(),node,backPressed);
+        }
+    }
+
+    /**
+     * Respond to requests for permissions at runtime for API 23 and above.
+     * @param requestCode The request code passed in
+     *     requestPermissions(android.app.Activity, String, int, String[])
+     * @param permissions The requested permissions. Never null.
+     * @param grantResults The grant results for the corresponding permissions
+     *     which is either PERMISSION_GRANTED or PERMISSION_DENIED. Never null.
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        hideLoading(); hideMoreProgress();
+        EasyPermissions.onRequestPermissionsResult(
+                requestCode, permissions, grantResults, this);
+    }
+
+    /**
+     * Callback for when a permission is granted using the EasyPermissions
+     * library.
+     * @param requestCode The request code associated with the requested
+     *         permission
+     * @param list The requested permission list. Never null.
+     */
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> list) {
+        // Do nothing.
+    }
+
+    /**
+     * Callback for when a permission is denied using the EasyPermissions
+     * library.
+     * @param requestCode The request code associated with the requested
+     *         permission
+     * @param list The requested permission list. Never null.
+     */
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> list) {
+        // Do nothing.
+        if(!EasyPermissions.hasPermissions(this,Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+            Toast.makeText(getApplicationContext(),
+                    R.string.error_permission_denied,
+                    Toast.LENGTH_SHORT).show();
+            finish();
+        }
+    }
+
+    /**
+     * Checks whether the device currently has a network connection.
+     * @return true if the device has a network connection, false otherwise.
+     */
+    private boolean isDeviceOnline() {
+        ConnectivityManager connMgr =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnected());
+    }
+
+    /**
+     * Attempts to set the account used with the API credentials. If an account
+     * name was previously saved it will use that one; otherwise an account
+     * picker dialog will be shown to the user. Note that the setting the
+     * account to use with the credentials object requires the app to have the
+     * GET_ACCOUNTS permission, which is requested here if it is not already
+     * present. The AfterPermissionGranted annotation indicates that this
+     * function will be rerun automatically whenever the GET_ACCOUNTS permission
+     * is granted.
+     */
+    @AfterPermissionGranted(REQUEST_PERMISSION_GET_ACCOUNTS)
+    private void chooseAccount() {
+        if (EasyPermissions.hasPermissions(
+                this, Manifest.permission.GET_ACCOUNTS)) {
+            String accountName = null;
+
+            if(((Provider)(mCurrentDisplayedNode.node)).code.equals(Constants.TYPE_DRIVE)){
+                accountName = getPreferences(Context.MODE_PRIVATE)
+                        .getString(PREF_ACCOUNT_NAME, null);
+            }else if (((Provider)(mCurrentDisplayedNode.node)).code.equals(Constants.TYPE_GMAIL)){
+                accountName = getPreferences(Context.MODE_PRIVATE)
+                        .getString(PREF_ACCOUNT_NAME_GMAIL, null);
+            }else if (((Provider)(mCurrentDisplayedNode.node)).code.equals(Constants.TYPE_PICASA)){
+                accountName = getPreferences(Context.MODE_PRIVATE)
+                        .getString(PREF_ACCOUNT_NAME_GPHOTOS,null);
+            }
+
+            if (accountName != null) {
+                if(((Provider)(mCurrentDisplayedNode.node)).code.equals(Constants.TYPE_DRIVE)){
+                    Filepicker.getGoogleCredential(getApplicationContext()).setSelectedAccountName(accountName);
+                }else if (((Provider)(mCurrentDisplayedNode.node)).code.equals(Constants.TYPE_GMAIL)){
+                    Filepicker.getGmailCredential(getApplicationContext()).setSelectedAccountName(accountName);
+                }else if (((Provider)(mCurrentDisplayedNode.node)).code.equals(Constants.TYPE_PICASA)){
+                    Filepicker.getGPhotosCredential(getApplicationContext()).setSelectedAccountName(accountName);
+                }
+                refreshCurrentlyDisplayedNode(mCurrentDisplayedNode, false);
+
+            } else {
+                // Start a dialog from which the user can choose an account
+                if(((Provider)(mCurrentDisplayedNode.node)).code.equals(Constants.TYPE_DRIVE)){
+                    startActivityForResult(
+                            Filepicker.getGoogleCredential(getApplicationContext()).newChooseAccountIntent(),
+                            REQUEST_ACCOUNT_PICKER);
+                }else if (((Provider)(mCurrentDisplayedNode.node)).code.equals(Constants.TYPE_GMAIL)){
+                    startActivityForResult(
+                            Filepicker.getGmailCredential(getApplicationContext()).newChooseAccountIntent(),
+                            REQUEST_ACCOUNT_PICKER);
+                }else if (((Provider)(mCurrentDisplayedNode.node)).code.equals(Constants.TYPE_PICASA)){
+                    startActivityForResult(
+                            Filepicker.getGPhotosCredential(getApplicationContext()).newChooseAccountIntent(),
+                            REQUEST_ACCOUNT_PICKER);
+                }
+
+            }
+        } else {
+            // Request the GET_ACCOUNTS permission via a user dialog
+            EasyPermissions.requestPermissions(
+                    this,
+                    getString(R.string.message_contact_permission_needed),
+                    REQUEST_PERMISSION_GET_ACCOUNTS,
+                    Manifest.permission.GET_ACCOUNTS);
+        }
+    }
+
+    /**
+     * Check that Google Play services APK is installed and up to date.
+     * @return true if Google Play Services is available and up to
+     *     date on this device; false otherwise.
+     */
+    private boolean isGooglePlayServicesAvailable() {
+        GoogleApiAvailability apiAvailability =
+                GoogleApiAvailability.getInstance();
+        final int connectionStatusCode =
+                apiAvailability.isGooglePlayServicesAvailable(this);
+        return connectionStatusCode == ConnectionResult.SUCCESS;
+    }
+
+    /**
+     * Attempt to resolve a missing, out-of-date, invalid or disabled Google
+     * Play Services installation via a user dialog, if possible.
+     */
+    private void acquireGooglePlayServices() {
+        GoogleApiAvailability apiAvailability =
+                GoogleApiAvailability.getInstance();
+        final int connectionStatusCode =
+                apiAvailability.isGooglePlayServicesAvailable(this);
+        if (apiAvailability.isUserResolvableError(connectionStatusCode)) {
+            showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode);
+        }
+    }
+
+    /**
+     * Display an error dialog showing that Google Play Services is missing
+     * or out of date.
+     * @param connectionStatusCode code describing the presence (or lack of)
+     *     Google Play Services on this device.
+     */
+    void showGooglePlayServicesAvailabilityErrorDialog(
+            final int connectionStatusCode) {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        Dialog dialog = apiAvailability.getErrorDialog(
+                Filepicker.this,
+                connectionStatusCode,
+                REQUEST_GOOGLE_PLAY_SERVICES);
+        dialog.show();
+    }
+
 
     private void setTitle(String title) {
         if (getActionBar() != null) {
@@ -602,7 +1184,10 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
     @Override
     public void exportFile(String filename) {
         showLoading();
-        ContentService.exportFile(this, mCurrentDisplayedNode.node, mFileToExport, filename);
+        mIsWaitingForContent = true;
+        mPendingAbort = false;
+        mDisplayedNodesList.add(new DisplayedNode(null,""));
+        ContentService.exportFile(getApplicationContext(), mCurrentDisplayedNode.node, mFileToExport, filename);
     }
 
     @Override
@@ -676,8 +1261,47 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
             finish();
             return;
         }
-
         switch (requestCode) {
+            case REQUEST_GOOGLE_PLAY_SERVICES:
+                if (resultCode != RESULT_OK) {
+                    hideLoading(); hideMoreProgress();
+                    Toast.makeText(Filepicker.this,
+                            R.string.error_no_google_services,
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    refreshCurrentlyDisplayedNode(mCurrentDisplayedNode, false);
+                }
+                break;
+            case REQUEST_ACCOUNT_PICKER:
+                if (resultCode == RESULT_OK && data != null &&
+                        data.getExtras() != null) {
+                    String accountName =
+                            data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                    if (accountName != null) {
+                        SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = settings.edit();
+
+                        if(((Provider)(mCurrentDisplayedNode.node)).code.equals(Constants.TYPE_DRIVE)) {
+                            editor.putString(PREF_ACCOUNT_NAME, accountName);
+                            Filepicker.getGoogleCredential(getApplicationContext()).setSelectedAccountName(accountName);
+                        }else if (((Provider)(mCurrentDisplayedNode.node)).code.equals(Constants.TYPE_GMAIL)) {
+                            editor.putString(PREF_ACCOUNT_NAME_GMAIL, accountName);
+                            Filepicker.getGmailCredential(getApplicationContext()).setSelectedAccountName(accountName);
+                        }else if (((Provider)(mCurrentDisplayedNode.node)).code.equals(Constants.TYPE_PICASA)) {
+                            editor.putString(PREF_ACCOUNT_NAME_GPHOTOS, accountName);
+                            Filepicker.getGPhotosCredential(getApplicationContext()).setSelectedAccountName(accountName);
+                        }
+                        editor.apply();
+                        refreshCurrentlyDisplayedNode(mCurrentDisplayedNode, false);
+                    }
+                }else{hideLoading(); hideMoreProgress();}
+                break;
+            case REQUEST_AUTHORIZATION:
+                if (resultCode == RESULT_OK) {
+                    refreshCurrentlyDisplayedNode(mCurrentDisplayedNode, false);
+                }else{hideLoading(); hideMoreProgress();}
+                break;
+
             case REQUEST_CODE_GETFILE:
                 if (resultCode == RESULT_OK) {
                     setResult(RESULT_OK, data);
@@ -714,17 +1338,17 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
 
     private void hideLoading() {
         mIsLoading = false;
-        updateLoadingView();
+        new Handler(getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                updateLoadingView();
+            }
+        });
     }
 
     private void updateLoadingView() {
         mProgressBar.setVisibility(mIsLoading ? View.VISIBLE : View.GONE);
-        Fragment frag = getFragmentManager().findFragmentById(android.R.id.content);
-
-        if (frag != null && frag.getView() != null) {
-            frag.getView().setEnabled(!mIsLoading);
-            frag.getView().setAlpha(mIsLoading ? 0.2f : 1f);
-        }
+        progress_text.setText("");
     }
 
     private void setCameraImageUri() {
@@ -748,21 +1372,26 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
                 intent.getData() != null;
     }
 
-    private void showCachedNode(File nodeCachedData) {
-        new AsyncTask<File, Void, Void>() {
+    private void showCachedNode(java.io.File nodeCachedData) {
+        new AsyncTask<java.io.File, Void, Void>() {
             @Override
-            protected Void doInBackground(File... params) {
-                mNodeContentList = new ArrayList<>();
-                File nodeCachedData = params[0];
-
+            protected Void doInBackground(java.io.File... params) {
+                java.io.File nodeCachedData = params[0];
                 try {
                     Log.d(LOG_TAG, "Reading from file " + nodeCachedData.getAbsolutePath());
                     BufferedReader br = new BufferedReader(new FileReader(nodeCachedData));
                     String line;
                     while ((line = br.readLine()) != null) {
-                        for (Node node :  new Gson().fromJson(line, Node[].class)) {
-                            mNodeContentList.add(node);
+
+                        if (nodeCachedData.getName().contains("drive_") ||
+                                nodeCachedData.getName().toUpperCase().contains("GOOGLEDRIVE") ||
+                                nodeCachedData.getName().toUpperCase().contains("GMAIL")||
+                                nodeCachedData.getName().toUpperCase().contains("GOOGLEPHOTOS")){
+                            mNodeContentList = new ArrayList<>(Arrays.asList(new Gson().fromJson(line, GoogleDriveNode[].class)));
+                        }else{
+                            mNodeContentList = new ArrayList<>(Arrays.asList(new Gson().fromJson(line, Node[].class)));
                         }
+
                     }
                     br.close();
                 } catch (IOException e) {
@@ -773,7 +1402,7 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
 
             @Override
             protected void onPostExecute(Void param) {
-                refreshFragment(true);
+                refreshFragment();
             }
         }.execute(nodeCachedData);
     }
@@ -787,7 +1416,7 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
             }
         }.execute();
     }
-    private static class CacheGotItemsTask extends AsyncTask<ArrayList<Node>, Void, Void> {
+    private static class CacheGotItemsTask extends AsyncTask<ArrayList<? extends Node>, Void, Void> {
 
         private final Context mContext;
         private final Node mLastNode;
@@ -798,13 +1427,13 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
         }
 
         @Override
-        protected Void doInBackground(ArrayList<Node>... params) {
-            final ArrayList<Node> nodes = params[0];
+        protected Void doInBackground(ArrayList<? extends Node>... params) {
+            final List<? extends Node> nodes = params[0];
             if (nodes != null && !nodes.isEmpty() && mLastNode != null) {
                 Gson gson = new Gson();
                 JsonElement jsonElement = new JsonParser().parse(gson.toJson(nodes));
                 String result = gson.toJson(jsonElement);
-                File file = Utils.getCacheFile(mContext, mLastNode.deslashedPath());
+                java.io.File file = Utils.getCacheFile(mContext, mLastNode.deslashedPath());
                 try {
                     Log.d(LOG_TAG, "Writing to file " + file.getAbsolutePath());
                     FileOutputStream output = new FileOutputStream(file);
@@ -826,4 +1455,6 @@ public class Filepicker extends Activity implements AuthFragment.Contract, Nodes
         PreferencesUtils prefs = PreferencesUtils.newInstance(this);
         return prefs.isMimetypeSet("video") && !prefs.isMimetypeSet("image");
     }
+
+
 }
