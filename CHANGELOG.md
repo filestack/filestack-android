@@ -1,3 +1,8 @@
+Version 4.0.0 *(2017-05-29)*
+----------------------------
+  * New: Build process with Bintray upload
+  * Fix: Google OAuth without Webview
+
 Version 3.9.10 *(2015-12-11)*
 ----------------------------
   * New: Add callback for uploading local files
