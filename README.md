@@ -17,20 +17,23 @@ Including In Your Project
 
 This library is distributed as Android library project so it can be included by referencing it as a library project.
 
+https://bintray.com/filestack/maven/filepicker-android
+
 If you use Maven, you can include this library as a dependency:
 
 ```xml
 <dependency>
   <groupId>io.filepicker</groupId>
   <artifactId>filepicker-android</artifactId>
-  <version>3.9.0</version>
+  <version>4.0.0</version>
+  <type>pom</type>
 </dependency>
 ```
 
 For Gradle users:
 
 ```xml
-compile 'io.filepicker:filepicker-android:3.9.0’
+compile 'io.filepicker:filepicker-android:4.0.0'
 ```
 
 ProGuard
