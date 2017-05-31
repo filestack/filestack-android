@@ -1,6 +1,6 @@
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.0'
@@ -8,10 +8,6 @@ buildscript {
 }
 
 apply plugin: 'com.android.application'
-
-repositories {
-    mavenCentral()
-}
 
 android {
 
@@ -22,6 +18,19 @@ android {
         targetSdkVersion 22
     }
     productFlavors {
+    }
+
+    lintOptions {
+      abortOnError false
+    }
+}
+
+allprojects {
+    version = version
+    group = group
+
+    repositories {
+        jcenter()
     }
 }
 
