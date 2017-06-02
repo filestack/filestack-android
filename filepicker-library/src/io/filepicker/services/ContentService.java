@@ -372,14 +372,14 @@ public class ContentService extends IntentService {
                             } else {
                                 if(!cancelled)handleApiError(getErrorType(response));
                             }
-                            countDownLatch.countDown();
+
                         }
 
                         @Override
                         public void onFailure(Call<Folder> call, Throwable throwable) {
                             currentCall = null;
                             if(!cancelled)handleApiError(ApiErrorEvent.ErrorType.UNKNOWN_ERROR);
-                            countDownLatch.countDown();
+
                         }
                     });
         }
@@ -573,13 +573,13 @@ public class ContentService extends IntentService {
                             } else {
                                 Log.d(LOG_TAG, "failure");
                             }
-                            countDownLatch.countDown();
+
                         }
 
                         @Override
                         public void onFailure(Call<FPFile> call, Throwable throwable) {
                             Log.e(LOG_TAG, "failure", throwable);
-                            countDownLatch.countDown();
+
                         }
                     });
         }
