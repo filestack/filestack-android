@@ -1,3 +1,7 @@
+Version 4.0.1 *(2017-06-05)*
+----------------------------
+  * Fix: Activity not closing after upload
+
 Version 4.0.0 *(2017-05-29)*
 ----------------------------
   * New: Build process with Bintray upload
