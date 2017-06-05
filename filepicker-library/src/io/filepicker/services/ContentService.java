@@ -222,8 +222,6 @@ public class ContentService extends IntentService {
         cancelled = false;
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_GET_CANCEL_OPERATION);
-        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(getMessageReceiver(),filter);
-
         if (intent != null) {
             String action = intent.getAction();
             Node node;
@@ -232,24 +230,36 @@ public class ContentService extends IntentService {
 
             switch (action) {
                 case ACTION_GET_GPHOTOS_CONTENT:
+                    LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(getMessageReceiver(),filter);
                     if(intent.hasExtra(EXTRA_NODE))
                         gNode = intent.getParcelableExtra(EXTRA_NODE);
                     backPressed = intent.getBooleanExtra(EXTRA_BACK_PRESSED,false);
                     handleActionGetGPhotosContent(gNode, backPressed);
+                    if(cancelled)
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent(SERVICE_TERMINATED));
+                    LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(getMessageReceiver());
                     break;
 
                 case ACTION_GET_GMAIL_CONTENT:
+                    LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(getMessageReceiver(),filter);
                     if(intent.hasExtra(EXTRA_NODE))
                         gNode = intent.getParcelableExtra(EXTRA_NODE);
                     backPressed = intent.getBooleanExtra(EXTRA_BACK_PRESSED,false);
                     handleActionGetGMailContent(gNode, backPressed);
+                    if(cancelled)
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent(SERVICE_TERMINATED));
+                    LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(getMessageReceiver());
                     break;
 
                 case ACTION_GET_DRIVE_CONTENT:
+                    LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(getMessageReceiver(),filter);
                     if(intent.hasExtra(EXTRA_NODE))
                         gNode = intent.getParcelableExtra(EXTRA_NODE);
                     backPressed = intent.getBooleanExtra(EXTRA_BACK_PRESSED,false);
                     handleActionGetDriveContent(gNode, backPressed);
+                    if(cancelled)
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent(SERVICE_TERMINATED));
+                    LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(getMessageReceiver());
                     break;
 
                 case ACTION_GET_CONTENT:
@@ -264,8 +274,12 @@ public class ContentService extends IntentService {
                     break;
 
                 case ACTION_PICK_FILES:
+                    LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(getMessageReceiver(),filter);
                     ArrayList<Node> files = intent.getParcelableArrayListExtra(EXTRA_NODE);
                     handleActionPickFiles(files);
+                    if(cancelled)
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent(SERVICE_TERMINATED));
+                    LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(getMessageReceiver());
                     break;
 
                 case ACTION_EXPORT_FILE:
@@ -279,9 +293,7 @@ public class ContentService extends IntentService {
                     break;
             }
 
-            if(cancelled)
-                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent(SERVICE_TERMINATED));
-            LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(getMessageReceiver());
+
         }
     }
 
@@ -349,7 +361,6 @@ public class ContentService extends IntentService {
 
     private void handleActionGetContent(Node node, final boolean backPressed) {
         if(!cancelled) {
-            countDownLatch = new CountDownLatch(1);
             (currentCall= FpApiClient.getFpApiClient(this)
                     .getFolder(node.linkPath, "info", FpApiClient.getJsSession(this)))
                     .enqueue(new Callback<Folder>() {
@@ -361,17 +372,16 @@ public class ContentService extends IntentService {
                             } else {
                                 if(!cancelled)handleApiError(getErrorType(response));
                             }
-                            countDownLatch.countDown();
+
                         }
 
                         @Override
                         public void onFailure(Call<Folder> call, Throwable throwable) {
                             currentCall = null;
                             if(!cancelled)handleApiError(ApiErrorEvent.ErrorType.UNKNOWN_ERROR);
-                            countDownLatch.countDown();
+
                         }
                     });
-            try{countDownLatch.await();}catch (Exception e){Log.e(LOG_TAG, "failure");}
         }
     }
 
@@ -530,13 +540,11 @@ public class ContentService extends IntentService {
         });
 
         if(!cancelled) {
-            countDownLatch = new CountDownLatch(1);
             (currentCall =FpApiClient.getFpApiClient(this).uploadFile(
                     Utils.getUploadedFilename(file.getName()),
                     FpApiClient.getJsSession(this),
                     requestBody
             )).enqueue(uploadLocalFileCallback(uri));
-            try{countDownLatch.await();}catch (Exception e){Log.e(LOG_TAG, "failure");}
         }
     }
 
@@ -553,7 +561,6 @@ public class ContentService extends IntentService {
         RequestBody content = FilesUtils.buildRequestBody(this, fileUri);
 
         if(!cancelled) {
-            countDownLatch = new CountDownLatch(1);
             (currentCall = FpApiClient.getFpApiClient(this)
                     .exportFile(path, FpApiClient.getJsSession(this), content))
                     .enqueue(new Callback<FPFile>() {
@@ -566,16 +573,15 @@ public class ContentService extends IntentService {
                             } else {
                                 Log.d(LOG_TAG, "failure");
                             }
-                            countDownLatch.countDown();
+
                         }
 
                         @Override
                         public void onFailure(Call<FPFile> call, Throwable throwable) {
                             Log.e(LOG_TAG, "failure", throwable);
-                            countDownLatch.countDown();
+
                         }
                     });
-            try{countDownLatch.await();}catch (Exception e){Log.e(LOG_TAG, "failure");}
         }
     }
 
@@ -827,18 +833,17 @@ public class ContentService extends IntentService {
             public void onResponse(Call<UploadLocalFileResponse> call, Response<UploadLocalFileResponse> response) {
                 currentCall = null;
                 if (response.isSuccessful()) {
-                    if(!cancelled)onFileUploadSuccess(response.body(), uri);
+                   onFileUploadSuccess(response.body(), uri);
                 } else {
-                    if(!cancelled)handleUploadFileError(uri, getErrorType(response));
+                    handleUploadFileError(uri, getErrorType(response));
                 }
-                countDownLatch.countDown();
+
             }
 
             @Override
             public void onFailure(Call<UploadLocalFileResponse> call, Throwable throwable) {
                 currentCall = null;
                 handleUploadFileError(uri, ApiErrorEvent.ErrorType.UNKNOWN_ERROR);
-                countDownLatch.countDown();
             }
         };
     }

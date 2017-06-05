@@ -184,7 +184,7 @@ public class Filepicker extends FragmentActivity implements AuthFragment.Contrac
     private static FilepickerCallbackHandler sFilepickerCallbackHandler = new FilepickerCallbackHandler();
 
     static boolean mExport = false;
-    private boolean allowMultiple = false;
+    private boolean allowMultiple = false,activityBack = false;
     private Node moreNode;
 
     public static void setKey(String apiKey) {
@@ -290,6 +290,7 @@ public class Filepicker extends FragmentActivity implements AuthFragment.Contrac
         mProgressBar =  findViewById(R.id.fpProgressBar);
         progress_text = (TextView) findViewById(R.id.progress_text);
         initSavedState(savedInstanceState);
+        activityBack = false;
 
         if (mDisplayedNodesList == null) {
             mDisplayedNodesList = new ArrayList<>();
@@ -1202,10 +1203,12 @@ public class Filepicker extends FragmentActivity implements AuthFragment.Contrac
 
     @Override
     public void openCamera() {
-        if (isOnlyVideoCamera()) {
-            recordVideo();
-        } else {
-            takePhoto();
+        if(!activityBack) {
+            if (isOnlyVideoCamera()) {
+                recordVideo();
+            } else {
+                takePhoto();
+            }
         }
     }
 
@@ -1230,17 +1233,20 @@ public class Filepicker extends FragmentActivity implements AuthFragment.Contrac
 
     @Override
     public void openGallery(boolean allowMultiple) {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType(isOnlyVideoCamera() ? Constants.MIMETYPE_VIDEO : Constants.MIMETYPE_IMAGE);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
+        if(!activityBack) {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType(isOnlyVideoCamera() ? Constants.MIMETYPE_VIDEO : Constants.MIMETYPE_IMAGE);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
+            }
+            startActivityForResult(intent, REQUEST_CODE_GET_LOCAL_FILE);
         }
-        startActivityForResult(intent, REQUEST_CODE_GET_LOCAL_FILE);
     }
 
     private void uploadLocalFile(Uri uri) {
         showLoading();
+
         uploadLocalFile(uri, this);
     }
 
@@ -1254,6 +1260,7 @@ public class Filepicker extends FragmentActivity implements AuthFragment.Contrac
         return super.onOptionsItemSelected(item);
     }
 
+
     // For Camera and Gallery
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -1263,6 +1270,7 @@ public class Filepicker extends FragmentActivity implements AuthFragment.Contrac
         }
         switch (requestCode) {
             case REQUEST_GOOGLE_PLAY_SERVICES:
+                activityBack = true;
                 if (resultCode != RESULT_OK) {
                     hideLoading(); hideMoreProgress();
                     Toast.makeText(Filepicker.this,
@@ -1273,6 +1281,7 @@ public class Filepicker extends FragmentActivity implements AuthFragment.Contrac
                 }
                 break;
             case REQUEST_ACCOUNT_PICKER:
+                activityBack = true;
                 if (resultCode == RESULT_OK && data != null &&
                         data.getExtras() != null) {
                     String accountName =
@@ -1297,18 +1306,21 @@ public class Filepicker extends FragmentActivity implements AuthFragment.Contrac
                 }else{hideLoading(); hideMoreProgress();}
                 break;
             case REQUEST_AUTHORIZATION:
+                activityBack = true;
                 if (resultCode == RESULT_OK) {
                     refreshCurrentlyDisplayedNode(mCurrentDisplayedNode, false);
                 }else{hideLoading(); hideMoreProgress();}
                 break;
 
             case REQUEST_CODE_GETFILE:
+                activityBack = true;
                 if (resultCode == RESULT_OK) {
                     setResult(RESULT_OK, data);
                     finish();
                 }
                 break;
             case REQUEST_CODE_EXPORT_FILE:
+                activityBack = true;
                 if (resultCode == RESULT_OK) {
                     setResult(RESULT_OK, data);
                     finish();
@@ -1316,6 +1328,7 @@ public class Filepicker extends FragmentActivity implements AuthFragment.Contrac
                 break;
             case REQUEST_CODE_GET_LOCAL_FILE:
             case REQUEST_CODE_VIDEO:
+                activityBack = true;
                 if (resultCode == RESULT_OK) {
                     Utils.showQuickToast(this, R.string.uploading_image);
                     showLoading();
@@ -1323,6 +1336,7 @@ public class Filepicker extends FragmentActivity implements AuthFragment.Contrac
                 }
                 break;
             case REQUEST_CODE_TAKE_PICTURE:
+                activityBack = true;
                 if (resultCode == RESULT_OK) {
                     Utils.showQuickToast(this, R.string.uploading_image);
                     uploadLocalFile(imageUri);
@@ -1333,6 +1347,7 @@ public class Filepicker extends FragmentActivity implements AuthFragment.Contrac
 
     private void showLoading() {
         mIsLoading = true;
+        mIsWaitingForContent = true;
         updateLoadingView();
     }
 

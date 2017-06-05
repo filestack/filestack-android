@@ -272,3 +272,15 @@ The set of arguments is the same as specified in [docs](https://developers.filep
 Note the “policy” prefix in options.
 
 [1]: https://raw.github.com/Ink/filepicker-android/master/sample-studio/sample_screen.png
+
+###Enabling APIs for Google Services###
+
+1. In your web browser navigate to  https://console.developers.google.com and sign in with your Google account.
+2. Select “Dashboard” and click on the “Create Project” button, creating a new project for your app (following Google’s steps).
+3. Once the project is successfully created, click on your project name in the upper bar of the Google console. Select the “Credentials” tab on the left Menu.
+4. Click on the “Create Credentials” button, and select “OAuth Client ID” in the sub-menu.
+5. Select Android in the list and complete the required information based on your app. Click “Create” and close the confirmation popup.
+6. Return to the Dashboard section and click on “Enable API”.
+7. Depending on the services you want to include:
+ - **For Google Drive and/or Google Photos**: select “Drive API” under “Google Apps APIs” and click “Enable”.
+ - **For Gmail**: select “Gmail API” under “Google Apps APIs” and click “Enable”.
