@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.app.Fragment;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -1332,7 +1333,13 @@ public class Filepicker extends FragmentActivity implements AuthFragment.Contrac
                 if (resultCode == RESULT_OK) {
                     Utils.showQuickToast(this, R.string.uploading_image);
                     showLoading();
-                    uploadLocalFile(data.getData());
+                    if (data.getData() != null) // Single file returned
+                        uploadLocalFile(data.getData());
+                    else { // Multiple files returned, use getClipData()
+                        ClipData clipData = data.getClipData();
+                        for (int i = 0; i < clipData.getItemCount(); i++)
+                            uploadLocalFile(clipData.getItemAt(i).getUri());
+                    }
                 }
                 break;
             case REQUEST_CODE_TAKE_PICTURE:
