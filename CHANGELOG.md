@@ -1,3 +1,7 @@
+Version 4.0.2 *(2017-06-19)*
+----------------------------
+  * Fix: Fails on multi-image gallery upload
+
 Version 4.0.1 *(2017-06-05)*
 ----------------------------
   * Fix: Activity not closing after upload

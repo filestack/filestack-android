@@ -25,7 +25,7 @@ If you use Maven, you can include this library as a dependency:
 <dependency>
   <groupId>io.filepicker</groupId>
   <artifactId>filepicker-android</artifactId>
-  <version>4.0.1</version>
+  <version>4.0.2</version>
   <type>pom</type>
 </dependency>
 ```
@@ -33,7 +33,7 @@ If you use Maven, you can include this library as a dependency:
 For Gradle users:
 
 ```xml
-compile 'io.filepicker:filepicker-android:4.0.1'
+compile 'io.filepicker:filepicker-android:4.0.2'
 ```
 
 ProGuard
