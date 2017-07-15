@@ -134,6 +134,7 @@ public class Filepicker extends FragmentActivity implements AuthFragment.Contrac
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
     static final int REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE = 1004;
+    static final int REQUEST_PERMISSION_CAMERA = 1005;
 
 
     private static final String PREF_ACCOUNT_NAME = "accountName";
@@ -1024,6 +1025,14 @@ public class Filepicker extends FragmentActivity implements AuthFragment.Contrac
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         hideLoading(); hideMoreProgress();
+        if (requestCode == REQUEST_PERMISSION_CAMERA) {
+            if (grantResults.length > 0) {
+                if (grantResults[0] ==
+                        PackageManager.PERMISSION_GRANTED) {
+                    openCamera();
+                }
+            }
+        }
         EasyPermissions.onRequestPermissionsResult(
                 requestCode, permissions, grantResults, this);
     }
@@ -1204,6 +1213,12 @@ public class Filepicker extends FragmentActivity implements AuthFragment.Contrac
 
     @Override
     public void openCamera() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED && Build.VERSION.SDK_INT >= 23) {
+            requestPermissions(new String[] {Manifest.permission.CAMERA},
+                    REQUEST_PERMISSION_CAMERA);
+            return;
+        }
         if(!activityBack) {
             if (isOnlyVideoCamera()) {
                 recordVideo();
