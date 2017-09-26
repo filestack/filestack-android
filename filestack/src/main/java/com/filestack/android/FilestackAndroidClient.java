@@ -1,0 +1,109 @@
+package com.filestack.android;
+
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.MediaStore;
+import com.filestack.FileLink;
+import com.filestack.FilestackClient;
+import com.filestack.Progress;
+import com.filestack.Security;
+import com.filestack.StorageOptions;
+import com.filestack.errors.InternalException;
+import com.filestack.errors.InvalidParameterException;
+import com.filestack.errors.PolicySignatureException;
+import com.filestack.errors.ValidationException;
+import com.filestack.util.FsService;
+import io.reactivex.Flowable;
+import java.io.IOException;
+
+public class FilestackAndroidClient extends FilestackClient {
+
+    /**
+     * Constructs a client without security.
+     *
+     * @param apiKey account key from the dev portal
+     */
+    public FilestackAndroidClient(String apiKey) {
+        super(apiKey);
+    }
+
+    /**
+     * Constructs a client with security.
+     *
+     * @param apiKey   account key from the dev portal
+     * @param security configured security object
+     */
+    public FilestackAndroidClient(String apiKey, Security security) {
+        super(apiKey, security);
+    }
+
+    /**
+     * Constructs a client using custom {@link FsService}. For internal use.
+     *
+     * @param apiKey    account key from the dev portal
+     * @param security  configured security object
+     * @param fsService service to use for API calls, overrides default singleton
+     */
+    public FilestackAndroidClient(String apiKey, Security security, FsService fsService) {
+        super(apiKey, security, fsService);
+    }
+
+    /**
+     * Uploads {@link Uri} using default storage options.
+     *
+     * @see #upload(String, boolean, StorageOptions)
+     */
+    public FileLink upload(Context context, Uri uri, boolean intelligent)
+            throws ValidationException, IOException, PolicySignatureException,
+                   InvalidParameterException, InternalException {
+        return super.upload(getPathFromMediaUri(context, uri), intelligent);
+    }
+
+    /**
+     * Uploads {@link Uri}.
+     *
+     * @see #upload(String, boolean, StorageOptions)
+     */
+    public FileLink upload(Context context, Uri uri, boolean intelligent, StorageOptions options)
+            throws ValidationException, IOException, PolicySignatureException,
+                   InvalidParameterException, InternalException {
+        return super.upload(getPathFromMediaUri(context, uri), intelligent, options);
+    }
+
+    /**
+     * Asynchronously uploads {@link Uri} using default storage options.
+     *
+     * @see #upload(String, boolean, StorageOptions)
+     * @see #uploadAsync(String, boolean, StorageOptions)
+     */
+    public Flowable<Progress<FileLink>> uploadAsync(Context context, Uri uri, boolean intelligent) {
+        return super.uploadAsync(getPathFromMediaUri(context, uri), intelligent, null);
+    }
+
+    /**
+     * Asynchronously uploads {@link Uri}.
+     *
+     * @see #upload(String, boolean, StorageOptions)
+     * @see #uploadAsync(String, boolean, StorageOptions)
+     */
+    public Flowable<Progress<FileLink>> uploadAsync(Context context, Uri uri, boolean intelligent,
+                                                    StorageOptions options) {
+        return super.uploadAsync(getPathFromMediaUri(context, uri), intelligent, options);
+    }
+
+    private static String getPathFromMediaUri(Context context, Uri uri) {
+        Cursor cursor = null;
+        try {
+            String[] projection = { MediaStore.Images.Media.DATA };
+            cursor = context.getContentResolver().query(uri,  projection, null, null, null);
+            int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(columnIndex);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+}

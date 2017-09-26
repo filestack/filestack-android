@@ -1,4 +1,11 @@
+plugins {
+    id "com.github.dcendents.android-maven" version "1.5"
+}
+
 apply plugin: 'com.android.library'
+
+group = 'com.filestack'
+version = file(new File('../VERSION')).text.trim()
 
 android {
     compileSdkVersion 26
@@ -28,4 +35,32 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:26.+'
     testCompile 'junit:junit:4.12'
+    compile 'com.filestack:filestack-java:0.4.0'
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    destinationDir = file("../docs/")
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    // archives javadocJar
+    archives sourcesJar
+}
+
+install {
+    repositories.mavenInstaller {
+        pom.artifactId = 'filestack-android'
+    }
 }
