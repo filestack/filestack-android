@@ -9,10 +9,6 @@ import com.filestack.FilestackClient;
 import com.filestack.Progress;
 import com.filestack.Security;
 import com.filestack.StorageOptions;
-import com.filestack.errors.InternalException;
-import com.filestack.errors.InvalidParameterException;
-import com.filestack.errors.PolicySignatureException;
-import com.filestack.errors.ValidationException;
 import com.filestack.util.FsService;
 import io.reactivex.Flowable;
 import java.io.IOException;
@@ -54,9 +50,7 @@ public class FilestackAndroidClient extends FilestackClient {
      *
      * @see #upload(String, boolean, StorageOptions)
      */
-    public FileLink upload(Context context, Uri uri, boolean intelligent)
-            throws ValidationException, IOException, PolicySignatureException,
-                   InvalidParameterException, InternalException {
+    public FileLink upload(Context context, Uri uri, boolean intelligent) throws IOException {
         return super.upload(getPathFromMediaUri(context, uri), intelligent);
     }
 
@@ -66,8 +60,7 @@ public class FilestackAndroidClient extends FilestackClient {
      * @see #upload(String, boolean, StorageOptions)
      */
     public FileLink upload(Context context, Uri uri, boolean intelligent, StorageOptions options)
-            throws ValidationException, IOException, PolicySignatureException,
-                   InvalidParameterException, InternalException {
+            throws IOException {
         return super.upload(getPathFromMediaUri(context, uri), intelligent, options);
     }
 
