@@ -2,9 +2,16 @@
 
     package="com.filestack.android">
 
-    <application android:allowBackup="true" android:label="@string/app_name"
-        android:supportsRtl="true">
+    <uses-permission android:name="android.permission.INTERNET" />
 
+    <application
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:supportsRtl="true">
+        <activity
+            android:name=".FilestackActivity"
+            android:label="@string/picker_title"
+            android:theme="@style/NoActionBar"/>
     </application>
 
 </manifest>
