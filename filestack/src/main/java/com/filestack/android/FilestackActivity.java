@@ -25,6 +25,7 @@ import com.filestack.Security;
 
 import io.reactivex.CompletableObserver;
 import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
 public class FilestackActivity extends AppCompatActivity implements
@@ -42,6 +43,7 @@ public class FilestackActivity extends AppCompatActivity implements
 
     private DrawerLayout drawer;
     private NavigationView nav;
+    private Toolbar toolbar;
     private FilestackAndroidClient client;
 
     private CloudInfo cloudInfo; // TODO maybe don't do this
@@ -66,7 +68,7 @@ public class FilestackActivity extends AppCompatActivity implements
         client = new FilestackAndroidClient(apiKey, security);
 
         setContentView(R.layout.activity_filestack);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -142,7 +144,10 @@ public class FilestackActivity extends AppCompatActivity implements
         Log.d("menu item click", "activity");
 
         if (id == R.id.action_logout) {
-            client.logoutCloudAsync(cloudInfo.getProvider()).subscribe(this);
+            client
+                    .logoutCloudAsync(cloudInfo.getProvider())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(this);
             return true;
         }
 
@@ -168,6 +173,9 @@ public class FilestackActivity extends AppCompatActivity implements
             }
         } else if (cloudInfo == null || id != cloudInfo.getId()){
             cloudInfo = Util.getCloudInfo(id);
+            nav.getHeaderView(0).setBackgroundColor(cloudInfo.getIconId());
+            toolbar.setBackgroundColor(cloudInfo.getIconId());
+            toolbar.setSubtitle(cloudInfo.getTextId());
             checkAuth();
         }
 
@@ -222,7 +230,10 @@ public class FilestackActivity extends AppCompatActivity implements
 
     private void checkAuth() {
         checkAuth = true;
-        client.getCloudContentsAsync(cloudInfo.getProvider(), "/").subscribe(this);
+        client
+                .getCloudContentsAsync(cloudInfo.getProvider(), "/")
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this);
     }
 
     @Override
