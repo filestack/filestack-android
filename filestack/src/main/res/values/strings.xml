@@ -29,6 +29,7 @@
     <string name="menu_view_grid">View as grid</string>
     <string name="menu_view_list">View as list</string>
     <string name="menu_logout">Logout</string>
+    <string name="menu_upload">Upload</string>
 
     <string name="action_settings">Settings</string>
 

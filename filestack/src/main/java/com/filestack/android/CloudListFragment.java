@@ -79,7 +79,7 @@ public class CloudListFragment extends Fragment {
         if (id == R.id.action_toggle_list_grid) {
             isListMode = !isListMode;
             if (isListMode) {
-                item.setIcon(R.drawable.ic_menu_module_white);
+                item.setIcon(R.drawable.ic_menu_grid_white);
                 item.setTitle(R.string.menu_view_grid);
             } else  {
                 item.setIcon(R.drawable.ic_menu_list_white);
