@@ -27,13 +27,18 @@ import io.reactivex.CompletableObserver;
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 
-public class FilestackActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SingleObserver<CloudContents>, CompletableObserver {
+public class FilestackActivity extends AppCompatActivity implements
+        SingleObserver<CloudContents>, CompletableObserver,
+        NavigationView.OnNavigationItemSelectedListener {
+
+    public static final String EXTRA_API_KEY = "apiKey";
+    public static final String EXTRA_POLICY = "policy";
+    public static final String EXTRA_SIGNATURE = "signature";
 
     private static final int REQUEST_CAMERA = RESULT_FIRST_USER;
     private static final int REQUEST_FILE_BROWSER = RESULT_FIRST_USER + 1;
 
-    private static final String PREF_SESSION_TOKEN = "prefSessionToken";
+    private static final String PREF_SESSION_TOKEN = "sessionToken";
 
     private DrawerLayout drawer;
     private NavigationView nav;
@@ -46,7 +51,19 @@ public class FilestackActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Setup client here;
+        Intent intent = getIntent();
+
+        String apiKey = intent.getStringExtra(EXTRA_API_KEY);
+        String policy = intent.getStringExtra(EXTRA_POLICY);
+        String signature = intent.getStringExtra(EXTRA_SIGNATURE);
+
+        Security security = null;
+
+        if (policy != null && signature != null) {
+            security = Security.fromExisting(policy, signature);
+        }
+
+        client = new FilestackAndroidClient(apiKey, security);
 
         setContentView(R.layout.activity_filestack);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
