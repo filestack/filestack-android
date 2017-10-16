@@ -28,7 +28,7 @@ import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 
 public class FilestackActivity extends AppCompatActivity implements
-        SingleObserver<CloudContents>, CompletableObserver,
+        SingleObserver<CloudContents>, CompletableObserver, ClientProvider,
         NavigationView.OnNavigationItemSelectedListener {
 
     public static final String EXTRA_API_KEY = "apiKey";
@@ -225,7 +225,8 @@ public class FilestackActivity extends AppCompatActivity implements
         client.getCloudContentsAsync(cloudInfo.getProvider(), "/").subscribe(this);
     }
 
-    FilestackAndroidClient getClient() {
+    @Override
+    public FilestackAndroidClient getClient() {
         return client;
     }
 }

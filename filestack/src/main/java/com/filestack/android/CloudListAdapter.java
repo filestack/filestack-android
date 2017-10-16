@@ -22,7 +22,7 @@ import io.reactivex.disposables.Disposable;
 class CloudListAdapter extends RecyclerView.Adapter implements SingleObserver<CloudContents> {
     private static final double PAGINATION_THRESHOLD = 0.50;
 
-    private final FilestackAndroidClient client;
+    private final ClientProvider clientProvider;
     private final String provider;
 
     private int layoutId;
@@ -30,8 +30,8 @@ class CloudListAdapter extends RecyclerView.Adapter implements SingleObserver<Cl
     private Integer threshold;
     private String nextToken;
 
-    CloudListAdapter(FilestackAndroidClient client, String provider) {
-        this.client = client;
+    CloudListAdapter(ClientProvider clientProvider, String provider) {
+        this.clientProvider = clientProvider;
         this.provider = provider;
     }
 
@@ -39,7 +39,6 @@ class CloudListAdapter extends RecyclerView.Adapter implements SingleObserver<Cl
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
         View listItemView = inflater.inflate(layoutId, viewGroup, false);
-        Log.d("adapter", "Creating view holder");
         return new CloudListItemViewHolder(listItemView);
     }
 
@@ -113,7 +112,8 @@ class CloudListAdapter extends RecyclerView.Adapter implements SingleObserver<Cl
 
     private void loadMoreData() {
         Log.d("pagination", "Loading more data");
-        client
+        clientProvider
+                .getClient()
                 .getCloudContentsAsync(provider, "/", nextToken)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this);

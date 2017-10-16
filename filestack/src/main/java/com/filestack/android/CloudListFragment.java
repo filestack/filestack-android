@@ -1,12 +1,12 @@
 package com.filestack.android;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,7 +17,7 @@ public class CloudListFragment extends Fragment {
 
     private final static int GRID_COLUMNS = 3;
 
-    private FilestackAndroidClient client;
+    private ClientProvider clientProvider;
     private CloudInfo cloudInfo;
 
     private RecyclerView recyclerView;
@@ -41,7 +41,16 @@ public class CloudListFragment extends Fragment {
 
         Bundle args = getArguments();
         cloudInfo = Util.getCloudInfo(args.getInt(ARG_CLOUD_INFO_ID));
-        client = ((FilestackActivity) getActivity()).getClient();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            clientProvider = (ClientProvider) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement ClientProvider");
+        }
     }
 
     @Nullable
@@ -53,7 +62,7 @@ public class CloudListFragment extends Fragment {
 
         recyclerView = baseView.findViewById(R.id.recycler);
 
-        adapter = new CloudListAdapter(client, cloudInfo.getProvider());
+        adapter = new CloudListAdapter(clientProvider, cloudInfo.getProvider());
         linearLayoutManager = new LinearLayoutManager(getContext());
         gridLayoutManager = new GridLayoutManager(getContext(), GRID_COLUMNS);
         recyclerView.setAdapter(adapter);
@@ -66,8 +75,6 @@ public class CloudListFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
-        Log.d("menu item click", "fragment");
 
         if (id == R.id.action_toggle_list_grid) {
             isListMode = !isListMode;
