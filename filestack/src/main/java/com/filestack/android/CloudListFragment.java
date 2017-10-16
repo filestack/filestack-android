@@ -1,20 +1,30 @@
 package com.filestack.android;
 
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 public class CloudListFragment extends Fragment {
     private final static String ARG_CLOUD_INFO_ID = "cloudInfoId";
 
+    private final static int GRID_COLUMNS = 3;
+
+    private FilestackAndroidClient client;
     private CloudInfo cloudInfo;
+
+    private RecyclerView recyclerView;
+    private LinearLayoutManager linearLayoutManager;
+    private GridLayoutManager gridLayoutManager;
+    private CloudListAdapter adapter;
+    private boolean isListMode = true;
 
     public static CloudListFragment create(int cloudInfoId) {
         CloudListFragment fragment = new CloudListFragment();
@@ -27,9 +37,11 @@ public class CloudListFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         Bundle args = getArguments();
         cloudInfo = Util.getCloudInfo(args.getInt(ARG_CLOUD_INFO_ID));
+        client = ((FilestackActivity) getActivity()).getClient();
     }
 
     @Nullable
@@ -39,18 +51,49 @@ public class CloudListFragment extends Fragment {
 
         View baseView = inflater.inflate(R.layout.fragment_cloud_list, container, false);
 
-        // TODO Temporary until we set actual icons
-        Drawable drawable = getResources().getDrawable(R.drawable.ic_menu_square);
-        ImageView iconView = baseView.findViewById(R.id.icon);
-        drawable.setColorFilter(cloudInfo.getIconId(), PorterDuff.Mode.MULTIPLY);
-        iconView.setImageDrawable(drawable);
+        recyclerView = baseView.findViewById(R.id.recycler);
 
-        // Replace placeholder text with actual cloud name
-        String target = "Cloud";
-        String replacement = getString(cloudInfo.getTextId());
-        TextView textView = baseView.findViewById(R.id.title);
-        Util.textViewReplace(textView, target, replacement);
+        adapter = new CloudListAdapter(client, cloudInfo.getProvider());
+        linearLayoutManager = new LinearLayoutManager(getContext());
+        gridLayoutManager = new GridLayoutManager(getContext(), GRID_COLUMNS);
+        recyclerView.setAdapter(adapter);
+
+        setupRecyclerView();
 
         return baseView;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        Log.d("menu item click", "fragment");
+
+        if (id == R.id.action_toggle_list_grid) {
+            isListMode = !isListMode;
+            if (isListMode) {
+                item.setIcon(R.drawable.ic_menu_module_white);
+                item.setTitle(R.string.menu_view_grid);
+            } else  {
+                item.setIcon(R.drawable.ic_menu_list_white);
+                item.setTitle(R.string.menu_view_list);
+            }
+            setupRecyclerView();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setupRecyclerView() {
+        if (isListMode) {
+            adapter.setLayoutId(R.layout.cloud_list_item);
+            recyclerView.setAdapter(adapter);
+            recyclerView.setLayoutManager(linearLayoutManager);
+        } else  {
+            adapter.setLayoutId(R.layout.cloud_grid_item);
+            recyclerView.setAdapter(adapter);
+            recyclerView.setLayoutManager(gridLayoutManager);
+        }
     }
 }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_toggle_list_grid"
+        android:icon="@drawable/ic_menu_module_white"
+        android:title="@string/menu_view_grid"
+        app:showAsAction="always"
+        android:orderInCategory="1"/>
+    <item
+        android:id="@+id/action_logout"
+        android:icon="@drawable/ic_menu_logout_white"
+        android:title="@string/menu_logout"
+        app:showAsAction="always"
+        android:orderInCategory="2"/>
+</menu>

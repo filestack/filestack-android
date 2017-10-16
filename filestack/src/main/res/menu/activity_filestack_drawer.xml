@@ -7,11 +7,11 @@
         <menu>
             <item
                 android:id="@+id/nav_camera"
-                android:icon="@drawable/ic_menu_square"
+                android:icon="@drawable/ic_menu_square_white"
                 android:title="@string/menu_camera"/>
             <item
                 android:id="@+id/nav_file_browser"
-                android:icon="@drawable/ic_menu_square"
+                android:icon="@drawable/ic_menu_square_white"
                 android:title="@string/menu_file_browser"/>
         </menu>
     </item>
@@ -21,22 +21,22 @@
         <menu>
             <item
                 android:id="@+id/nav_facebook"
-                android:icon="@drawable/ic_menu_square"
+                android:icon="@drawable/ic_menu_square_white"
                 android:title="@string/menu_facebook"
                 android:checkable="true" />
             <item
                 android:id="@+id/nav_flickr"
-                android:icon="@drawable/ic_menu_square"
+                android:icon="@drawable/ic_menu_square_white"
                 android:title="@string/menu_flickr"
                 android:checkable="true"/>
             <item
                 android:id="@+id/nav_google_photos"
-                android:icon="@drawable/ic_menu_square"
+                android:icon="@drawable/ic_menu_square_white"
                 android:title="@string/menu_google_photos"
                 android:checkable="true"/>
             <item
                 android:id="@+id/nav_instagram"
-                android:icon="@drawable/ic_menu_square"
+                android:icon="@drawable/ic_menu_square_white"
                 android:title="@string/menu_instagram"
                 android:checkable="true"/>
         </menu>
@@ -47,27 +47,27 @@
         <menu>
             <item
                 android:id="@+id/nav_amazon_drive"
-                android:icon="@drawable/ic_menu_square"
+                android:icon="@drawable/ic_menu_square_white"
                 android:title="@string/menu_amazon_drive"
                 android:checkable="true"/>
             <item
                 android:id="@+id/nav_box"
-                android:icon="@drawable/ic_menu_square"
+                android:icon="@drawable/ic_menu_square_white"
                 android:title="@string/menu_box"
                 android:checkable="true"/>
             <item
                 android:id="@+id/nav_dropbox"
-                android:icon="@drawable/ic_menu_square"
+                android:icon="@drawable/ic_menu_square_white"
                 android:title="@string/menu_dropbox"
                 android:checkable="true"/>
             <item
                 android:id="@+id/nav_google_drive"
-                android:icon="@drawable/ic_menu_square"
+                android:icon="@drawable/ic_menu_square_white"
                 android:title="@string/menu_google_drive"
                 android:checkable="true"/>
             <item
                 android:id="@+id/nav_one_drive"
-                android:icon="@drawable/ic_menu_square"
+                android:icon="@drawable/ic_menu_square_white"
                 android:title="@string/menu_one_drive"
                 android:checkable="true"/>
         </menu>
@@ -78,17 +78,17 @@
         <menu>
             <item
                 android:id="@+id/nav_evernote"
-                android:icon="@drawable/ic_menu_square"
+                android:icon="@drawable/ic_menu_square_white"
                 android:title="@string/menu_evernote"
                 android:checkable="true"/>
             <item
                 android:id="@+id/nav_github"
-                android:icon="@drawable/ic_menu_square"
+                android:icon="@drawable/ic_menu_square_white"
                 android:title="@string/menu_github"
                 android:checkable="true"/>
             <item
                 android:id="@+id/nav_gmail"
-                android:icon="@drawable/ic_menu_square"
+                android:icon="@drawable/ic_menu_square_white"
                 android:title="@string/menu_gmail"
                 android:checkable="true"/>
         </menu>

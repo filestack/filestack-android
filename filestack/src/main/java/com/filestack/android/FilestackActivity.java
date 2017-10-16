@@ -1,6 +1,7 @@
 package com.filestack.android;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,21 +23,23 @@ import android.view.MenuItem;
 import com.filestack.CloudContents;
 import com.filestack.Security;
 
+import io.reactivex.CompletableObserver;
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 
 public class FilestackActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SingleObserver<CloudContents> {
+        implements NavigationView.OnNavigationItemSelectedListener, SingleObserver<CloudContents>, CompletableObserver {
 
     private static final int REQUEST_CAMERA = RESULT_FIRST_USER;
     private static final int REQUEST_FILE_BROWSER = RESULT_FIRST_USER + 1;
+
+    private static final String PREF_SESSION_TOKEN = "prefSessionToken";
 
     private DrawerLayout drawer;
     private NavigationView nav;
     private FilestackAndroidClient client;
 
-    // TODO maybe don't do this
-    private int selectedCloud;
+    private CloudInfo cloudInfo; // TODO maybe don't do this
     private boolean checkAuth;
 
     @Override
@@ -43,7 +47,6 @@ public class FilestackActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         // Setup client here;
-        FilestackAndroidClient client;
 
         setContentView(R.layout.activity_filestack);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -62,14 +65,36 @@ public class FilestackActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+
+        String sessionToken = preferences.getString(PREF_SESSION_TOKEN, null);
+        Log.d("sessionToken", "Retrieving: " + sessionToken);
+        client.setSessionToken(sessionToken);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+
+        String sessionToken = client.getSessionToken();
+        Log.d("sessionToken", "Saving: " + sessionToken);
+        preferences.edit().putString(PREF_SESSION_TOKEN, sessionToken).apply();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
 
-        if (selectedCloud == 0) {
-            nav.getMenu().performIdentifierAction(R.id.nav_facebook, 0);
+        if (cloudInfo == null) {
+            nav.getMenu().performIdentifierAction(R.id.nav_google_drive, 0);
             drawer.openDrawer(Gravity.START);
         } else if (checkAuth) {
-            checkAuth(selectedCloud);
+            checkAuth();
         }
     }
 
@@ -86,7 +111,7 @@ public class FilestackActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        // getMenuInflater().inflate(R.menu.filestack, menu);
+        getMenuInflater().inflate(R.menu.filestack, menu);
         return true;
     }
 
@@ -97,10 +122,12 @@ public class FilestackActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        // if (id == R.id.action_settings) {
-        //    return true;
-        //}
+        Log.d("menu item click", "activity");
+
+        if (id == R.id.action_logout) {
+            client.logoutCloudAsync(cloudInfo.getProvider()).subscribe(this);
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -112,27 +139,55 @@ public class FilestackActivity extends AppCompatActivity
         nav.setCheckedItem(id);
 
         if (id == R.id.nav_camera) {
-            checkAuth = false;
             Intent cameraIntent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
             if (cameraIntent.resolveActivity(getPackageManager()) != null) {
                 startActivityForResult(cameraIntent, REQUEST_CAMERA);
             }
         } else if (id == R.id.nav_file_browser) {
-            checkAuth = false;
             Intent fileBrowserIntent = new Intent(Intent.ACTION_GET_CONTENT);
             fileBrowserIntent.setType("*/*");
             if (fileBrowserIntent.resolveActivity(getPackageManager()) != null) {
                 startActivityForResult(fileBrowserIntent, REQUEST_FILE_BROWSER);
             }
-        } else if (id != selectedCloud){
-            checkAuth = true;
-            selectedCloud = id;
-            checkAuth(selectedCloud);
+        } else if (cloudInfo == null || id != cloudInfo.getId()){
+            cloudInfo = Util.getCloudInfo(id);
+            checkAuth();
         }
 
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    @Override
+    public void onSubscribe(Disposable d) { }
+
+    @Override
+    public void onSuccess(CloudContents contents) {
+        String authUrl = contents.getAuthUrl();
+
+        if (authUrl != null) {
+            AuthFragment authFragment = AuthFragment.create(cloudInfo.getId(), authUrl);
+            FragmentManager manager = getSupportFragmentManager();
+            FragmentTransaction transaction = manager.beginTransaction();
+            transaction.replace(R.id.content, authFragment);
+            transaction.commit();
+        } else {
+            checkAuth = false;
+            CloudListFragment cloudListFragment = CloudListFragment.create(cloudInfo.getId());
+            FragmentManager manager = getSupportFragmentManager();
+            FragmentTransaction transaction = manager.beginTransaction();
+            transaction.replace(R.id.content, cloudListFragment);
+            transaction.commit();
+        }
+    }
+
+    @Override
+    public void onComplete() {
+        checkAuth();
+    }
+
+    @Override
+    public void onError(Throwable e) { }
 
     private void setNavIconColors() {
         Menu menu = nav.getMenu();
@@ -148,38 +203,12 @@ public class FilestackActivity extends AppCompatActivity
         }
     }
 
-    private void checkAuth(int id) {
-        CloudInfo info = Util.getCloudInfo(id);
-        client.getCloudContentsAsync(info.getProvider(), "/").subscribe(this);
+    private void checkAuth() {
+        checkAuth = true;
+        client.getCloudContentsAsync(cloudInfo.getProvider(), "/").subscribe(this);
     }
 
-    @Override
-    public void onSubscribe(Disposable d) {
-
-    }
-
-    @Override
-    public void onSuccess(CloudContents contents) {
-        String authUrl = contents.getAuthUrl();
-
-        if (authUrl != null) {
-            AuthFragment authFragment = AuthFragment.create(selectedCloud, authUrl);
-            FragmentManager manager = getSupportFragmentManager();
-            FragmentTransaction transaction = manager.beginTransaction();
-            transaction.replace(R.id.content, authFragment);
-            transaction.commit();
-        } else {
-            checkAuth = false;
-            CloudListFragment cloudListFragment = CloudListFragment.create(selectedCloud);
-            FragmentManager manager = getSupportFragmentManager();
-            FragmentTransaction transaction = manager.beginTransaction();
-            transaction.replace(R.id.content, cloudListFragment);
-            transaction.commit();
-        }
-    }
-
-    @Override
-    public void onError(Throwable e) {
-        e.printStackTrace();
+    FilestackAndroidClient getClient() {
+        return client;
     }
 }
