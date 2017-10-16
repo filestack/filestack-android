@@ -1,9 +1,11 @@
 package com.filestack.android;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,9 +23,8 @@ public class CloudListFragment extends Fragment {
     private CloudInfo cloudInfo;
 
     private RecyclerView recyclerView;
-    private LinearLayoutManager linearLayoutManager;
-    private GridLayoutManager gridLayoutManager;
     private CloudListAdapter adapter;
+    private DividerItemDecoration horizontalDecor, verticalDecor;
     private boolean isListMode = true;
 
     public static CloudListFragment create(int cloudInfoId) {
@@ -61,11 +62,14 @@ public class CloudListFragment extends Fragment {
         View baseView = inflater.inflate(R.layout.fragment_cloud_list, container, false);
 
         recyclerView = baseView.findViewById(R.id.recycler);
-
         adapter = new CloudListAdapter(clientProvider, cloudInfo.getProvider());
-        linearLayoutManager = new LinearLayoutManager(getContext());
-        gridLayoutManager = new GridLayoutManager(getContext(), GRID_COLUMNS);
-        recyclerView.setAdapter(adapter);
+
+        Context context = recyclerView.getContext();
+        Drawable drawable = getResources().getDrawable(R.drawable.list_grid_divider);
+        horizontalDecor = new DividerItemDecoration(context, DividerItemDecoration.HORIZONTAL);
+        horizontalDecor.setDrawable(drawable);
+        verticalDecor = new DividerItemDecoration(context, DividerItemDecoration.VERTICAL);
+        verticalDecor.setDrawable(drawable);
 
         setupRecyclerView();
 
@@ -93,14 +97,20 @@ public class CloudListFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
+        Context context = recyclerView.getContext();
+
         if (isListMode) {
             adapter.setLayoutId(R.layout.cloud_list_item);
             recyclerView.setAdapter(adapter);
-            recyclerView.setLayoutManager(linearLayoutManager);
+            recyclerView.setLayoutManager(new LinearLayoutManager((context)));
+            recyclerView.removeItemDecoration(horizontalDecor);
+            recyclerView.removeItemDecoration(verticalDecor);
         } else  {
             adapter.setLayoutId(R.layout.cloud_grid_item);
             recyclerView.setAdapter(adapter);
-            recyclerView.setLayoutManager(gridLayoutManager);
+            recyclerView.setLayoutManager(new GridLayoutManager(context, GRID_COLUMNS));
+            recyclerView.addItemDecoration(horizontalDecor);
+            recyclerView.addItemDecoration(verticalDecor);
         }
     }
 }
