@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/list_item_height">
+    android:layout_height="@dimen/list_item_height"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:clickable="true"
+    android:longClickable="true">
+
+    <View
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/selectableItemBackground" />
 
     <ImageView
         android:id="@+id/icon"
@@ -12,6 +20,17 @@
         android:layout_marginEnd="@dimen/list_item_horizontal_padding"
         android:scaleType="centerCrop"
         android:layout_marginStart="@dimen/list_item_horizontal_padding"/>
+
+    <ImageView
+        app:srcCompat="@drawable/ic_menu_upload_white"
+        android:id="@+id/checkbox"
+        android:layout_width="@dimen/list_icon_size"
+        android:layout_height="@dimen/list_icon_size"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/list_item_horizontal_padding"
+        android:scaleType="centerCrop"
+        android:layout_marginStart="@dimen/list_item_horizontal_padding"
+        android:visibility="invisible"/>
 
     <Space
         android:id="@+id/center"
@@ -39,11 +58,5 @@
         style="@style/TextAppearance.AppCompat.Body1"
         android:textColor="@color/text_secondary"
         android:layout_marginEnd="@dimen/list_item_horizontal_padding"/>
-
-    <View
-        android:id="@+id/overlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?attr/selectableItemBackground"/>
 
 </RelativeLayout>

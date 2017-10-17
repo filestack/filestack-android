@@ -19,20 +19,27 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 
-class CloudListAdapter extends RecyclerView.Adapter implements SingleObserver<CloudContents> {
+class CloudListAdapter extends RecyclerView.Adapter implements
+        SingleObserver<CloudContents>, View.OnClickListener, View.OnLongClickListener {
+
     private static final double PAGINATION_THRESHOLD = 0.50;
 
     private final ClientProvider clientProvider;
     private final String provider;
 
     private int layoutId;
+    private RecyclerView recyclerView;
+
     private ArrayList<CloudItem> items;
+    private ArrayList<Integer> selected;
     private Integer threshold;
     private String nextToken;
+    private boolean multiSelectMode;
 
     CloudListAdapter(ClientProvider clientProvider, String provider) {
         this.clientProvider = clientProvider;
         this.provider = provider;
+        selected = new ArrayList<>();
     }
 
     @Override
@@ -53,6 +60,9 @@ class CloudListAdapter extends RecyclerView.Adapter implements SingleObserver<Cl
                 Locale.getDefault(), "%s - %d", item.getMimetype(), item.getSize());
         holder.setInfo(info);
         holder.setIcon(item.getThumbnail());
+        holder.setSelected(selected.contains(i));
+        holder.setOnClickListener(this);
+        holder.setOnLongClickListener(this);
 
         if (threshold != null && nextToken != null && i >= threshold ) {
             threshold = null;
@@ -106,8 +116,26 @@ class CloudListAdapter extends RecyclerView.Adapter implements SingleObserver<Cl
     @Override
     public void onError(@NonNull Throwable e) { }
 
-    public void setLayoutId(int layoutId) {
-        this.layoutId = layoutId;
+    @Override
+    public void onClick(View view) {
+        selectItem(view);
+    }
+
+    @Override
+    public boolean onLongClick(View view) {
+        multiSelectMode = !multiSelectMode;
+        if (multiSelectMode) {
+            selectItem(view);
+        } else {
+            clearSelections();
+        }
+        return true;
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        this.recyclerView = recyclerView;
     }
 
     private void loadMoreData() {
@@ -117,5 +145,37 @@ class CloudListAdapter extends RecyclerView.Adapter implements SingleObserver<Cl
                 .getCloudContentsAsync(provider, "/", nextToken)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this);
+    }
+
+    private void selectItem(View view) {
+        CloudListItemViewHolder holder;
+        holder = (CloudListItemViewHolder) recyclerView.findContainingViewHolder(view);
+
+        if (multiSelectMode) {
+            if (selected.contains(holder.getId())) {
+                // view.setActivated(false);
+                selected.remove(holder.getId());
+                holder.setSelected(false);
+            } else {
+                // view.setActivated(true);
+                selected.add(holder.getId());
+                holder.setSelected(true);
+            }
+        }
+    }
+
+    private void clearSelections() {
+        CloudListItemViewHolder holder;
+        for (int id : selected) {
+            holder = (CloudListItemViewHolder) recyclerView.findViewHolderForAdapterPosition(id);
+            if (holder != null) {
+                holder.setSelected(false);
+            }
+        }
+        selected.clear();
+    }
+
+    void setLayoutId(int layoutId) {
+        this.layoutId = layoutId;
     }
 }

@@ -8,24 +8,22 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-class CloudListItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+class CloudListItemViewHolder extends RecyclerView.ViewHolder {
     private int id;
 
+    private View itemView;
     private TextView nameView;
     private TextView infoView;
     private ImageView iconView;
+    private ImageView checkboxView;
 
     CloudListItemViewHolder(View listItemView) {
         super(listItemView);
+        this.itemView = listItemView;
         this.nameView = listItemView.findViewById(R.id.name);
         this.infoView = listItemView.findViewById(R.id.info);
         this.iconView = listItemView.findViewById(R.id.icon);
-        listItemView.setOnClickListener(this);
-    }
-
-    @Override
-    public void onClick(View view) {
-
+        this.checkboxView = listItemView.findViewById(R.id.checkbox);
     }
 
     public int getId() {
@@ -52,6 +50,22 @@ class CloudListItemViewHolder extends RecyclerView.ViewHolder implements View.On
         if (iconView != null) {
             Context context = iconView.getContext();
             Picasso.with(context).load(url).into(iconView);
+        }
+    }
+
+    void setOnClickListener(View.OnClickListener listener) {
+        itemView.setOnClickListener(listener);
+    }
+
+    void setOnLongClickListener(View.OnLongClickListener listener) {
+        itemView.setOnLongClickListener(listener);
+    }
+
+    void setSelected(boolean selected) {
+        if (selected) {
+            checkboxView.setVisibility(View.VISIBLE);
+        } else {
+            checkboxView.setVisibility(View.INVISIBLE);
         }
     }
 }
