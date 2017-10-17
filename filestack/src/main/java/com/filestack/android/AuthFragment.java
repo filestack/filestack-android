@@ -50,7 +50,7 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
         View baseView = inflater.inflate(R.layout.fragment_auth, container, false);
 
         // TODO Temporary until we set actual icons
-        Drawable drawable = getResources().getDrawable(R.drawable.ic_menu_square);
+        Drawable drawable = getResources().getDrawable(R.drawable.ic_menu_square_white);
         ImageView iconView = baseView.findViewById(R.id.icon);
         drawable.setColorFilter(cloudInfo.getIconId(), PorterDuff.Mode.MULTIPLY);
         iconView.setImageDrawable(drawable);

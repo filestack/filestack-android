@@ -26,6 +26,11 @@
     <string name="menu_one_drive">OneDrive</string>
     <string name="menu_amazon_drive">Amazon Drive</string>
 
+    <string name="menu_view_grid">View as grid</string>
+    <string name="menu_view_list">View as list</string>
+    <string name="menu_logout">Logout</string>
+    <string name="menu_upload">Upload</string>
+
     <string name="action_settings">Settings</string>
 
     <string name="auth_description">You need to authenticate with Cloud.\nWe only extract files and never modify or delete them.</string>

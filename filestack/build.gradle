@@ -41,6 +41,8 @@ dependencies {
     compile 'com.filestack:filestack-java:0.4.0'
     compile 'com.android.support:design:26.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
 }
 
 task sourcesJar(type: Jar) {

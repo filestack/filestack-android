@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:longClickable="true">
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        android:scaleType="centerCrop"/>
+
+    <ImageView
+        app:srcCompat="@drawable/ic_menu_upload_white"
+        android:id="@+id/checkbox"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        android:scaleType="centerCrop"
+        android:visibility="invisible"/>
+
+    <View
+        android:id="@+id/button"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        android:background="?attr/selectableItemBackground"/>
+
+</android.support.constraint.ConstraintLayout>
