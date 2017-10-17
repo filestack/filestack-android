@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.filestack.CloudContents;
 import com.filestack.Security;
@@ -72,10 +73,12 @@ public class FilestackActivity extends AppCompatActivity implements
         setSupportActionBar(toolbar);
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.nav_drawer_open, R.string.nav_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+        if (drawer != null) {
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                    this, drawer, toolbar, R.string.nav_drawer_open, R.string.nav_drawer_close);
+            drawer.addDrawerListener(toggle);
+            toggle.syncState();
+        }
 
         nav = (NavigationView) findViewById(R.id.nav_view);
         nav.setNavigationItemSelectedListener(this);
@@ -111,7 +114,9 @@ public class FilestackActivity extends AppCompatActivity implements
 
         if (cloudInfo == null) {
             nav.getMenu().performIdentifierAction(R.id.nav_google_drive, 0);
-            drawer.openDrawer(Gravity.START);
+            if (drawer != null) {
+                drawer.openDrawer(Gravity.START);
+            }
         } else if (checkAuth) {
             checkAuth();
         }
@@ -119,8 +124,7 @@ public class FilestackActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
+        if (drawer != null && drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
@@ -173,13 +177,20 @@ public class FilestackActivity extends AppCompatActivity implements
             }
         } else if (cloudInfo == null || id != cloudInfo.getId()){
             cloudInfo = Util.getCloudInfo(id);
-            nav.getHeaderView(0).setBackgroundColor(cloudInfo.getIconId());
+            View header = nav.getHeaderView(0);
+            if (header != null) {
+                header.setBackgroundColor(cloudInfo.getIconId());
+            }
             toolbar.setBackgroundColor(cloudInfo.getIconId());
-            toolbar.setSubtitle(cloudInfo.getTextId());
+            if (drawer != null) {
+                toolbar.setSubtitle(cloudInfo.getTextId());
+            }
             checkAuth();
         }
 
-        drawer.closeDrawer(GravityCompat.START);
+        if (drawer != null) {
+            drawer.closeDrawer(GravityCompat.START);
+        }
         return true;
     }
 
