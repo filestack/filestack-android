@@ -36,6 +36,7 @@ public class FilestackActivity extends AppCompatActivity implements
     public static final String EXTRA_API_KEY = "apiKey";
     public static final String EXTRA_POLICY = "policy";
     public static final String EXTRA_SIGNATURE = "signature";
+    public static final String EXTRA_APP_URL = "appUrl";
 
     private static final int REQUEST_CAMERA = RESULT_FIRST_USER;
     private static final int REQUEST_FILE_BROWSER = RESULT_FIRST_USER + 1;
@@ -59,6 +60,7 @@ public class FilestackActivity extends AppCompatActivity implements
         String apiKey = intent.getStringExtra(EXTRA_API_KEY);
         String policy = intent.getStringExtra(EXTRA_POLICY);
         String signature = intent.getStringExtra(EXTRA_SIGNATURE);
+        String appUrl = intent.getStringExtra(EXTRA_APP_URL);
 
         Security security = null;
 
@@ -67,6 +69,7 @@ public class FilestackActivity extends AppCompatActivity implements
         }
 
         client = new FilestackAndroidClient(apiKey, security);
+        client.setReturnUrl(appUrl);
 
         setContentView(R.layout.activity_filestack);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
