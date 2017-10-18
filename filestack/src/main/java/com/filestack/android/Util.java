@@ -15,8 +15,6 @@ public class Util {
                 R.id.nav_file_browser, null, 0xFFE91E63, R.string.menu_file_browser));
         CLOUDS.put(R.id.nav_facebook, new CloudInfo(
                 R.id.nav_facebook, FilestackAndroidClient.CLOUD_FACEBOOK, 0xFF9C27B0, R.string.menu_facebook));
-        CLOUDS.put(R.id.nav_flickr, new CloudInfo(
-                R.id.nav_flickr, FilestackAndroidClient.CLOUD_FLICKR, 0xFF673AB7, R.string.menu_flickr));
         CLOUDS.put(R.id.nav_google_photos, new CloudInfo(
                 R.id.nav_google_photos, FilestackAndroidClient.CLOUD_GOOGLE_PHOTOS, 0xFF3F51B5, R.string.menu_google_photos));
         CLOUDS.put(R.id.nav_instagram, new CloudInfo(
@@ -31,8 +29,6 @@ public class Util {
                 R.id.nav_google_drive, FilestackAndroidClient.CLOUD_GOOGLE_DRIVE, 0xFF4CAF50, R.string.menu_google_drive));
         CLOUDS.put(R.id.nav_one_drive, new CloudInfo(
                 R.id.nav_one_drive, FilestackAndroidClient.CLOUD_ONEDRIVE, 0xFF8BC34A, R.string.menu_one_drive));
-        CLOUDS.put(R.id.nav_evernote, new CloudInfo(
-                R.id.nav_evernote, FilestackAndroidClient.CLOUD_EVERNOTE, 0xFFCDDC39, R.string.menu_evernote));
         CLOUDS.put(R.id.nav_github, new CloudInfo(
                 R.id.nav_github, FilestackAndroidClient.CLOUD_GITHUB, 0xFFFFEB3B, R.string.menu_github));
         CLOUDS.put(R.id.nav_gmail, new CloudInfo(

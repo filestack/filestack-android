@@ -25,11 +25,6 @@
                 android:title="@string/menu_facebook"
                 android:checkable="true" />
             <item
-                android:id="@+id/nav_flickr"
-                android:icon="@drawable/ic_menu_square_white"
-                android:title="@string/menu_flickr"
-                android:checkable="true"/>
-            <item
                 android:id="@+id/nav_google_photos"
                 android:icon="@drawable/ic_menu_square_white"
                 android:title="@string/menu_google_photos"
@@ -76,11 +71,6 @@
     <item
         android:title="@string/picker_drawer_section_clouds_other">
         <menu>
-            <item
-                android:id="@+id/nav_evernote"
-                android:icon="@drawable/ic_menu_square_white"
-                android:title="@string/menu_evernote"
-                android:checkable="true"/>
             <item
                 android:id="@+id/nav_github"
                 android:icon="@drawable/ic_menu_square_white"
