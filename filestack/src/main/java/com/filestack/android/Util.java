@@ -81,7 +81,7 @@ class Util {
                 FsSources.GMAIL,
                 R.drawable.ic_source_gmail,
                 R.string.source_gmail,
-                R.color.theme_source_github));
+                R.color.theme_source_gmail));
     }
     
     static SourceInfo getSourceInfo(int id) {

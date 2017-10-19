@@ -186,7 +186,7 @@ public class FilestackActivity extends AppCompatActivity implements
         } else {
             nav.setCheckedItem(id);
             selectedSourceId = id;
-            setThemeColor();
+            // setThemeColor();
             checkAuth();
         }
 
