@@ -49,11 +49,8 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
 
         View baseView = inflater.inflate(R.layout.fragment_auth, container, false);
 
-        // TODO Temporary until we set actual icons
-        Drawable drawable = getResources().getDrawable(R.drawable.ic_menu_square_white);
         ImageView iconView = baseView.findViewById(R.id.icon);
-        drawable.setColorFilter(sourceInfo.getIconId(), PorterDuff.Mode.MULTIPLY);
-        iconView.setImageDrawable(drawable);
+        iconView.setImageResource(sourceInfo.getIconId());
 
         // Replace placeholder text with actual cloud name
         String target = "Cloud";
