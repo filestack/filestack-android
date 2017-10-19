@@ -85,8 +85,8 @@ public class FilestackActivity extends AppCompatActivity implements
 
         nav = (NavigationView) findViewById(R.id.nav_view);
         nav.setNavigationItemSelectedListener(this);
-        nav.setItemIconTintList(null);
-        setNavIconColors();
+        // nav.setItemIconTintList(null); // To enable color icons
+        // setNavIconColors();
     }
 
     @Override
