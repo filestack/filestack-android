@@ -48,7 +48,7 @@ public class FilestackActivity extends AppCompatActivity implements
     private Toolbar toolbar;
     private FilestackAndroidClient client;
 
-    private CloudInfo cloudInfo; // TODO maybe don't do this
+    private int selectedSourceId; // TODO maybe don't do this
     private boolean checkAuth;
 
     @Override
@@ -115,8 +115,8 @@ public class FilestackActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
 
-        if (cloudInfo == null) {
-            nav.getMenu().performIdentifierAction(R.id.nav_google_drive, 0);
+        if (selectedSourceId == 0) {
+            nav.getMenu().performIdentifierAction(R.id.google_drive, 0);
             if (drawer != null) {
                 drawer.openDrawer(Gravity.START);
             }
@@ -151,8 +151,9 @@ public class FilestackActivity extends AppCompatActivity implements
         Log.d("menu item click", "activity");
 
         if (id == R.id.action_logout) {
+            SourceInfo info = Util.getSourceInfo(selectedSourceId);
             client
-                    .logoutCloudAsync(cloudInfo.getProvider())
+                    .logoutCloudAsync(info.getId())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(this);
             return true;
@@ -167,26 +168,32 @@ public class FilestackActivity extends AppCompatActivity implements
 
         nav.setCheckedItem(id);
 
+        if (selectedSourceId == id) {
+            return true;
+        } else {
+            selectedSourceId = id;
+        }
+
         if (id == R.id.nav_camera) {
             Intent cameraIntent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
             if (cameraIntent.resolveActivity(getPackageManager()) != null) {
                 startActivityForResult(cameraIntent, REQUEST_CAMERA);
             }
-        } else if (id == R.id.nav_file_browser) {
+        } else if (id == R.id.nav_device) {
             Intent fileBrowserIntent = new Intent(Intent.ACTION_GET_CONTENT);
             fileBrowserIntent.setType("*/*");
             if (fileBrowserIntent.resolveActivity(getPackageManager()) != null) {
                 startActivityForResult(fileBrowserIntent, REQUEST_FILE_BROWSER);
             }
-        } else if (cloudInfo == null || id != cloudInfo.getId()){
-            cloudInfo = Util.getCloudInfo(id);
+        } else {
+            SourceInfo info = Util.getSourceInfo(id);
             View header = nav.getHeaderView(0);
             if (header != null) {
-                header.setBackgroundColor(cloudInfo.getIconId());
+                header.setBackgroundResource(info.getColorId());
             }
-            toolbar.setBackgroundColor(cloudInfo.getIconId());
+            toolbar.setBackgroundResource(info.getColorId());
             if (drawer != null) {
-                toolbar.setSubtitle(cloudInfo.getTextId());
+                toolbar.setSubtitle(info.getTextId());
             }
             checkAuth();
         }
@@ -194,6 +201,7 @@ public class FilestackActivity extends AppCompatActivity implements
         if (drawer != null) {
             drawer.closeDrawer(GravityCompat.START);
         }
+
         return true;
     }
 
@@ -205,14 +213,14 @@ public class FilestackActivity extends AppCompatActivity implements
         String authUrl = contents.getAuthUrl();
 
         if (authUrl != null) {
-            AuthFragment authFragment = AuthFragment.create(cloudInfo.getId(), authUrl);
+            AuthFragment authFragment = AuthFragment.create(selectedSourceId, authUrl);
             FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
             transaction.replace(R.id.content, authFragment);
             transaction.commit();
         } else {
             checkAuth = false;
-            CloudListFragment cloudListFragment = CloudListFragment.create(cloudInfo.getId());
+            CloudListFragment cloudListFragment = CloudListFragment.create(selectedSourceId);
             FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
             transaction.replace(R.id.content, cloudListFragment);
@@ -235,7 +243,7 @@ public class FilestackActivity extends AppCompatActivity implements
             for (int j = 0; j < subMenu.size(); j++) {
                 MenuItem item = subMenu.getItem(j);
                 Drawable icon = item.getIcon().mutate();
-                CloudInfo res = Util.getCloudInfo(item.getItemId());
+                SourceInfo res = Util.getSourceInfo(item.getItemId());
                 icon.setColorFilter(res.getIconId(), PorterDuff.Mode.MULTIPLY);
                 subMenu.getItem(j).setIcon(icon);
             }
@@ -244,8 +252,9 @@ public class FilestackActivity extends AppCompatActivity implements
 
     private void checkAuth() {
         checkAuth = true;
+        SourceInfo info = Util.getSourceInfo(selectedSourceId);
         client
-                .getCloudContentsAsync(cloudInfo.getProvider(), "/")
+                .getCloudContentsAsync(info.getId(), "/")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this);
     }

@@ -2,4 +2,17 @@
 <resources>
     <color name="primary">#212121</color>
     <color name="text_secondary">#89000000</color>
+
+    <color name="theme_source_camera">#FFE91E63</color>
+    <color name="theme_source_device">#FFE91E63</color>
+    <color name="theme_source_facebook">#FFE91E63</color>
+    <color name="theme_source_google_photos">#FFE91E63</color>
+    <color name="theme_source_instagram">#FFE91E63</color>
+    <color name="theme_source_amazon_drive">#FFE91E63</color>
+    <color name="theme_source_box">#FFE91E63</color>
+    <color name="theme_source_dropbox">#FFE91E63</color>
+    <color name="theme_source_google_drive">#FFE91E63</color>
+    <color name="theme_source_onedrive">#FFE91E63</color>
+    <color name="theme_source_github">#FFE91E63</color>
+    <color name="theme_source_gmail">#FFE91E63</color>
 </resources>

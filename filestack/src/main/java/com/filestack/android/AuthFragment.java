@@ -21,7 +21,7 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
     private final static int[] TEXT_VIEW_IDS = {
             R.id.title, R.id.description, R.id.button, R.id.action };
 
-    private CloudInfo cloudInfo;
+    private SourceInfo sourceInfo;
     private String authUrl;
 
     public static AuthFragment create(int cloudInfoId, String authUrl) {
@@ -38,7 +38,7 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
         super.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
-        cloudInfo = Util.getCloudInfo(args.getInt(ARG_CLOUD_INFO_ID));
+        sourceInfo = Util.getSourceInfo(args.getInt(ARG_CLOUD_INFO_ID));
         authUrl = args.getString(ARG_AUTH_URL);
     }
 
@@ -52,12 +52,12 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
         // TODO Temporary until we set actual icons
         Drawable drawable = getResources().getDrawable(R.drawable.ic_menu_square_white);
         ImageView iconView = baseView.findViewById(R.id.icon);
-        drawable.setColorFilter(cloudInfo.getIconId(), PorterDuff.Mode.MULTIPLY);
+        drawable.setColorFilter(sourceInfo.getIconId(), PorterDuff.Mode.MULTIPLY);
         iconView.setImageDrawable(drawable);
 
         // Replace placeholder text with actual cloud name
         String target = "Cloud";
-        String replacement = getString(cloudInfo.getTextId());
+        String replacement = getString(sourceInfo.getTextId());
         for (int id : TEXT_VIEW_IDS) {
             TextView textView = baseView.findViewById(id);
             Util.textViewReplace(textView, target, replacement);

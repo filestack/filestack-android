@@ -7,12 +7,12 @@
         <menu>
             <item
                 android:id="@+id/nav_camera"
-                android:icon="@drawable/ic_provider_camera"
-                android:title="@string/menu_camera"/>
+                android:icon="@drawable/ic_source_camera"
+                android:title="@string/source_camera"/>
             <item
-                android:id="@+id/nav_file_browser"
-                android:icon="@drawable/ic_provider_file_browser"
-                android:title="@string/menu_file_browser"/>
+                android:id="@+id/nav_device"
+                android:icon="@drawable/ic_source_folder"
+                android:title="@string/source_device"/>
         </menu>
     </item>
 
@@ -21,18 +21,18 @@
         <menu>
             <item
                 android:id="@+id/nav_facebook"
-                android:icon="@drawable/ic_provider_facebook"
-                android:title="@string/menu_facebook"
+                android:icon="@drawable/ic_source_facebook"
+                android:title="@string/source_facebook"
                 android:checkable="true" />
             <item
-                android:id="@+id/nav_google_photos"
-                android:icon="@drawable/ic_provider_google_photos"
-                android:title="@string/menu_google_photos"
+                android:id="@+id/google_photos"
+                android:icon="@drawable/ic_source_google_photos"
+                android:title="@string/source_google_photos"
                 android:checkable="true"/>
             <item
-                android:id="@+id/nav_instagram"
-                android:icon="@drawable/ic_provider_instagram"
-                android:title="@string/menu_instagram"
+                android:id="@+id/instagram"
+                android:icon="@drawable/ic_source_instagram"
+                android:title="@string/source_instagram"
                 android:checkable="true"/>
         </menu>
     </item>
@@ -41,29 +41,29 @@
         android:title="@string/picker_drawer_section_clouds_drives">
         <menu>
             <item
-                android:id="@+id/nav_amazon_drive"
-                android:icon="@drawable/ic_provider_amazon_cloud_drive"
-                android:title="@string/menu_amazon_drive"
+                android:id="@+id/amazon_drive"
+                android:icon="@drawable/ic_source_amazon_drive"
+                android:title="@string/source_amazon_drive"
                 android:checkable="true"/>
             <item
-                android:id="@+id/nav_box"
-                android:icon="@drawable/ic_provider_box"
-                android:title="@string/menu_box"
+                android:id="@+id/box"
+                android:icon="@drawable/ic_source_box"
+                android:title="@string/source_box"
                 android:checkable="true"/>
             <item
-                android:id="@+id/nav_dropbox"
-                android:icon="@drawable/ic_provider_dropbox"
-                android:title="@string/menu_dropbox"
+                android:id="@+id/dropbox"
+                android:icon="@drawable/ic_source_dropbox"
+                android:title="@string/source_dropbox"
                 android:checkable="true"/>
             <item
-                android:id="@+id/nav_google_drive"
-                android:icon="@drawable/ic_provider_google_drive"
-                android:title="@string/menu_google_drive"
+                android:id="@+id/google_drive"
+                android:icon="@drawable/ic_source_google_drive"
+                android:title="@string/source_google_drive"
                 android:checkable="true"/>
             <item
-                android:id="@+id/nav_one_drive"
-                android:icon="@drawable/ic_provider_onedrive"
-                android:title="@string/menu_one_drive"
+                android:id="@+id/onedrive"
+                android:icon="@drawable/ic_source_onedrive"
+                android:title="@string/source_onedrive"
                 android:checkable="true"/>
         </menu>
     </item>
@@ -72,14 +72,14 @@
         android:title="@string/picker_drawer_section_clouds_other">
         <menu>
             <item
-                android:id="@+id/nav_github"
-                android:icon="@drawable/ic_provider_github"
-                android:title="@string/menu_github"
+                android:id="@+id/github"
+                android:icon="@drawable/ic_source_github"
+                android:title="@string/source_github"
                 android:checkable="true"/>
             <item
-                android:id="@+id/nav_gmail"
-                android:icon="@drawable/ic_provider_gmail"
-                android:title="@string/menu_gmail"
+                android:id="@+id/gmail"
+                android:icon="@drawable/ic_source_gmail"
+                android:title="@string/source_gmail"
                 android:checkable="true"/>
         </menu>
     </item>
