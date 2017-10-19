@@ -42,6 +42,7 @@ public class FilestackActivity extends AppCompatActivity implements
     private static final int REQUEST_FILE_BROWSER = RESULT_FIRST_USER + 1;
 
     private static final String PREF_SESSION_TOKEN = "sessionToken";
+    private static final String PREF_SELECTED_SOURCE_ID = "selectedSourceId";
 
     private DrawerLayout drawer;
     private NavigationView nav;
@@ -98,6 +99,7 @@ public class FilestackActivity extends AppCompatActivity implements
         String sessionToken = preferences.getString(PREF_SESSION_TOKEN, null);
         Log.d("sessionToken", "Retrieving: " + sessionToken);
         client.setSessionToken(sessionToken);
+        selectedSourceId = preferences.getInt(PREF_SELECTED_SOURCE_ID, 0);
     }
 
     @Override
@@ -108,7 +110,11 @@ public class FilestackActivity extends AppCompatActivity implements
 
         String sessionToken = client.getSessionToken();
         Log.d("sessionToken", "Saving: " + sessionToken);
-        preferences.edit().putString(PREF_SESSION_TOKEN, sessionToken).apply();
+        preferences
+                .edit()
+                .putString(PREF_SESSION_TOKEN, sessionToken)
+                .putInt(PREF_SELECTED_SOURCE_ID, selectedSourceId)
+                .apply();
     }
 
     @Override
@@ -120,8 +126,8 @@ public class FilestackActivity extends AppCompatActivity implements
             if (drawer != null) {
                 drawer.openDrawer(Gravity.START);
             }
-        } else if (checkAuth) {
-            checkAuth();
+        } else {
+            nav.getMenu().performIdentifierAction(selectedSourceId, 0);
         }
     }
 
@@ -166,14 +172,6 @@ public class FilestackActivity extends AppCompatActivity implements
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        nav.setCheckedItem(id);
-
-        if (selectedSourceId == id) {
-            return true;
-        } else {
-            selectedSourceId = id;
-        }
-
         if (id == R.id.nav_camera) {
             Intent cameraIntent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
             if (cameraIntent.resolveActivity(getPackageManager()) != null) {
@@ -186,15 +184,9 @@ public class FilestackActivity extends AppCompatActivity implements
                 startActivityForResult(fileBrowserIntent, REQUEST_FILE_BROWSER);
             }
         } else {
-            SourceInfo info = Util.getSourceInfo(id);
-            View header = nav.getHeaderView(0);
-            if (header != null) {
-                header.setBackgroundResource(info.getColorId());
-            }
-            toolbar.setBackgroundResource(info.getColorId());
-            if (drawer != null) {
-                toolbar.setSubtitle(info.getTextId());
-            }
+            nav.setCheckedItem(id);
+            selectedSourceId = id;
+            setThemeColor();
             checkAuth();
         }
 
@@ -257,6 +249,18 @@ public class FilestackActivity extends AppCompatActivity implements
                 .getCloudContentsAsync(info.getId(), "/")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this);
+    }
+
+    private void setThemeColor() {
+        SourceInfo info = Util.getSourceInfo(selectedSourceId);
+        View header = nav.getHeaderView(0);
+        if (header != null) {
+            header.setBackgroundResource(info.getColorId());
+        }
+        toolbar.setBackgroundResource(info.getColorId());
+        if (drawer != null) {
+            toolbar.setSubtitle(info.getTextId());
+        }
     }
 
     @Override
