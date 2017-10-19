@@ -20,7 +20,7 @@ public class CloudListFragment extends Fragment {
 
     private final static int MIN_GRID_WIDTH = 135;
 
-    private ClientProvider clientProvider;
+    private FsAndroidClient.Provider clientProvider;
     private SourceInfo sourceInfo;
 
     private RecyclerView recyclerView;
@@ -50,9 +50,10 @@ public class CloudListFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            clientProvider = (ClientProvider) context;
+            clientProvider = (FsAndroidClient.Provider) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement ClientProvider");
+            throw new ClassCastException(context.toString()
+                    + " must implement FsAndroidClient.Provider");
         }
     }
 

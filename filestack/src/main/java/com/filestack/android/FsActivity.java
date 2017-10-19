@@ -29,8 +29,8 @@ import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
-public class FilestackActivity extends AppCompatActivity implements
-        SingleObserver<CloudContents>, CompletableObserver, ClientProvider,
+public class FsActivity extends AppCompatActivity implements
+        SingleObserver<CloudContents>, CompletableObserver, FsAndroidClient.Provider,
         NavigationView.OnNavigationItemSelectedListener {
 
     public static final String EXTRA_API_KEY = "apiKey";
@@ -47,7 +47,7 @@ public class FilestackActivity extends AppCompatActivity implements
     private DrawerLayout drawer;
     private NavigationView nav;
     private Toolbar toolbar;
-    private FilestackAndroidClient client;
+    private FsAndroidClient client;
 
     private int selectedSourceId; // TODO maybe don't do this
     private boolean checkAuth;
@@ -69,7 +69,7 @@ public class FilestackActivity extends AppCompatActivity implements
             security = Security.fromExisting(policy, signature);
         }
 
-        client = new FilestackAndroidClient(apiKey, security);
+        client = new FsAndroidClient(apiKey, security);
         client.setReturnUrl(appUrl);
 
         setContentView(R.layout.activity_filestack);
@@ -205,10 +205,10 @@ public class FilestackActivity extends AppCompatActivity implements
         String authUrl = contents.getAuthUrl();
 
         if (authUrl != null) {
-            AuthFragment authFragment = AuthFragment.create(selectedSourceId, authUrl);
+            CloudAuthFragment cloudAuthFragment = CloudAuthFragment.create(selectedSourceId, authUrl);
             FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
-            transaction.replace(R.id.content, authFragment);
+            transaction.replace(R.id.content, cloudAuthFragment);
             transaction.commit();
         } else {
             checkAuth = false;
@@ -264,7 +264,7 @@ public class FilestackActivity extends AppCompatActivity implements
     }
 
     @Override
-    public FilestackAndroidClient getClient() {
+    public FsAndroidClient getClient() {
         return client;
     }
 }

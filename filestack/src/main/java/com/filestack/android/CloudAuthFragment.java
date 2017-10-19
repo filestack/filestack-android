@@ -1,8 +1,6 @@
 package com.filestack.android;
 
 import android.content.Intent;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,7 +12,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class AuthFragment extends Fragment implements View.OnClickListener {
+public class CloudAuthFragment extends Fragment implements View.OnClickListener {
     private final static String ARG_CLOUD_INFO_ID = "cloudInfoId";
     private final static String ARG_AUTH_URL = "authUrl";
 
@@ -24,8 +22,8 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
     private SourceInfo sourceInfo;
     private String authUrl;
 
-    public static AuthFragment create(int cloudInfoId, String authUrl) {
-        AuthFragment fragment = new AuthFragment();
+    public static CloudAuthFragment create(int cloudInfoId, String authUrl) {
+        CloudAuthFragment fragment = new CloudAuthFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_CLOUD_INFO_ID, cloudInfoId);
         args.putString(ARG_AUTH_URL, authUrl);

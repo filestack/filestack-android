@@ -24,7 +24,7 @@ class CloudListAdapter extends RecyclerView.Adapter implements
 
     private static final double PAGINATION_THRESHOLD = 0.50;
 
-    private final ClientProvider clientProvider;
+    private final FsAndroidClient.Provider clientProvider;
     private final String provider;
 
     private int layoutId;
@@ -36,7 +36,7 @@ class CloudListAdapter extends RecyclerView.Adapter implements
     private String nextToken;
     private boolean multiSelectMode;
 
-    CloudListAdapter(ClientProvider clientProvider, String provider) {
+    CloudListAdapter(FsAndroidClient.Provider clientProvider, String provider) {
         this.clientProvider = clientProvider;
         this.provider = provider;
         selected = new ArrayList<>();
@@ -46,12 +46,12 @@ class CloudListAdapter extends RecyclerView.Adapter implements
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
         View listItemView = inflater.inflate(layoutId, viewGroup, false);
-        return new CloudListItemViewHolder(listItemView);
+        return new CloudListViewHolder(listItemView);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
-        CloudListItemViewHolder holder = (CloudListItemViewHolder) viewHolder;
+        CloudListViewHolder holder = (CloudListViewHolder) viewHolder;
         CloudItem item = items.get(i);
 
         holder.setId(i);
@@ -148,8 +148,8 @@ class CloudListAdapter extends RecyclerView.Adapter implements
     }
 
     private void selectItem(View view) {
-        CloudListItemViewHolder holder;
-        holder = (CloudListItemViewHolder) recyclerView.findContainingViewHolder(view);
+        CloudListViewHolder holder;
+        holder = (CloudListViewHolder) recyclerView.findContainingViewHolder(view);
 
         if (multiSelectMode) {
             if (selected.contains(holder.getId())) {
@@ -165,9 +165,9 @@ class CloudListAdapter extends RecyclerView.Adapter implements
     }
 
     private void clearSelections() {
-        CloudListItemViewHolder holder;
+        CloudListViewHolder holder;
         for (int id : selected) {
-            holder = (CloudListItemViewHolder) recyclerView.findViewHolderForAdapterPosition(id);
+            holder = (CloudListViewHolder) recyclerView.findViewHolderForAdapterPosition(id);
             if (holder != null) {
                 holder.setSelected(false);
             }
