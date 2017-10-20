@@ -10,7 +10,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,7 +21,7 @@ public class CloudListFragment extends Fragment {
     private final static int MIN_GRID_WIDTH = 135;
 
     private ClientProvider clientProvider;
-    private CloudInfo cloudInfo;
+    private SourceInfo sourceInfo;
 
     private RecyclerView recyclerView;
     private CloudListAdapter adapter;
@@ -44,7 +43,7 @@ public class CloudListFragment extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle args = getArguments();
-        cloudInfo = Util.getCloudInfo(args.getInt(ARG_CLOUD_INFO_ID));
+        sourceInfo = Util.getSourceInfo(args.getInt(ARG_CLOUD_INFO_ID));
     }
 
     @Override
@@ -65,7 +64,7 @@ public class CloudListFragment extends Fragment {
         View baseView = inflater.inflate(R.layout.fragment_cloud_list, container, false);
 
         recyclerView = baseView.findViewById(R.id.recycler);
-        adapter = new CloudListAdapter(clientProvider, cloudInfo.getProvider());
+        adapter = new CloudListAdapter(clientProvider, sourceInfo.getId());
 
         Context context = recyclerView.getContext();
         Drawable drawable = getResources().getDrawable(R.drawable.list_grid_divider);

@@ -11,20 +11,18 @@
     <string name="nav_drawer_open">Open navigation drawer</string>
     <string name="nav_drawer_close">Close navigation drawer</string>
 
-    <string name="menu_camera">Camera</string>
-    <string name="menu_file_browser">File browser</string>
-    <string name="menu_facebook">Facebook</string>
-    <string name="menu_instagram">Instagram</string>
-    <string name="menu_google_drive">Google Drive</string>
-    <string name="menu_dropbox">Dropbox</string>
-    <string name="menu_evernote">Evernote</string>
-    <string name="menu_flickr">Flickr</string>
-    <string name="menu_box">Box</string>
-    <string name="menu_github">GitHub</string>
-    <string name="menu_gmail">Gmail</string>
-    <string name="menu_google_photos">Google Photos</string>
-    <string name="menu_one_drive">OneDrive</string>
-    <string name="menu_amazon_drive">Amazon Drive</string>
+    <string name="source_camera">Camera</string>
+    <string name="source_device">File browser</string>
+    <string name="source_facebook">Facebook</string>
+    <string name="source_instagram">Instagram</string>
+    <string name="source_google_drive">Google Drive</string>
+    <string name="source_dropbox">Dropbox</string>
+    <string name="source_box">Box</string>
+    <string name="source_github">GitHub</string>
+    <string name="source_gmail">Gmail</string>
+    <string name="source_google_photos">Google Photos</string>
+    <string name="source_onedrive">OneDrive</string>
+    <string name="source_amazon_drive">Amazon Drive</string>
 
     <string name="menu_view_grid">View as grid</string>
     <string name="menu_view_list">View as list</string>
