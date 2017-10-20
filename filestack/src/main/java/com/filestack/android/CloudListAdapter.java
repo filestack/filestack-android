@@ -149,11 +149,12 @@ class CloudListAdapter extends RecyclerView.Adapter implements
 
     @Override
     public boolean onBackPressed() {
-//        if (level == 0) {
-//            return false;
-//        }
-//        changeFolder(level-1);
-        return false;
+        if (currentPath.equals("/")) {
+            return false;
+        }
+        String newPath = Util.trimLastPathSection(currentPath);
+        setPath(newPath);
+        return true;
     }
 
     private void loadMoreData() {
