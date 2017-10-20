@@ -15,7 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class CloudListFragment extends Fragment {
+public class CloudListFragment extends Fragment implements FsActivity.BackListener {
     private final static String ARG_CLOUD_INFO_ID = "cloudInfoId";
 
     private final static int MIN_GRID_WIDTH = 135;
@@ -120,5 +120,10 @@ public class CloudListFragment extends Fragment {
             recyclerView.addItemDecoration(horizontalDecor);
             recyclerView.addItemDecoration(verticalDecor);
         }
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        return adapter.onBackPressed();
     }
 }

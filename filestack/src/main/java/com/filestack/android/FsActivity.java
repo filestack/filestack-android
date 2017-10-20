@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -51,6 +52,8 @@ public class FsActivity extends AppCompatActivity implements
 
     private int selectedSourceId; // TODO maybe don't do this
     private boolean checkAuth;
+
+    private BackListener backListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,7 +138,7 @@ public class FsActivity extends AppCompatActivity implements
     public void onBackPressed() {
         if (drawer != null && drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        } else if (!backListener.onBackPressed()){
             super.onBackPressed();
         }
     }
@@ -228,6 +231,16 @@ public class FsActivity extends AppCompatActivity implements
     @Override
     public void onError(Throwable e) { }
 
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        super.onAttachFragment(fragment);
+
+        try {
+            backListener = (BackListener) fragment;
+        } catch (ClassCastException e) {
+        }
+    }
+
     private void setNavIconColors() {
         Menu menu = nav.getMenu();
         for (int i = 0; i < menu.size(); i++) {
@@ -266,5 +279,9 @@ public class FsActivity extends AppCompatActivity implements
     @Override
     public FsAndroidClient getClient() {
         return client;
+    }
+
+    interface BackListener {
+        boolean onBackPressed();
     }
 }
