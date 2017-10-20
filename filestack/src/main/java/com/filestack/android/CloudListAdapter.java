@@ -18,7 +18,7 @@ import io.reactivex.disposables.Disposable;
 
 class CloudListAdapter extends RecyclerView.Adapter implements
         SingleObserver<CloudContents>, View.OnClickListener, View.OnLongClickListener,
-        FsActivity.BackListener {
+        FsActivity.BackButtonListener {
 
     private static final double LOAD_TRIGGER = 0.50;
 

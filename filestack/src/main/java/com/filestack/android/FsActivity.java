@@ -53,7 +53,7 @@ public class FsActivity extends AppCompatActivity implements
     private int selectedSourceId; // TODO maybe don't do this
     private boolean checkAuth;
 
-    private BackListener backListener;
+    private BackButtonListener backButtonListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,7 +138,7 @@ public class FsActivity extends AppCompatActivity implements
     public void onBackPressed() {
         if (drawer != null && drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (!backListener.onBackPressed()){
+        } else if (!backButtonListener.onBackPressed()){
             super.onBackPressed();
         }
     }
@@ -236,7 +236,7 @@ public class FsActivity extends AppCompatActivity implements
         super.onAttachFragment(fragment);
 
         try {
-            backListener = (BackListener) fragment;
+            backButtonListener = (BackButtonListener) fragment;
         } catch (ClassCastException e) {
         }
     }
@@ -281,7 +281,7 @@ public class FsActivity extends AppCompatActivity implements
         return client;
     }
 
-    interface BackListener {
+    interface BackButtonListener {
         boolean onBackPressed();
     }
 }
