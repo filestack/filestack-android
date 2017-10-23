@@ -21,7 +21,7 @@ class Util {
 
         SOURCES.put(R.id.nav_device, new SourceInfo(
                 FsSources.DEVICE,
-                R.drawable.ic_source_folder,
+                R.drawable.ic_source_device,
                 R.string.source_device,
                 R.color.theme_source_device));
 

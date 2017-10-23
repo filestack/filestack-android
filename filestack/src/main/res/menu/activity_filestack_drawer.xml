@@ -11,7 +11,7 @@
                 android:title="@string/source_camera"/>
             <item
                 android:id="@+id/nav_device"
-                android:icon="@drawable/ic_source_folder"
+                android:icon="@drawable/ic_source_device"
                 android:title="@string/source_device"/>
         </menu>
     </item>
