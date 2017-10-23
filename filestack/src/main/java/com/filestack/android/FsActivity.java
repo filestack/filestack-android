@@ -22,7 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.filestack.CloudContents;
+import com.filestack.CloudResponse;
 import com.filestack.Security;
 
 import io.reactivex.CompletableObserver;
@@ -31,7 +31,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
 public class FsActivity extends AppCompatActivity implements
-        SingleObserver<CloudContents>, CompletableObserver, FsAndroidClient.Provider,
+        SingleObserver<CloudResponse>, CompletableObserver, FsAndroidClient.Provider,
         NavigationView.OnNavigationItemSelectedListener {
 
     public static final String EXTRA_API_KEY = "apiKey";
@@ -204,7 +204,7 @@ public class FsActivity extends AppCompatActivity implements
     public void onSubscribe(Disposable d) { }
 
     @Override
-    public void onSuccess(CloudContents contents) {
+    public void onSuccess(CloudResponse contents) {
         String authUrl = contents.getAuthUrl();
 
         if (authUrl != null) {
@@ -259,7 +259,7 @@ public class FsActivity extends AppCompatActivity implements
         checkAuth = true;
         SourceInfo info = Util.getSourceInfo(selectedSourceId);
         client
-                .getCloudContentsAsync(info.getId(), "/")
+                .getCloudItemsAsync(info.getId(), "/")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this);
     }

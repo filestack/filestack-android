@@ -4,8 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
-import com.filestack.FileLink;
-import com.filestack.FilestackClient;
+import com.filestack.FsFile;
+import com.filestack.FsClient;
 import com.filestack.Progress;
 import com.filestack.Security;
 import com.filestack.StorageOptions;
@@ -13,7 +13,7 @@ import com.filestack.util.FsService;
 import io.reactivex.Flowable;
 import java.io.IOException;
 
-public class FsAndroidClient extends FilestackClient {
+public class FsAndroidClient extends FsClient {
 
     /**
      * Constructs a client without security.
@@ -50,7 +50,7 @@ public class FsAndroidClient extends FilestackClient {
      *
      * @see #upload(String, boolean, StorageOptions)
      */
-    public FileLink upload(Context context, Uri uri, boolean intelligent) throws IOException {
+    public FsFile upload(Context context, Uri uri, boolean intelligent) throws IOException {
         return super.upload(getPathFromMediaUri(context, uri), intelligent);
     }
 
@@ -59,7 +59,7 @@ public class FsAndroidClient extends FilestackClient {
      *
      * @see #upload(String, boolean, StorageOptions)
      */
-    public FileLink upload(Context context, Uri uri, boolean intelligent, StorageOptions options)
+    public FsFile upload(Context context, Uri uri, boolean intelligent, StorageOptions options)
             throws IOException {
         return super.upload(getPathFromMediaUri(context, uri), intelligent, options);
     }
@@ -70,7 +70,7 @@ public class FsAndroidClient extends FilestackClient {
      * @see #upload(String, boolean, StorageOptions)
      * @see #uploadAsync(String, boolean, StorageOptions)
      */
-    public Flowable<Progress<FileLink>> uploadAsync(Context context, Uri uri, boolean intelligent) {
+    public Flowable<Progress<FsFile>> uploadAsync(Context context, Uri uri, boolean intelligent) {
         return super.uploadAsync(getPathFromMediaUri(context, uri), intelligent, null);
     }
 
@@ -80,7 +80,7 @@ public class FsAndroidClient extends FilestackClient {
      * @see #upload(String, boolean, StorageOptions)
      * @see #uploadAsync(String, boolean, StorageOptions)
      */
-    public Flowable<Progress<FileLink>> uploadAsync(Context context, Uri uri, boolean intelligent,
+    public Flowable<Progress<FsFile>> uploadAsync(Context context, Uri uri, boolean intelligent,
                                                     StorageOptions options) {
         return super.uploadAsync(getPathFromMediaUri(context, uri), intelligent, options);
     }

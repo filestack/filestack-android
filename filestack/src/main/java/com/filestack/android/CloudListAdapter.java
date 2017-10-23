@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.filestack.CloudContents;
+import com.filestack.CloudResponse;
 import com.filestack.CloudItem;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 
 class CloudListAdapter extends RecyclerView.Adapter implements
-        SingleObserver<CloudContents>, View.OnClickListener, View.OnLongClickListener,
+        SingleObserver<CloudResponse>, View.OnClickListener, View.OnLongClickListener,
         FsActivity.BackButtonListener {
 
     private static final double LOAD_TRIGGER = 0.50;
@@ -88,7 +88,7 @@ class CloudListAdapter extends RecyclerView.Adapter implements
     public void onSubscribe(@NonNull Disposable d) { }
 
     @Override
-    public void onSuccess(@NonNull CloudContents cloudContents) {
+    public void onSuccess(@NonNull CloudResponse cloudContents) {
         ArrayList<CloudItem> items = folders.get(currentPath);
         CloudItem[] newItems = cloudContents.getItems();
 
@@ -163,7 +163,7 @@ class CloudListAdapter extends RecyclerView.Adapter implements
         isLoading = true;
         clientProvider
                 .getClient()
-                .getCloudContentsAsync(sourceId, currentPath, nextTokens.get(currentPath))
+                .getCloudItemsAsync(sourceId, currentPath, nextTokens.get(currentPath))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this);
     }
