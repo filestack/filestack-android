@@ -12,7 +12,6 @@ import com.filestack.CloudItem;
 import java.util.ArrayList;
 
 import io.reactivex.SingleObserver;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 
@@ -164,7 +163,6 @@ class CloudListAdapter extends RecyclerView.Adapter implements
         clientProvider
                 .getClient()
                 .getCloudItemsAsync(sourceId, currentPath, nextTokens.get(currentPath))
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this);
     }
 

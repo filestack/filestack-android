@@ -4,45 +4,36 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
-import com.filestack.FsFile;
+
 import com.filestack.FsClient;
+import com.filestack.FsFile;
 import com.filestack.Progress;
-import com.filestack.Security;
 import com.filestack.StorageOptions;
-import com.filestack.util.FsService;
-import io.reactivex.Flowable;
+
 import java.io.IOException;
+
+import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class FsAndroidClient extends FsClient {
 
     /**
-     * Constructs a client without security.
-     *
-     * @param apiKey account key from the dev portal
+     * Builds new {@link FsAndroidClient}.
      */
-    public FsAndroidClient(String apiKey) {
-        super(apiKey);
+    public static class Builder extends FsClient.Builder<Builder> {
+
+        /**
+         * Create an {@link FsAndroidClient} using the configured values.
+         */
+        public FsAndroidClient build() {
+            obsScheduler = obsScheduler != null ? obsScheduler : AndroidSchedulers.mainThread();
+            super.build();
+            return new FsAndroidClient(this);
+        }
     }
 
-    /**
-     * Constructs a client with security.
-     *
-     * @param apiKey   account key from the dev portal
-     * @param security configured security object
-     */
-    public FsAndroidClient(String apiKey, Security security) {
-        super(apiKey, security);
-    }
-
-    /**
-     * Constructs a client using custom {@link FsService}. For internal use.
-     *
-     * @param apiKey    account key from the dev portal
-     * @param security  configured security object
-     * @param fsService service to use for API calls, overrides default singleton
-     */
-    public FsAndroidClient(String apiKey, Security security, FsService fsService) {
-        super(apiKey, security, fsService);
+    protected FsAndroidClient(Builder builder) {
+        super(builder);
     }
 
     /**

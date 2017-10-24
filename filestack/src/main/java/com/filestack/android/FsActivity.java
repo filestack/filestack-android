@@ -27,7 +27,6 @@ import com.filestack.Security;
 
 import io.reactivex.CompletableObserver;
 import io.reactivex.SingleObserver;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
 public class FsActivity extends AppCompatActivity implements
@@ -72,8 +71,11 @@ public class FsActivity extends AppCompatActivity implements
             security = Security.fromExisting(policy, signature);
         }
 
-        client = new FsAndroidClient(apiKey, security);
-        client.setReturnUrl(appUrl);
+        client = new FsAndroidClient.Builder()
+                .apiKey(apiKey)
+                .security(security)
+                .returnUrl(appUrl)
+                .build();
 
         setContentView(R.layout.activity_filestack);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -163,7 +165,6 @@ public class FsActivity extends AppCompatActivity implements
             SourceInfo info = Util.getSourceInfo(selectedSourceId);
             client
                     .logoutCloudAsync(info.getId())
-                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(this);
             return true;
         }
@@ -260,7 +261,6 @@ public class FsActivity extends AppCompatActivity implements
         SourceInfo info = Util.getSourceInfo(selectedSourceId);
         client
                 .getCloudItemsAsync(info.getId(), "/")
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this);
     }
 
