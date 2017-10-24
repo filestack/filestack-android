@@ -54,6 +54,12 @@ public class FsActivity extends AppCompatActivity implements
 
     private BackButtonListener backButtonListener;
 
+    interface BackButtonListener {
+        boolean onBackPressed();
+    }
+
+    // Activity lifecycle overrides (in sequential order)
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,6 +114,20 @@ public class FsActivity extends AppCompatActivity implements
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (selectedSourceId == 0) {
+            nav.getMenu().performIdentifierAction(R.id.google_drive, 0);
+            if (drawer != null) {
+                drawer.openDrawer(Gravity.START);
+            }
+        } else {
+            nav.getMenu().performIdentifierAction(selectedSourceId, 0);
+        }
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
 
@@ -122,17 +142,15 @@ public class FsActivity extends AppCompatActivity implements
                 .apply();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    // Other Activity overrides (alphabetical order)
 
-        if (selectedSourceId == 0) {
-            nav.getMenu().performIdentifierAction(R.id.google_drive, 0);
-            if (drawer != null) {
-                drawer.openDrawer(Gravity.START);
-            }
-        } else {
-            nav.getMenu().performIdentifierAction(selectedSourceId, 0);
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        super.onAttachFragment(fragment);
+
+        try {
+            backButtonListener = (BackButtonListener) fragment;
+        } catch (ClassCastException e) {
         }
     }
 
@@ -159,8 +177,6 @@ public class FsActivity extends AppCompatActivity implements
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        Log.d("menu item click", "activity");
-
         if (id == R.id.action_logout) {
             SourceInfo info = Util.getSourceInfo(selectedSourceId);
             client
@@ -170,6 +186,23 @@ public class FsActivity extends AppCompatActivity implements
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    // Interface overrides (alphabetical order)
+
+    @Override
+    public FsAndroidClient getClient() {
+        return client;
+    }
+
+    @Override
+    public void onComplete() {
+        checkAuth();
+    }
+
+    @Override
+    public void onError(Throwable e) {
+        // TODO Error handling
     }
 
     @Override
@@ -224,22 +257,12 @@ public class FsActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
-    public void onComplete() {
-        checkAuth();
-    }
+    // Private helper methods (alphabetical order)
 
-    @Override
-    public void onError(Throwable e) { }
-
-    @Override
-    public void onAttachFragment(Fragment fragment) {
-        super.onAttachFragment(fragment);
-
-        try {
-            backButtonListener = (BackButtonListener) fragment;
-        } catch (ClassCastException e) {
-        }
+    private void checkAuth() {
+        checkAuth = true;
+        SourceInfo info = Util.getSourceInfo(selectedSourceId);
+        client.getCloudItemsAsync(info.getId(), "/").subscribe(this);
     }
 
     private void setNavIconColors() {
@@ -256,14 +279,6 @@ public class FsActivity extends AppCompatActivity implements
         }
     }
 
-    private void checkAuth() {
-        checkAuth = true;
-        SourceInfo info = Util.getSourceInfo(selectedSourceId);
-        client
-                .getCloudItemsAsync(info.getId(), "/")
-                .subscribe(this);
-    }
-
     private void setThemeColor() {
         SourceInfo info = Util.getSourceInfo(selectedSourceId);
         View header = nav.getHeaderView(0);
@@ -274,14 +289,5 @@ public class FsActivity extends AppCompatActivity implements
         if (drawer != null) {
             toolbar.setSubtitle(info.getTextId());
         }
-    }
-
-    @Override
-    public FsAndroidClient getClient() {
-        return client;
-    }
-
-    interface BackButtonListener {
-        boolean onBackPressed();
     }
 }
