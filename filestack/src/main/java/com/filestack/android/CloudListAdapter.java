@@ -68,8 +68,10 @@ class CloudListAdapter extends RecyclerView.Adapter implements
         holder.setOnLongClickListener(this);
 
         String nextToken = nextTokens.get(currentPath);
-        if (!isLoading && nextToken != null && i >= LOAD_TRIGGER * items.size()) {
-            loadMoreData();
+        if (!isLoading) {
+            if (nextToken != null && i >= (LOAD_TRIGGER * items.size())) {
+                loadMoreData();
+            }
         }
     }
 
