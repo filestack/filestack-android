@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-class CloudListItemViewHolder extends RecyclerView.ViewHolder {
+class CloudListViewHolder extends RecyclerView.ViewHolder {
     private int id;
 
     private View itemView;
@@ -17,7 +17,7 @@ class CloudListItemViewHolder extends RecyclerView.ViewHolder {
     private ImageView iconView;
     private ImageView checkboxView;
 
-    CloudListItemViewHolder(View listItemView) {
+    CloudListViewHolder(View listItemView) {
         super(listItemView);
         this.itemView = listItemView;
         this.nameView = listItemView.findViewById(R.id.name);

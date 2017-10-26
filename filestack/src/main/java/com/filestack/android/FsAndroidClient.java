@@ -13,14 +13,14 @@ import com.filestack.util.FsService;
 import io.reactivex.Flowable;
 import java.io.IOException;
 
-public class FilestackAndroidClient extends FilestackClient {
+public class FsAndroidClient extends FilestackClient {
 
     /**
      * Constructs a client without security.
      *
      * @param apiKey account key from the dev portal
      */
-    public FilestackAndroidClient(String apiKey) {
+    public FsAndroidClient(String apiKey) {
         super(apiKey);
     }
 
@@ -30,7 +30,7 @@ public class FilestackAndroidClient extends FilestackClient {
      * @param apiKey   account key from the dev portal
      * @param security configured security object
      */
-    public FilestackAndroidClient(String apiKey, Security security) {
+    public FsAndroidClient(String apiKey, Security security) {
         super(apiKey, security);
     }
 
@@ -41,7 +41,7 @@ public class FilestackAndroidClient extends FilestackClient {
      * @param security  configured security object
      * @param fsService service to use for API calls, overrides default singleton
      */
-    public FilestackAndroidClient(String apiKey, Security security, FsService fsService) {
+    public FsAndroidClient(String apiKey, Security security, FsService fsService) {
         super(apiKey, security, fsService);
     }
 
@@ -98,5 +98,9 @@ public class FilestackAndroidClient extends FilestackClient {
                 cursor.close();
             }
         }
+    }
+
+    interface Provider {
+        FsAndroidClient getClient();
     }
 }

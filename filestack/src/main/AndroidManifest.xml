@@ -9,7 +9,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true">
         <activity
-            android:name=".FilestackActivity"
+            android:name=".FsActivity"
             android:label="@string/picker_title"
             android:theme="@style/NoActionBar"/>
     </application>

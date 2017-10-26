@@ -1,10 +1,12 @@
 package com.filestack.android;
 
 import android.support.v4.util.ArrayMap;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.filestack.FsSources;
 
+import java.util.Arrays;
 import java.util.Map;
 
 class Util {
@@ -92,5 +94,14 @@ class Util {
         String text = view.getText().toString();
         text = text.replace(target, replacement);
         view.setText(text);
+    }
+
+    static String trimLastPathSection(String path) {
+        String[] sections = path.split("/");
+        String newPath = "/";
+        for (int i = 1; i < sections.length - 1; i++) {
+            newPath += sections[i] + "/";
+        }
+        return newPath;
     }
 }

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -29,8 +30,8 @@ import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
-public class FilestackActivity extends AppCompatActivity implements
-        SingleObserver<CloudContents>, CompletableObserver, ClientProvider,
+public class FsActivity extends AppCompatActivity implements
+        SingleObserver<CloudContents>, CompletableObserver, FsAndroidClient.Provider,
         NavigationView.OnNavigationItemSelectedListener {
 
     public static final String EXTRA_API_KEY = "apiKey";
@@ -47,10 +48,12 @@ public class FilestackActivity extends AppCompatActivity implements
     private DrawerLayout drawer;
     private NavigationView nav;
     private Toolbar toolbar;
-    private FilestackAndroidClient client;
+    private FsAndroidClient client;
 
     private int selectedSourceId; // TODO maybe don't do this
     private boolean checkAuth;
+
+    private BackButtonListener backButtonListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +72,7 @@ public class FilestackActivity extends AppCompatActivity implements
             security = Security.fromExisting(policy, signature);
         }
 
-        client = new FilestackAndroidClient(apiKey, security);
+        client = new FsAndroidClient(apiKey, security);
         client.setReturnUrl(appUrl);
 
         setContentView(R.layout.activity_filestack);
@@ -135,7 +138,7 @@ public class FilestackActivity extends AppCompatActivity implements
     public void onBackPressed() {
         if (drawer != null && drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        } else if (!backButtonListener.onBackPressed()){
             super.onBackPressed();
         }
     }
@@ -205,10 +208,10 @@ public class FilestackActivity extends AppCompatActivity implements
         String authUrl = contents.getAuthUrl();
 
         if (authUrl != null) {
-            AuthFragment authFragment = AuthFragment.create(selectedSourceId, authUrl);
+            CloudAuthFragment cloudAuthFragment = CloudAuthFragment.create(selectedSourceId, authUrl);
             FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
-            transaction.replace(R.id.content, authFragment);
+            transaction.replace(R.id.content, cloudAuthFragment);
             transaction.commit();
         } else {
             checkAuth = false;
@@ -227,6 +230,16 @@ public class FilestackActivity extends AppCompatActivity implements
 
     @Override
     public void onError(Throwable e) { }
+
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        super.onAttachFragment(fragment);
+
+        try {
+            backButtonListener = (BackButtonListener) fragment;
+        } catch (ClassCastException e) {
+        }
+    }
 
     private void setNavIconColors() {
         Menu menu = nav.getMenu();
@@ -264,7 +277,11 @@ public class FilestackActivity extends AppCompatActivity implements
     }
 
     @Override
-    public FilestackAndroidClient getClient() {
+    public FsAndroidClient getClient() {
         return client;
+    }
+
+    interface BackButtonListener {
+        boolean onBackPressed();
     }
 }
