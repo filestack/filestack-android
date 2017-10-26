@@ -1,16 +1,16 @@
 package com.filestack.android;
 
 import android.support.v4.util.ArrayMap;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.filestack.FsSources;
 
-import java.util.Arrays;
 import java.util.Map;
 
 class Util {
     private static final Map<Integer, SourceInfo> SOURCES = new ArrayMap<>();
+
+    private static SelectedItem.SimpleSaver itemSaver;
 
     static {
         SOURCES.put(R.id.nav_camera, new SourceInfo(
@@ -103,5 +103,12 @@ class Util {
             newPath += sections[i] + "/";
         }
         return newPath;
+    }
+
+    static SelectedItem.SimpleSaver getItemSaver() {
+        if (itemSaver == null) {
+            itemSaver = new SelectedItem.SimpleSaver();
+        }
+        return itemSaver;
     }
 }

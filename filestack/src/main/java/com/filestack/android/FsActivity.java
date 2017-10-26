@@ -31,7 +31,7 @@ import io.reactivex.disposables.Disposable;
 
 public class FsActivity extends AppCompatActivity implements
         SingleObserver<CloudResponse>, CompletableObserver, FsAndroidClient.Provider,
-        NavigationView.OnNavigationItemSelectedListener {
+        NavigationView.OnNavigationItemSelectedListener, SelectedItem.Saver.SizeListener {
 
     public static final String EXTRA_API_KEY = "apiKey";
     public static final String EXTRA_POLICY = "policy";
@@ -99,6 +99,8 @@ public class FsActivity extends AppCompatActivity implements
         nav.setNavigationItemSelectedListener(this);
         // nav.setItemIconTintList(null); // To enable color icons
         // setNavIconColors();
+
+        Util.getItemSaver().setSizeListener(this);
     }
 
     @Override
@@ -232,6 +234,11 @@ public class FsActivity extends AppCompatActivity implements
         }
 
         return true;
+    }
+
+    @Override
+    public void onSizeChanged(int newSize) {
+        toolbar.getMenu().findItem(R.id.action_upload).setVisible(newSize > 0);
     }
 
     @Override

@@ -9,8 +9,6 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 class CloudListViewHolder extends RecyclerView.ViewHolder {
-    private int id;
-
     private View itemView;
     private TextView nameView;
     private TextView infoView;
@@ -27,11 +25,11 @@ class CloudListViewHolder extends RecyclerView.ViewHolder {
     }
 
     public int getId() {
-        return id;
+        return itemView.getId();
     }
 
     public void setId(int id) {
-        this.id = id;
+        itemView.setId(id);
     }
 
     public void setName(String name) {

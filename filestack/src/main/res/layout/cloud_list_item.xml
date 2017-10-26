@@ -22,7 +22,7 @@
         android:layout_marginStart="@dimen/list_item_horizontal_padding"/>
 
     <ImageView
-        app:srcCompat="@drawable/ic_menu_upload_white"
+        app:srcCompat="@drawable/ic_list_checkbox"
         android:id="@+id/checkbox"
         android:layout_width="@dimen/list_icon_size"
         android:layout_height="@dimen/list_icon_size"
