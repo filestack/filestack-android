@@ -1,9 +1,13 @@
 package com.filestack.android;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v4.util.ArrayMap;
 import android.widget.TextView;
 
-import com.filestack.FsSources;
+import com.filestack.Sources;
 
 import java.util.Map;
 
@@ -14,73 +18,73 @@ class Util {
 
     static {
         SOURCES.put(R.id.nav_camera, new SourceInfo(
-                FsSources.CAMERA,
+                Sources.CAMERA,
                 R.drawable.ic_source_camera,
                 R.string.source_camera,
                 R.color.theme_source_camera));
 
         SOURCES.put(R.id.nav_device, new SourceInfo(
-                FsSources.DEVICE,
+                Sources.DEVICE,
                 R.drawable.ic_source_device,
                 R.string.source_device,
                 R.color.theme_source_device));
 
         SOURCES.put(R.id.nav_facebook, new SourceInfo(
-                FsSources.FACEBOOK,
+                Sources.FACEBOOK,
                 R.drawable.ic_source_facebook,
                 R.string.source_facebook,
                 R.color.theme_source_facebook));
 
         SOURCES.put(R.id.google_photos, new SourceInfo(
-                FsSources.GOOGLE_PHOTOS,
+                Sources.GOOGLE_PHOTOS,
                 R.drawable.ic_source_google_photos,
                 R.string.source_google_photos,
                 R.color.theme_source_google_photos));
 
         SOURCES.put(R.id.instagram, new SourceInfo(
-                FsSources.INSTAGRAM,
+                Sources.INSTAGRAM,
                 R.drawable.ic_source_instagram,
                 R.string.source_instagram,
                 R.color.theme_source_instagram));
 
         SOURCES.put(R.id.amazon_drive, new SourceInfo(
-                FsSources.AMAZON_DRIVE,
+                Sources.AMAZON_DRIVE,
                 R.drawable.ic_source_amazon_drive,
                 R.string.source_amazon_drive,
                 R.color.theme_source_amazon_drive));
 
         SOURCES.put(R.id.box, new SourceInfo(
-                FsSources.BOX,
+                Sources.BOX,
                 R.drawable.ic_source_box,
                 R.string.source_box,
                 R.color.theme_source_box));
 
         SOURCES.put(R.id.dropbox, new SourceInfo(
-                FsSources.DROPBOX,
+                Sources.DROPBOX,
                 R.drawable.ic_source_dropbox,
                 R.string.source_dropbox,
                 R.color.theme_source_dropbox));
 
         SOURCES.put(R.id.google_drive, new SourceInfo(
-                FsSources.GOOGLE_DRIVE,
+                Sources.GOOGLE_DRIVE,
                 R.drawable.ic_source_google_drive,
                 R.string.source_google_drive,
                 R.color.theme_source_google_drive));
 
         SOURCES.put(R.id.onedrive, new SourceInfo(
-                FsSources.ONEDRIVE,
+                Sources.ONEDRIVE,
                 R.drawable.ic_source_onedrive,
                 R.string.source_onedrive,
                 R.color.theme_source_onedrive));
 
         SOURCES.put(R.id.github, new SourceInfo(
-                FsSources.GITHUB,
+                Sources.GITHUB,
                 R.drawable.ic_source_github,
                 R.string.source_github,
                 R.color.theme_source_github));
 
         SOURCES.put(R.id.gmail, new SourceInfo(
-                FsSources.GMAIL,
+                Sources.GMAIL,
                 R.drawable.ic_source_gmail,
                 R.string.source_gmail,
                 R.color.theme_source_gmail));
@@ -110,5 +114,20 @@ class Util {
             itemSaver = new SelectedItem.SimpleSaver();
         }
         return itemSaver;
+    }
+
+    static String getPathFromMediaUri(Context context, Uri uri) {
+        Cursor cursor = null;
+        try {
+            String[] projection = { MediaStore.Images.Media.DATA };
+            cursor = context.getContentResolver().query(uri,  projection, null, null, null);
+            int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(columnIndex);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 }
