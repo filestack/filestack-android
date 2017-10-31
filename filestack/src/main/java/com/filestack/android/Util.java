@@ -7,6 +7,7 @@ import android.provider.MediaStore;
 import android.support.v4.util.ArrayMap;
 import android.widget.TextView;
 
+import com.filestack.Client;
 import com.filestack.Sources;
 
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.Map;
 class Util {
     private static final Map<Integer, SourceInfo> SOURCES = new ArrayMap<>();
 
+    private static Client client;
     private static SelectedItem.SimpleSaver itemSaver;
 
     static {
@@ -129,5 +131,13 @@ class Util {
                 cursor.close();
             }
         }
+    }
+
+    static void setClient(Client client) {
+        Util.client = client;
+    }
+
+    static Client getClient() {
+        return client;
     }
 }

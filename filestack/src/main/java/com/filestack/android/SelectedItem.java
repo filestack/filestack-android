@@ -15,15 +15,17 @@ public class SelectedItem {
         boolean toggleItem(String provider, String path);
         boolean isSelected(String provider, Uri uri);
         boolean isSelected(String provider, String path);
-        void setSizeListener(SizeListener listener);
-        interface SizeListener {
-            void onSizeChanged(int newSize);
+        void setItemChangeListener(ItemChangeListener listener);
+        ArrayList<SelectedItem> getItems();
+        void clear();
+        interface ItemChangeListener {
+            void onCountChanged(int newSize);
         }
     }
 
     public static class SimpleSaver implements Saver {
         private ArrayList<SelectedItem> selectedItems = new ArrayList<>();
-        private SizeListener listener;
+        private ItemChangeListener listener;
 
         @Override
         public boolean toggleItem(String provider, Uri uri) {
@@ -46,8 +48,19 @@ public class SelectedItem {
         }
 
         @Override
-        public void setSizeListener(SizeListener listener) {
+        public void setItemChangeListener(ItemChangeListener listener) {
             this.listener = listener;
+        }
+
+        @Override
+        public ArrayList<SelectedItem> getItems() {
+            return selectedItems;
+        }
+
+        @Override
+        public void clear() {
+            selectedItems.clear();
+            callListener();
         }
 
         private boolean toggleItem(SelectedItem item) {
@@ -61,9 +74,7 @@ public class SelectedItem {
                 isSaved = true;
             }
 
-            log();
-            listener.onSizeChanged(selectedItems.size());
-
+            callListener();
             return isSaved;
         }
 
@@ -71,10 +82,18 @@ public class SelectedItem {
             return selectedItems.contains(item);
         }
 
+        private void callListener() {
+            if (listener != null) {
+                listener.onCountChanged(selectedItems.size());
+            }
+            log();
+        }
+
         private void log() {
-            Log.d("selectedItem", "************************");
+            Log.d("selectedItem", "count: " + Integer.toString(selectedItems.size()));
             for (SelectedItem item : selectedItems) {
-                Log.d("selectedItem", item.getProvider() + ": " + (item.getPath() != null ? item.getPath() : item.getUri().toString()));
+                Log.d("selectedItem", item.getProvider() + ": "
+                        + (item.getPath() != null ? item.getPath() : item.getUri().toString()));
             }
         }
     }

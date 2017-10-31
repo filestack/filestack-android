@@ -22,41 +22,38 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.filestack.Client;
 import com.filestack.CloudResponse;
-import com.filestack.Security;
+import com.filestack.Config;
+
+import java.util.ArrayList;
 
 import io.reactivex.CompletableObserver;
 import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
-public class FsActivity extends AppCompatActivity implements
-        SingleObserver<CloudResponse>, CompletableObserver, FsAndroidClient.Provider,
-        NavigationView.OnNavigationItemSelectedListener, SelectedItem.Saver.SizeListener {
+public class FilestackActivity extends AppCompatActivity implements
+        SingleObserver<CloudResponse>, CompletableObserver, SelectedItem.Saver.ItemChangeListener,
+        NavigationView.OnNavigationItemSelectedListener {
 
-    public static final String EXTRA_API_KEY = "apiKey";
-    public static final String EXTRA_POLICY = "policy";
-    public static final String EXTRA_SIGNATURE = "signature";
-    public static final String EXTRA_APP_URL = "appUrl";
+    public static final String EXTRA_CONFIG = "config";
+
+    interface BackListener {
+        boolean onBackPressed();
+    }
 
     private static final int REQUEST_CAMERA = RESULT_FIRST_USER;
     private static final int REQUEST_FILE_BROWSER = RESULT_FIRST_USER + 1;
-
-    private static final String PREF_SESSION_TOKEN = "sessionToken";
     private static final String PREF_SELECTED_SOURCE_ID = "selectedSourceId";
+    private static final String PREF_SESSION_TOKEN = "sessionToken";
 
+    private BackListener backListener;
     private DrawerLayout drawer;
+    private int selectedSourceId;
     private NavigationView nav;
     private Toolbar toolbar;
-    private FsAndroidClient client;
-
-    private int selectedSourceId; // TODO maybe don't do this
-    private boolean checkAuth;
-
-    private BackButtonListener backButtonListener;
-
-    interface BackButtonListener {
-        boolean onBackPressed();
-    }
 
     // Activity lifecycle overrides (in sequential order)
 
@@ -66,23 +63,17 @@ public class FsActivity extends AppCompatActivity implements
 
         Intent intent = getIntent();
 
-        String apiKey = intent.getStringExtra(EXTRA_API_KEY);
-        String policy = intent.getStringExtra(EXTRA_POLICY);
-        String signature = intent.getStringExtra(EXTRA_SIGNATURE);
-        String appUrl = intent.getStringExtra(EXTRA_APP_URL);
+        Config config = (Config) intent.getSerializableExtra(EXTRA_CONFIG);
+        Util.setClient(new Client(config));
 
-        Security security = null;
-
-        if (policy != null && signature != null) {
-            security = Security.fromExisting(policy, signature);
+        // If we're starting fresh, clear selected items
+        if (savedInstanceState == null) {
+            Util.getItemSaver().clear();
         }
 
-        client = new FsAndroidClient.Builder()
-                .apiKey(apiKey)
-                .security(security)
-                .returnUrl(appUrl)
-                .build();
+        Util.getItemSaver().setItemChangeListener(this);
 
+        // Setup view
         setContentView(R.layout.activity_filestack);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -99,8 +90,6 @@ public class FsActivity extends AppCompatActivity implements
         nav.setNavigationItemSelectedListener(this);
         // nav.setItemIconTintList(null); // To enable color icons
         // setNavIconColors();
-
-        Util.getItemSaver().setSizeListener(this);
     }
 
     @Override
@@ -111,7 +100,7 @@ public class FsActivity extends AppCompatActivity implements
 
         String sessionToken = preferences.getString(PREF_SESSION_TOKEN, null);
         Log.d("sessionToken", "Retrieving: " + sessionToken);
-        client.setSessionToken(sessionToken);
+        Util.getClient().setSessionToken(sessionToken);
         selectedSourceId = preferences.getInt(PREF_SELECTED_SOURCE_ID, 0);
     }
 
@@ -135,13 +124,14 @@ public class FsActivity extends AppCompatActivity implements
 
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 
-        String sessionToken = client.getSessionToken();
+        String sessionToken = Util.getClient().getSessionToken();
         Log.d("sessionToken", "Saving: " + sessionToken);
         preferences
                 .edit()
                 .putString(PREF_SESSION_TOKEN, sessionToken)
                 .putInt(PREF_SELECTED_SOURCE_ID, selectedSourceId)
                 .apply();
+        Util.getItemSaver().setItemChangeListener(null);
     }
 
     // Other Activity overrides (alphabetical order)
@@ -151,16 +141,15 @@ public class FsActivity extends AppCompatActivity implements
         super.onAttachFragment(fragment);
 
         try {
-            backButtonListener = (BackButtonListener) fragment;
-        } catch (ClassCastException e) {
-        }
+            backListener = (BackListener) fragment;
+        } catch (ClassCastException e) { }
     }
 
     @Override
     public void onBackPressed() {
         if (drawer != null && drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (!backButtonListener.onBackPressed()){
+        } else if (!backListener.onBackPressed()){
             super.onBackPressed();
         }
     }
@@ -181,10 +170,19 @@ public class FsActivity extends AppCompatActivity implements
 
         if (id == R.id.action_logout) {
             SourceInfo info = Util.getSourceInfo(selectedSourceId);
-            client
+            Util.getClient()
                     .logoutCloudAsync(info.getId())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(this);
             return true;
+        } else if (id == R.id.action_upload) {
+            Intent uploadIntent = new Intent(this, UploadService.class);
+            ArrayList<SelectedItem> items = Util.getItemSaver().getItems();
+            uploadIntent.putParcelableArrayListExtra(UploadService.EXTRA_SELECTED_ITEMS, items);
+            startService(uploadIntent);
+            Util.getItemSaver().clear();
+            finish();
         }
 
         return super.onOptionsItemSelected(item);
@@ -193,17 +191,13 @@ public class FsActivity extends AppCompatActivity implements
     // Interface overrides (alphabetical order)
 
     @Override
-    public FsAndroidClient getClient() {
-        return client;
-    }
-
-    @Override
     public void onComplete() {
         checkAuth();
     }
 
     @Override
     public void onError(Throwable e) {
+        e.printStackTrace();
         // TODO Error handling
     }
 
@@ -223,9 +217,14 @@ public class FsActivity extends AppCompatActivity implements
                 startActivityForResult(fileBrowserIntent, REQUEST_FILE_BROWSER);
             }
         } else {
+            if (id != selectedSourceId) {
+                Util.getItemSaver().clear();
+            }
+
             nav.setCheckedItem(id);
             selectedSourceId = id;
             // setThemeColor();
+
             checkAuth();
         }
 
@@ -237,7 +236,7 @@ public class FsActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onSizeChanged(int newSize) {
+    public void onCountChanged(int newSize) {
         toolbar.getMenu().findItem(R.id.action_upload).setVisible(newSize > 0);
     }
 
@@ -255,7 +254,6 @@ public class FsActivity extends AppCompatActivity implements
             transaction.replace(R.id.content, cloudAuthFragment);
             transaction.commit();
         } else {
-            checkAuth = false;
             CloudListFragment cloudListFragment = CloudListFragment.create(selectedSourceId);
             FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
@@ -267,9 +265,12 @@ public class FsActivity extends AppCompatActivity implements
     // Private helper methods (alphabetical order)
 
     private void checkAuth() {
-        checkAuth = true;
         SourceInfo info = Util.getSourceInfo(selectedSourceId);
-        client.getCloudItemsAsync(info.getId(), "/").subscribe(this);
+        Util.getClient()
+                .getCloudItemsAsync(info.getId(), "/")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this);
     }
 
     private void setNavIconColors() {

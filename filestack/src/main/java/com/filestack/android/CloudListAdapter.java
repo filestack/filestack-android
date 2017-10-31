@@ -12,31 +12,28 @@ import com.filestack.CloudResponse;
 import java.util.ArrayList;
 
 import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 class CloudListAdapter extends RecyclerView.Adapter implements
-        SingleObserver<CloudResponse>, View.OnClickListener, FsActivity.BackButtonListener {
+        SingleObserver<CloudResponse>, View.OnClickListener, FilestackActivity.BackListener {
 
     private static final double LOAD_TRIGGER = 0.50;
 
-    private final FsAndroidClient.Provider clientProvider;
-    private final String sourceId;
-
-    private RecyclerView recyclerView;
-    private int layoutId;
-
-    private String currentPath;
     private boolean isLoading;
-    // private boolean multiSelectMode;
+    private final ArrayMap<String, ArrayList<CloudItem>> folders;
+    private final ArrayMap<String, String> nextTokens;
+    private final String sourceId;
+    private int layoutId;
+    private RecyclerView recyclerView;
+    private String currentPath;
 
-    private final ArrayMap<String, ArrayList<CloudItem>> folders = new ArrayMap<>();
-    private final ArrayMap<String, String> nextTokens = new ArrayMap<>();
-    // private final ArrayList<String> selected = new ArrayList<>();
-
-    CloudListAdapter(FsAndroidClient.Provider clientProvider, String sourceId) {
-        this.clientProvider = clientProvider;
+    CloudListAdapter(String sourceId) {
         this.sourceId = sourceId;
+        this.folders = new ArrayMap<>();
+        this.nextTokens = new ArrayMap<>();
         setHasStableIds(true);
     }
 
@@ -70,8 +67,6 @@ class CloudListAdapter extends RecyclerView.Adapter implements
 
         SelectedItem.Saver itemSaver = Util.getItemSaver();
         holder.setSelected(itemSaver.isSelected(sourceId, item.getPath()));
-
-        // holder.setOnLongClickListener(this);
 
         String nextToken = nextTokens.get(currentPath);
         if (!isLoading) {
@@ -165,21 +160,6 @@ class CloudListAdapter extends RecyclerView.Adapter implements
         return true;
     }
 
-//    @Override
-//    public boolean onLongClick(View view) {
-//        if (isLoading) {
-//            return true;
-//        }
-//        multiSelectMode = !multiSelectMode;
-//        if (multiSelectMode) {
-//            selectItem(view);
-//        } else {
-//            selected.clear();
-//            notifyItemRangeChanged(0, folders.get(currentPath).size());
-//        }
-//        return true;
-//    }
-
     void setLayoutId(int layoutId) {
         this.layoutId = layoutId;
     }
@@ -188,9 +168,10 @@ class CloudListAdapter extends RecyclerView.Adapter implements
 
     private void loadMoreData() {
         isLoading = true;
-        clientProvider
-                .getClient()
+        Util.getClient()
                 .getCloudItemsAsync(sourceId, currentPath, nextTokens.get(currentPath))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this);
     }
 
@@ -203,20 +184,4 @@ class CloudListAdapter extends RecyclerView.Adapter implements
             notifyDataSetChanged();
         }
     }
-
-//    private void selectItem(View view) {
-//        CloudItem item = folders.get(currentPath).get(view.getId());
-//
-//        if (item.isFolder()) {
-//            setPath(item.getPath());
-//        } else if (multiSelectMode) {
-//            if (!selected.remove(item.getPath())) {
-//                selected.add(item.getPath());
-//            }
-//            if (selected.size() == 0) {
-//                multiSelectMode = false;
-//            }
-//            notifyItemChanged(view.getId());
-//        }
-//    }
 }

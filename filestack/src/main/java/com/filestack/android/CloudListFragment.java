@@ -15,19 +15,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class CloudListFragment extends Fragment implements FsActivity.BackButtonListener {
+public class CloudListFragment extends Fragment implements FilestackActivity.BackListener {
+    private final static int MIN_GRID_WIDTH = 135;
     private final static String ARG_CLOUD_INFO_ID = "cloudInfoId";
 
-    private final static int MIN_GRID_WIDTH = 135;
-
-    private FsAndroidClient.Provider clientProvider;
-    private SourceInfo sourceInfo;
-
-    private RecyclerView recyclerView;
+    private boolean isListMode = true;
     private CloudListAdapter adapter;
     private DividerItemDecoration horizontalDecor, verticalDecor;
-    private boolean isListMode = true;
     private int gridColumns;
+    private RecyclerView recyclerView;
+    private SourceInfo sourceInfo;
 
     public static CloudListFragment create(int cloudInfoId) {
         CloudListFragment fragment = new CloudListFragment();
@@ -46,17 +43,6 @@ public class CloudListFragment extends Fragment implements FsActivity.BackButton
         sourceInfo = Util.getSourceInfo(args.getInt(ARG_CLOUD_INFO_ID));
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        try {
-            clientProvider = (FsAndroidClient.Provider) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
-                    + " must implement FsAndroidClient.Provider");
-        }
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -65,7 +51,7 @@ public class CloudListFragment extends Fragment implements FsActivity.BackButton
         View baseView = inflater.inflate(R.layout.fragment_cloud_list, container, false);
 
         recyclerView = baseView.findViewById(R.id.recycler);
-        adapter = new CloudListAdapter(clientProvider, sourceInfo.getId());
+        adapter = new CloudListAdapter(sourceInfo.getId());
 
         Context context = recyclerView.getContext();
         Drawable drawable = getResources().getDrawable(R.drawable.list_grid_divider);
