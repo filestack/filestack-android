@@ -3,9 +3,10 @@ package com.filestack.android;
 import android.net.Uri;
 import android.util.Log;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class SelectedItem {
+public class SelectedItem implements Serializable {
     private String provider;
     private String path;
     private Uri uri;
@@ -15,17 +16,18 @@ public class SelectedItem {
         boolean toggleItem(String provider, String path);
         boolean isSelected(String provider, Uri uri);
         boolean isSelected(String provider, String path);
-        void setItemChangeListener(ItemChangeListener listener);
+        void setItemChangeListener(Listener listener);
         ArrayList<SelectedItem> getItems();
         void clear();
-        interface ItemChangeListener {
-            void onCountChanged(int newSize);
+        boolean isEmpty();
+        interface Listener {
+            void onEmptyChanged(boolean isEmpty);
         }
     }
 
     public static class SimpleSaver implements Saver {
         private ArrayList<SelectedItem> selectedItems = new ArrayList<>();
-        private ItemChangeListener listener;
+        private Listener listener;
 
         @Override
         public boolean toggleItem(String provider, Uri uri) {
@@ -48,7 +50,7 @@ public class SelectedItem {
         }
 
         @Override
-        public void setItemChangeListener(ItemChangeListener listener) {
+        public void setItemChangeListener(Listener listener) {
             this.listener = listener;
         }
 
@@ -59,12 +61,23 @@ public class SelectedItem {
 
         @Override
         public void clear() {
-            selectedItems.clear();
-            callListener();
+            if (selectedItems.size() != 0) {
+                selectedItems.clear();
+                if (listener != null) {
+                    listener.onEmptyChanged(true);
+                }
+            }
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return selectedItems.size() == 0;
         }
 
         private boolean toggleItem(SelectedItem item) {
             boolean isSaved;
+
+            boolean wasEmpty = isEmpty();
 
             if (isSelected(item)) {
                 selectedItems.remove(item);
@@ -74,19 +87,17 @@ public class SelectedItem {
                 isSaved = true;
             }
 
-            callListener();
+            boolean isEmpty = isEmpty();
+
+            if (listener != null && wasEmpty != isEmpty) {
+                listener.onEmptyChanged(isEmpty);
+            }
+
             return isSaved;
         }
 
         private boolean isSelected(SelectedItem item) {
             return selectedItems.contains(item);
-        }
-
-        private void callListener() {
-            if (listener != null) {
-                listener.onCountChanged(selectedItems.size());
-            }
-            log();
         }
 
         private void log() {

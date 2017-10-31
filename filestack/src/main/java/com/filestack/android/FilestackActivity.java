@@ -35,7 +35,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class FilestackActivity extends AppCompatActivity implements
-        SingleObserver<CloudResponse>, CompletableObserver, SelectedItem.Saver.ItemChangeListener,
+        SingleObserver<CloudResponse>, CompletableObserver, SelectedItem.Saver.Listener,
         NavigationView.OnNavigationItemSelectedListener {
 
     public static final String EXTRA_CONFIG = "config";
@@ -142,7 +142,10 @@ public class FilestackActivity extends AppCompatActivity implements
 
         try {
             backListener = (BackListener) fragment;
-        } catch (ClassCastException e) { }
+        } catch (ClassCastException e) {
+            String name = fragment.getClass().getName();
+            throw new RuntimeException(name + " must implement BackListener!");
+        }
     }
 
     @Override
@@ -152,13 +155,6 @@ public class FilestackActivity extends AppCompatActivity implements
         } else if (!backListener.onBackPressed()){
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.filestack, menu);
-        return true;
     }
 
     @Override
@@ -179,13 +175,25 @@ public class FilestackActivity extends AppCompatActivity implements
         } else if (id == R.id.action_upload) {
             Intent uploadIntent = new Intent(this, UploadService.class);
             ArrayList<SelectedItem> items = Util.getItemSaver().getItems();
-            uploadIntent.putParcelableArrayListExtra(UploadService.EXTRA_SELECTED_ITEMS, items);
+            uploadIntent.putExtra(UploadService.EXTRA_SELECTED_ITEMS, items);
             startService(uploadIntent);
             Util.getItemSaver().clear();
             finish();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.filestack, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_upload).setVisible(!Util.getItemSaver().isEmpty());
+        return true;
     }
 
     // Interface overrides (alphabetical order)
@@ -236,8 +244,8 @@ public class FilestackActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onCountChanged(int newSize) {
-        toolbar.getMenu().findItem(R.id.action_upload).setVisible(newSize > 0);
+    public void onEmptyChanged(boolean isEmpty) {
+        invalidateOptionsMenu();
     }
 
     @Override
