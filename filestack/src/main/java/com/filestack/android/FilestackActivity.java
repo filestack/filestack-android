@@ -35,7 +35,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class FilestackActivity extends AppCompatActivity implements
-        SingleObserver<CloudResponse>, CompletableObserver, SelectedItem.Saver.Listener,
+        SingleObserver<CloudResponse>, CompletableObserver, Selection.Saver.Listener,
         NavigationView.OnNavigationItemSelectedListener {
 
     public static final String EXTRA_CONFIG = "config";
@@ -68,10 +68,10 @@ public class FilestackActivity extends AppCompatActivity implements
 
         // If we're starting fresh, clear selected items
         if (savedInstanceState == null) {
-            Util.getItemSaver().clear();
+            Util.getSelectionSaver().clear();
         }
 
-        Util.getItemSaver().setItemChangeListener(this);
+        Util.getSelectionSaver().setItemChangeListener(this);
 
         // Setup view
         setContentView(R.layout.activity_filestack);
@@ -131,7 +131,7 @@ public class FilestackActivity extends AppCompatActivity implements
                 .putString(PREF_SESSION_TOKEN, sessionToken)
                 .putInt(PREF_SELECTED_SOURCE_ID, selectedSourceId)
                 .apply();
-        Util.getItemSaver().setItemChangeListener(null);
+        Util.getSelectionSaver().setItemChangeListener(null);
     }
 
     // Other Activity overrides (alphabetical order)
@@ -174,10 +174,10 @@ public class FilestackActivity extends AppCompatActivity implements
             return true;
         } else if (id == R.id.action_upload) {
             Intent uploadIntent = new Intent(this, UploadService.class);
-            ArrayList<SelectedItem> items = Util.getItemSaver().getItems();
+            ArrayList<Selection> items = Util.getSelectionSaver().getItems();
             uploadIntent.putExtra(UploadService.EXTRA_SELECTED_ITEMS, items);
             startService(uploadIntent);
-            Util.getItemSaver().clear();
+            Util.getSelectionSaver().clear();
             finish();
         }
 
@@ -192,7 +192,7 @@ public class FilestackActivity extends AppCompatActivity implements
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_upload).setVisible(!Util.getItemSaver().isEmpty());
+        menu.findItem(R.id.action_upload).setVisible(!Util.getSelectionSaver().isEmpty());
         return true;
     }
 
@@ -226,7 +226,7 @@ public class FilestackActivity extends AppCompatActivity implements
             }
         } else {
             if (id != selectedSourceId) {
-                Util.getItemSaver().clear();
+                Util.getSelectionSaver().clear();
             }
 
             nav.setCheckedItem(id);

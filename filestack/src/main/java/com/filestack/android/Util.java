@@ -16,7 +16,7 @@ class Util {
     private static final Map<Integer, SourceInfo> SOURCES = new ArrayMap<>();
 
     private static Client client;
-    private static SelectedItem.SimpleSaver itemSaver;
+    private static Selection.SimpleSaver selectionSaver;
 
     static {
         SOURCES.put(R.id.nav_camera, new SourceInfo(
@@ -111,11 +111,11 @@ class Util {
         return newPath;
     }
 
-    static SelectedItem.SimpleSaver getItemSaver() {
-        if (itemSaver == null) {
-            itemSaver = new SelectedItem.SimpleSaver();
+    static Selection.SimpleSaver getSelectionSaver() {
+        if (selectionSaver == null) {
+            selectionSaver = new Selection.SimpleSaver();
         }
-        return itemSaver;
+        return selectionSaver;
     }
 
     static String getPathFromMediaUri(Context context, Uri uri) {

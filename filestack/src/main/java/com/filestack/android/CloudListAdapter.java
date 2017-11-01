@@ -10,6 +10,7 @@ import com.filestack.CloudItem;
 import com.filestack.CloudResponse;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -60,13 +61,14 @@ class CloudListAdapter extends RecyclerView.Adapter implements
 
         holder.setId(i);
         holder.setName(item.getName());
-        String info = String.format("%s - %d", item.getMimetype(), item.getSize());
+        Locale locale = Locale.getDefault();
+        String info = String.format(locale, "%s - %d", item.getMimetype(), item.getSize());
         holder.setInfo(info);
         holder.setIcon(item.getThumbnail());
         holder.setOnClickListener(this);
 
-        SelectedItem.Saver itemSaver = Util.getItemSaver();
-        holder.setSelected(itemSaver.isSelected(sourceId, item.getPath()));
+        Selection.Saver selectionSaver = Util.getSelectionSaver();
+        holder.setSelected(selectionSaver.isSelected(sourceId, item.getPath(), item.getName()));
 
         String nextToken = nextTokens.get(currentPath);
         if (!isLoading) {
@@ -143,8 +145,8 @@ class CloudListAdapter extends RecyclerView.Adapter implements
             return;
         }
 
-        SelectedItem.Saver itemSaver = Util.getItemSaver();
-        boolean selected = itemSaver.toggleItem(sourceId, item.getPath());
+        Selection.Saver selectionSaver = Util.getSelectionSaver();
+        boolean selected = selectionSaver.toggleItem(sourceId, item.getPath(), item.getName());
         CloudListViewHolder holder = (CloudListViewHolder) recyclerView.findViewHolderForItemId(id);
 
         holder.setSelected(selected);
