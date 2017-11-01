@@ -45,6 +45,12 @@ class Util {
                 R.string.source_device,
                 R.color.theme_source_device));
 
+        SOURCES.put(R.id.nav_gallery, new SourceInfo(
+                Sources.DEVICE,
+                R.drawable.ic_source_device,
+                R.string.source_gallery,
+                R.color.theme_source_device));
+
         SOURCES.put(R.id.nav_facebook, new SourceInfo(
                 Sources.FACEBOOK,
                 R.drawable.ic_source_facebook,
@@ -133,25 +139,18 @@ class Util {
     }
 
     static String getPathFromMediaUri(Context context, Uri uri) {
-        String wholeID = DocumentsContract.getDocumentId(uri);
-        String id = wholeID.split(":")[1];
-        String[] column = { MediaStore.Images.Media.DATA };
-        String sel = MediaStore.Images.Media._ID + "=?";
-        Cursor cursor = context.getContentResolver()
-                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                        column, sel, new String[]{ id }, null);
-
-        String filePath = "";
-
-        int columnIndex = cursor.getColumnIndex(column[0]);
-
-        if (cursor.moveToFirst()) {
-            filePath = cursor.getString(columnIndex);
+        Cursor cursor = null;
+        try {
+            String[] projection = { MediaStore.Images.Media.DATA };
+            cursor = context.getContentResolver().query(uri,  projection, null, null, null);
+            int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(columnIndex);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
-
-        cursor.close();
-
-        return filePath;
     }
 
     static File createPictureFile(Context context) throws IOException {

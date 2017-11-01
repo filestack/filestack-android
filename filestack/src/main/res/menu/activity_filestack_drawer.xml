@@ -14,9 +14,14 @@
                 android:icon="@drawable/ic_source_camera_video"
                 android:title="@string/source_camera_video"/>
             <item
+                android:id="@+id/nav_gallery"
+                android:icon="@drawable/ic_source_device"
+                android:title="@string/source_gallery"/>
+            <item
                 android:id="@+id/nav_device"
                 android:icon="@drawable/ic_source_device"
-                android:title="@string/source_device"/>
+                android:title="@string/source_device"
+                android:visible="false"/>
         </menu>
     </item>
 

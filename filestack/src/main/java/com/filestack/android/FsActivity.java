@@ -1,7 +1,6 @@
 package com.filestack.android;
 
 import android.Manifest;
-import android.content.ClipData;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -54,6 +53,7 @@ public class FsActivity extends AppCompatActivity implements
 
     private static final int REQUEST_MEDIA_CAPTURE = RESULT_FIRST_USER;
     private static final int REQUEST_FILE_BROWSER = RESULT_FIRST_USER + 1;
+    private static final int REQUEST_GALLERY = RESULT_FIRST_USER + 2;
     private static final String PREF_SELECTED_SOURCE_ID = "selectedSourceId";
     private static final String PREF_SESSION_TOKEN = "sessionToken";
 
@@ -156,30 +156,40 @@ public class FsActivity extends AppCompatActivity implements
                     uploadSelections(selections);
                 }
                 break;
-            case REQUEST_FILE_BROWSER:
+//            case REQUEST_FILE_BROWSER:
+//                if (resultCode == RESULT_OK) {
+//                    ArrayList<Uri> uris = new ArrayList<>();
+//                    ClipData clipData = data.getClipData();
+//
+//                    if (clipData != null) {
+//                        for (int i = 0; i < clipData.getItemCount(); i++) {
+//                            uris.add(clipData.getItemAt(i).getUri());
+//                        }
+//                    } else {
+//                        uris.add(data.getData());
+//                    }
+//
+//                    for (Uri uri : uris) {
+//                        Log.d("localFile", uri.toString());
+//                        String path = Util.getPathFromMediaUri(this, uri);
+//                        String[] parts = path.split("/");
+//                        String name = parts[parts.length-1];
+//                        Selection selection = new Selection(Sources.DEVICE, path, name);
+//                        Log.d("localFile", path + " " + name);
+//                        selections.add(selection);
+//                    }
+//                }
+//                uploadSelections(selections);
+//                break;
+            case REQUEST_GALLERY:
                 if (resultCode == RESULT_OK) {
-                    ArrayList<Uri> uris = new ArrayList<>();
-                    ClipData clipData = data.getClipData();
-
-                    if (clipData != null) {
-                        for (int i = 0; i < clipData.getItemCount(); i++) {
-                            uris.add(clipData.getItemAt(i).getUri());
-                        }
-                    } else {
-                        uris.add(data.getData());
-                    }
-
-                    for (Uri uri : uris) {
-                        Log.d("localFile", uri.toString());
-                        String path = Util.getPathFromMediaUri(this, uri);
-                        String[] parts = path.split("/");
-                        String name = parts[parts.length-1];
-                        Selection selection = new Selection(Sources.DEVICE, path, name);
-                        Log.d("localFile", path + " " + name);
-                        selections.add(selection);
-                    }
+                    Uri uri = data.getData();
+                    String path = Util.getPathFromMediaUri(this, uri);
+                    String parts[] = path.split("/");
+                    String name = parts[parts.length - 1];
+                    selections.add(new Selection(Sources.DEVICE, path, name));
+                    uploadSelections(selections);
                 }
-                uploadSelections(selections);
                 break;
         }
     }
@@ -280,11 +290,12 @@ public class FsActivity extends AppCompatActivity implements
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                 startActivityForResult(intent, REQUEST_MEDIA_CAPTURE);
             }
-        } else if (id == R.id.nav_device) {
+        } else if (id == R.id.nav_gallery) {
             Intent intent = new Intent();
             intent.setType("image/*,video/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(intent, REQUEST_FILE_BROWSER);
+            intent.setAction(Intent.ACTION_PICK);
+            startActivityForResult(intent, REQUEST_GALLERY);
+//        } else if (id == R.id.nav_device) {
 //            Intent fileBrowserIntent = new Intent(Intent.ACTION_GET_CONTENT);
 //            fileBrowserIntent.setType("*/*");
 //            fileBrowserIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
