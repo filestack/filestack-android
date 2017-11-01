@@ -1,10 +1,15 @@
 package com.filestack.android;
 
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.util.ArrayMap;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.filestack.Client;
@@ -120,18 +125,25 @@ class Util {
     }
 
     static String getPathFromMediaUri(Context context, Uri uri) {
-        Cursor cursor = null;
-        try {
-            String[] projection = { MediaStore.Images.Media.DATA };
-            cursor = context.getContentResolver().query(uri,  projection, null, null, null);
-            int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            return cursor.getString(columnIndex);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
+        String wholeID = DocumentsContract.getDocumentId(uri);
+        String id = wholeID.split(":")[1];
+        String[] column = { MediaStore.Images.Media.DATA };
+        String sel = MediaStore.Images.Media._ID + "=?";
+        Cursor cursor = context.getContentResolver()
+                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        column, sel, new String[]{ id }, null);
+
+        String filePath = "";
+
+        int columnIndex = cursor.getColumnIndex(column[0]);
+
+        if (cursor.moveToFirst()) {
+            filePath = cursor.getString(columnIndex);
         }
+
+        cursor.close();
+
+        return filePath;
     }
 
     static void initializeClient(Config config, String sessionToken) {

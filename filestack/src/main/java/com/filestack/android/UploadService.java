@@ -35,6 +35,7 @@ public class UploadService extends IntentService {
         int id = preferences.getInt(PREF_ID_COUNTER, 0);
 
         selections = (ArrayList<Selection>) intent.getSerializableExtra(FsConstants.EXTRA_SELECTION_LIST);
+        int total = selections.size();
         localItems = new ArrayList<>();
 
         for (Selection item : selections) {
@@ -54,13 +55,13 @@ public class UploadService extends IntentService {
         int count = 0;
         for (Selection selection : selections) {
             FileLink fileLink = uploadCloud(selection, storeOpts);
-            updateNotification(id, selections, ++count);
+            updateNotification(id, ++count, total, selection.getName());
             sendBroadcast(selection, fileLink);
         }
 
         for (Selection selection : localItems) {
             FileLink fileLink = uploadLocal(selection, storeOpts);
-            updateNotification(id, selections, ++count);
+            updateNotification(id, ++count, total, selection.getName());
             sendBroadcast(selection, fileLink);
         }
 
@@ -95,19 +96,18 @@ public class UploadService extends IntentService {
         }
     }
 
-    private void updateNotification(int id, ArrayList<Selection> selections, int count) {
-        int total = selections.size();
+    private void updateNotification(int id, int done, int total, String name) {
         Locale locale = Locale.getDefault();
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
 
-        if (total == count) {
-            mBuilder.setContentTitle(String.format(locale, "Uploaded %d files", count));
+        if (total == done) {
+            mBuilder.setContentTitle(String.format(locale, "Uploaded %d files", done));
             mBuilder.setSmallIcon(R.drawable.ic_menu_upload_done_white);
         } else {
-            mBuilder.setContentTitle(String.format(locale, "Uploading %d/%d files", count, total));
+            mBuilder.setContentTitle(String.format(locale, "Uploading %d/%d files", done, total));
             mBuilder.setSmallIcon(R.drawable.ic_menu_upload_white);
-            mBuilder.setContentText(selections.get(count-1).getName());
-            mBuilder.setProgress(total, count, false);
+            mBuilder.setContentText(name);
+            mBuilder.setProgress(total, done, false);
         }
 
         NotificationManager mNotificationManager =
