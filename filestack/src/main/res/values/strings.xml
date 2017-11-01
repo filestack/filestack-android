@@ -11,7 +11,8 @@
     <string name="nav_drawer_open">Open navigation drawer</string>
     <string name="nav_drawer_close">Close navigation drawer</string>
 
-    <string name="source_camera">Camera</string>
+    <string name="source_camera_photo">Take photo</string>
+    <string name="source_camera_video">Take video</string>
     <string name="source_device">File browser</string>
     <string name="source_facebook">Facebook</string>
     <string name="source_instagram">Instagram</string>

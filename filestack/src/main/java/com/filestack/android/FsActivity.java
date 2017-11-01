@@ -9,6 +9,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -16,6 +17,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -32,6 +34,8 @@ import com.filestack.Config;
 import com.filestack.Sources;
 import com.filestack.StorageOptions;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import io.reactivex.CompletableObserver;
@@ -48,7 +52,7 @@ public class FsActivity extends AppCompatActivity implements
         boolean onBackPressed();
     }
 
-    private static final int REQUEST_CAMERA = RESULT_FIRST_USER;
+    private static final int REQUEST_MEDIA_CAPTURE = RESULT_FIRST_USER;
     private static final int REQUEST_FILE_BROWSER = RESULT_FIRST_USER + 1;
     private static final String PREF_SELECTED_SOURCE_ID = "selectedSourceId";
     private static final String PREF_SESSION_TOKEN = "sessionToken";
@@ -57,6 +61,7 @@ public class FsActivity extends AppCompatActivity implements
     private DrawerLayout drawer;
     private int selectedSourceId;
     private NavigationView nav;
+    private Selection mediaSelection;
     private Toolbar toolbar;
 
     // Activity lifecycle overrides (in sequential order)
@@ -141,9 +146,17 @@ public class FsActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        ArrayList<Selection> selections = new ArrayList<>();
+
         switch (requestCode) {
+            case REQUEST_MEDIA_CAPTURE:
+                if (resultCode == RESULT_OK) {
+                    Util.addMediaToGallery(this, mediaSelection.getPath());
+                    selections.add(mediaSelection);
+                    uploadSelections(selections);
+                }
+                break;
             case REQUEST_FILE_BROWSER:
-                ArrayList<Selection> selections = new ArrayList<>();
                 if (resultCode == RESULT_OK) {
                     ArrayList<Uri> uris = new ArrayList<>();
                     ClipData clipData = data.getClipData();
@@ -243,21 +256,41 @@ public class FsActivity extends AppCompatActivity implements
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        // TODO re-enable camera
-//        if (id == R.id.nav_camera) {
-//            Intent cameraIntent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
-//            if (cameraIntent.resolveActivity(getPackageManager()) != null) {
-//                startActivityForResult(cameraIntent, REQUEST_CAMERA);
-//            }
-//        }
-        if (id == R.id.nav_device || id == R.id.nav_camera) {
-            Intent fileBrowserIntent = new Intent(Intent.ACTION_GET_CONTENT);
-            // TODO allow for more document types
-            fileBrowserIntent.setType("image/*");
-            // fileBrowserIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-            if (fileBrowserIntent.resolveActivity(getPackageManager()) != null) {
-                startActivityForResult(fileBrowserIntent, REQUEST_FILE_BROWSER);
+        if (id == R.id.nav_camera_picture || id == R.id.nav_camera_movie) {
+            Intent intent = null;
+            File file = null;
+
+            try {
+                if (id == R.id.nav_camera_picture) {
+                    intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    file = Util.createPictureFile(this);
+                } else {
+                    intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+                    file = Util.createMovieFile(this);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+
+            if (file != null) {
+                mediaSelection = new Selection(
+                        Sources.CAMERA, file.getAbsolutePath(), file.getName());
+                Uri imageUri = FileProvider.getUriForFile(
+                        this, "com.filestack.android.fileprovider", file);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                startActivityForResult(intent, REQUEST_MEDIA_CAPTURE);
+            }
+        } else if (id == R.id.nav_device) {
+            Intent intent = new Intent();
+            intent.setType("image/*,video/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(intent, REQUEST_FILE_BROWSER);
+//            Intent fileBrowserIntent = new Intent(Intent.ACTION_GET_CONTENT);
+//            fileBrowserIntent.setType("*/*");
+//            fileBrowserIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+//            if (fileBrowserIntent.resolveActivity(getPackageManager()) != null) {
+//                startActivityForResult(fileBrowserIntent, REQUEST_FILE_BROWSER);
+//            }
         } else {
             if (id != selectedSourceId) {
                 Util.getSelectionSaver().clear();
@@ -360,10 +393,10 @@ public class FsActivity extends AppCompatActivity implements
 
     private void checkPermissions() {
         int permissionCheck = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE);
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
         }
     }
 }

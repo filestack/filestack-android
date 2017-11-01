@@ -1,21 +1,23 @@
 package com.filestack.android;
 
-import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.util.ArrayMap;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.filestack.Client;
 import com.filestack.Config;
 import com.filestack.Sources;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 class Util {
@@ -25,10 +27,16 @@ class Util {
     private static Selection.SimpleSaver selectionSaver;
 
     static {
-        SOURCES.put(R.id.nav_camera, new SourceInfo(
+        SOURCES.put(R.id.nav_camera_picture, new SourceInfo(
                 Sources.CAMERA,
-                R.drawable.ic_source_camera,
-                R.string.source_camera,
+                R.drawable.ic_source_camera_photo,
+                R.string.source_camera_photo,
+                R.color.theme_source_camera));
+
+        SOURCES.put(R.id.nav_camera_movie, new SourceInfo(
+                Sources.CAMERA,
+                R.drawable.ic_source_camera_video,
+                R.string.source_camera_video,
                 R.color.theme_source_camera));
 
         SOURCES.put(R.id.nav_device, new SourceInfo(
@@ -144,6 +152,30 @@ class Util {
         cursor.close();
 
         return filePath;
+    }
+
+    static File createPictureFile(Context context) throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String fileName = "JPEG_" + timeStamp + "_";
+        // Store in normal camera directory
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+        return File.createTempFile(fileName, ".jpg", storageDir);
+    }
+
+    static File createMovieFile(Context context) throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String fileName = "MP4_" + timeStamp + "_";
+        // Store in normal camera directory
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+        return File.createTempFile(fileName, ".mp4", storageDir);
+    }
+
+    static void addMediaToGallery(Context context, String path) {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(path);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        context.sendBroadcast(mediaScanIntent);
     }
 
     static void initializeClient(Config config, String sessionToken) {
