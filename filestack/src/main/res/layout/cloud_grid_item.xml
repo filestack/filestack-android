@@ -17,15 +17,14 @@
         android:scaleType="centerCrop"/>
 
     <ImageView
-        app:srcCompat="@drawable/ic_menu_upload_white"
+        app:srcCompat="@drawable/ic_list_checkbox"
         android:id="@+id/checkbox"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintDimensionRatio="1:1"
-        android:scaleType="centerCrop"
-        android:visibility="invisible"/>
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        app:layout_constraintTop_toTopOf="@id/icon"
+        app:layout_constraintEnd_toEndOf="@id/icon"
+        android:visibility="invisible"
+        android:layout_margin="8dp"/>
 
     <View
         android:id="@+id/button"

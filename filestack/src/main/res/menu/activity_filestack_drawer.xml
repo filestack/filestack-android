@@ -6,13 +6,22 @@
         android:title="@string/picker_drawer_section_device">
         <menu>
             <item
-                android:id="@+id/nav_camera"
-                android:icon="@drawable/ic_source_camera"
-                android:title="@string/source_camera"/>
+                android:id="@+id/nav_camera_picture"
+                android:icon="@drawable/ic_source_camera_photo"
+                android:title="@string/source_camera_photo"/>
+            <item
+                android:id="@+id/nav_camera_movie"
+                android:icon="@drawable/ic_source_camera_video"
+                android:title="@string/source_camera_video"/>
+            <item
+                android:id="@+id/nav_gallery"
+                android:icon="@drawable/ic_source_device"
+                android:title="@string/source_gallery"/>
             <item
                 android:id="@+id/nav_device"
-                android:icon="@drawable/ic_source_folder"
-                android:title="@string/source_device"/>
+                android:icon="@drawable/ic_source_device"
+                android:title="@string/source_device"
+                android:visible="false"/>
         </menu>
     </item>
 

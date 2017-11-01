@@ -12,7 +12,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class CloudAuthFragment extends Fragment implements View.OnClickListener {
+public class CloudAuthFragment extends Fragment implements
+        View.OnClickListener,FsActivity.BackListener {
     private final static String ARG_CLOUD_INFO_ID = "cloudInfoId";
     private final static String ARG_AUTH_URL = "authUrl";
 
@@ -73,5 +74,10 @@ public class CloudAuthFragment extends Fragment implements View.OnClickListener 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(authUrl));
         startActivity(intent);
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        return false;
     }
 }

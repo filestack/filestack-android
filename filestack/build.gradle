@@ -1,11 +1,13 @@
 plugins {
     id "com.github.dcendents.android-maven" version "1.5"
+    id 'com.jfrog.bintray' version '1.7.3'
 }
 
 apply plugin: 'com.android.library'
 
 group = 'com.filestack'
 version = file(new File('../VERSION')).text.trim()
+project.archivesBaseName = 'filestack-android'
 
 android {
     compileSdkVersion 26
@@ -62,12 +64,37 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 }
 
 artifacts {
-    // archives javadocJar
+    archives javadocJar
     archives sourcesJar
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.artifactId = 'filestack-android'
+bintray {
+    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser')
+            : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey')
+            : System.getenv('BINTRAY_API_KEY')
+    configurations = ['archives']
+    publish = true
+    pkg {
+        repo = 'maven'
+        userOrg = 'filestack'
+        name = 'filestack-android'
+        desc = 'Official Android SDK for Filestack.'
+
+        publicDownloadNumbers = true
+        licenses = ['Apache-2.0']
+
+        websiteUrl = 'https://filestack.com'
+        vcsUrl = 'https://github.com/filestack/filestack-android.git'
+        issueTrackerUrl = 'https://github.com/filestack/filestack-android/issues'
+
+        githubRepo = 'filestack/filestack-android'
+        githubReleaseNotesFile = 'CHANGELOG.md'
+
+        version {
+            name = project.version
+            vcsTag = project.version
+            released = new Date()
+        }
     }
 }

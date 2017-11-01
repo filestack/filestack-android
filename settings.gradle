@@ -1,1 +1,1 @@
-include ':filestack'
+include ':filestack', ':demo'

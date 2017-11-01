@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#EC4B30</color>
-    <color name="primary_dark">#C32B11</color>
+    <color name="primary_light">#FFE0B2</color>
+    <color name="primary">#FF9800</color>
+    <color name="primary_dark">#F57C00</color>
+    <color name="accent">#448AFF</color>
     <color name="text_secondary">#89000000</color>
 
     <!-- Had the idea to customize app bar based on source. -->
