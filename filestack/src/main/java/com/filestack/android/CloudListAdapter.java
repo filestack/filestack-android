@@ -19,7 +19,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 class CloudListAdapter extends RecyclerView.Adapter implements
-        SingleObserver<CloudResponse>, View.OnClickListener, FilestackActivity.BackListener {
+        SingleObserver<CloudResponse>, View.OnClickListener, FsActivity.BackListener {
 
     private static final double LOAD_TRIGGER = 0.50;
 

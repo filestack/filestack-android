@@ -22,9 +22,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.filestack.Client;
 import com.filestack.CloudResponse;
 import com.filestack.Config;
+import com.filestack.StorageOptions;
 
 import java.util.ArrayList;
 
@@ -34,11 +34,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class FilestackActivity extends AppCompatActivity implements
+public class FsActivity extends AppCompatActivity implements
         SingleObserver<CloudResponse>, CompletableObserver, Selection.Saver.Listener,
         NavigationView.OnNavigationItemSelectedListener {
-
-    public static final String EXTRA_CONFIG = "config";
 
     interface BackListener {
         boolean onBackPressed();
@@ -62,15 +60,21 @@ public class FilestackActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 
-        Config config = (Config) intent.getSerializableExtra(EXTRA_CONFIG);
-        Util.setClient(new Client(config));
-
-        // If we're starting fresh, clear selected items
+        // If we're starting fresh
         if (savedInstanceState == null) {
+            // Initialize static client
+            Config config = (Config) intent.getSerializableExtra(FsConstants.EXTRA_CONFIG);
+            String sessionToken = preferences.getString(PREF_SESSION_TOKEN, null);
+            Log.d("sessionToken", "Retrieving: " + sessionToken);
+            Util.initializeClient(config, sessionToken);
+
+            // Clear selected item list
             Util.getSelectionSaver().clear();
         }
 
+        selectedSourceId = preferences.getInt(PREF_SELECTED_SOURCE_ID, 0);
         Util.getSelectionSaver().setItemChangeListener(this);
 
         // Setup view
@@ -90,18 +94,6 @@ public class FilestackActivity extends AppCompatActivity implements
         nav.setNavigationItemSelectedListener(this);
         // nav.setItemIconTintList(null); // To enable color icons
         // setNavIconColors();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-
-        String sessionToken = preferences.getString(PREF_SESSION_TOKEN, null);
-        Log.d("sessionToken", "Retrieving: " + sessionToken);
-        Util.getClient().setSessionToken(sessionToken);
-        selectedSourceId = preferences.getInt(PREF_SELECTED_SOURCE_ID, 0);
     }
 
     @Override
@@ -174,11 +166,21 @@ public class FilestackActivity extends AppCompatActivity implements
             return true;
         } else if (id == R.id.action_upload) {
             Intent uploadIntent = new Intent(this, UploadService.class);
-            ArrayList<Selection> items = Util.getSelectionSaver().getItems();
-            uploadIntent.putExtra(UploadService.EXTRA_SELECTED_ITEMS, items);
+
+            StorageOptions storeOpts =
+                    (StorageOptions) getIntent().getSerializableExtra(FsConstants.EXTRA_STORE_OPTS);
+            ArrayList<Selection> selections = Util.getSelectionSaver().getItems();
+
+            uploadIntent.putExtra(FsConstants.EXTRA_STORE_OPTS, storeOpts);
+            uploadIntent.putExtra(FsConstants.EXTRA_SELECTION_LIST, selections);
+
             startService(uploadIntent);
-            Util.getSelectionSaver().clear();
+
+            Intent data = new Intent();
+            data.putExtra(FsConstants.EXTRA_SELECTION_LIST, selections);
+            setResult(RESULT_OK, data);
             finish();
+            Util.getSelectionSaver().clear();
         }
 
         return super.onOptionsItemSelected(item);

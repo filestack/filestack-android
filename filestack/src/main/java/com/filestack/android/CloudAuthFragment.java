@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class CloudAuthFragment extends Fragment implements
-        View.OnClickListener,FilestackActivity.BackListener {
+        View.OnClickListener,FsActivity.BackListener {
     private final static String ARG_CLOUD_INFO_ID = "cloudInfoId";
     private final static String ARG_AUTH_URL = "authUrl";
 

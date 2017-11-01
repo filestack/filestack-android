@@ -12,6 +12,9 @@
             android:name=".FsActivity"
             android:label="@string/picker_title"
             android:theme="@style/NoActionBar"/>
+        <service
+            android:name=".UploadService"
+            android:exported="false"/>
     </application>
 
 </manifest>

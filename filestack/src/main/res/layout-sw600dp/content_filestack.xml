@@ -28,7 +28,7 @@
         android:layout_height="match_parent"
         android:layout_toEndOf="@id/divider"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context="com.filestack.android.FilestackActivity"
+        tools:context="com.filestack.android.FsActivity"
         tools:showIn="@layout/app_bar_filestack" />
 
 </RelativeLayout>

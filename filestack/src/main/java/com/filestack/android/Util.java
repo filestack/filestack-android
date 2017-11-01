@@ -8,6 +8,7 @@ import android.support.v4.util.ArrayMap;
 import android.widget.TextView;
 
 import com.filestack.Client;
+import com.filestack.Config;
 import com.filestack.Sources;
 
 import java.util.Map;
@@ -133,8 +134,9 @@ class Util {
         }
     }
 
-    static void setClient(Client client) {
-        Util.client = client;
+    static void initializeClient(Config config, String sessionToken) {
+        client = new Client(config);
+        client.setSessionToken(sessionToken);
     }
 
     static Client getClient() {
