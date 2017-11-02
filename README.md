@@ -1,286 +1,159 @@
+# filestack-android
 
-filepicker-android
-==================
+Android UI and upload API's for Filestack. Easily upload files from a user's
+local device or cloud services. Provides both a picker activity for easy
+integration as well as a client class for manual control and customization.
+Supports Facebook, Instagram, Google Drive, Dropbox, Box, GitHub, Gmail, Google
+Photos, Microsoft OneDrive, and Amazon Drive.
 
-Android version of Filepicker.  Allow your users to pull in their content from Dropbox, Facebook, and more!
+*The 2.0 version of this library is just being released as of November 2017.*
+*Expect that the API and setup process may change somewhat.*
+*We're aware of some missing basic features that will be added soon.*
 
-For more info see https://www.filepicker.io
+New features:
+- Built on new base Java SDK and updated backend API's
+- Multipart uploads and Filestack Intelligent Ingestion support
+- New UI as well as necessary components to create completely custom UI
+- Background upload and notification support
 
-The library provides an activity that your app can spawn that allows the user to open and save files.
+![Demo Screen Recording][screen-recording]
 
-![Sample Screenshots][1]
+## Including In Your Project
 
-
-
-Including In Your Project
-=========================
-
-This library is distributed as Android library project so it can be included by referencing it as a library project.
-
-https://bintray.com/filestack/maven/filepicker-android
-
-If you use Maven, you can include this library as a dependency:
-
-```xml
-<dependency>
-  <groupId>io.filepicker</groupId>
-  <artifactId>filepicker-android</artifactId>
-  <version>4.0.2</version>
-  <type>pom</type>
-</dependency>
+```gradle
+compile 'com.filestack:filestack-android:2.0.0-alpha.1'
 ```
 
-For Gradle users:
+## Usage
 
-```xml
-compile 'io.filepicker:filepicker-android:4.0.2'
+*For a working implementation of this project see the `demo` folder.*
+
+### Launch activity
+```java
+// Setting a policy and signature is optional
+Config config = new Config("API_KEY", "RETURN_URL", "POLICY", "SIGNATURE");
+// Storage options are also optional
+StorageOptions storeOpts = new StorageOptions();
+Intent intent = new Intent(this, FsActivity.class);
+intent.putExtra(FsConstants.EXTRA_CONFIG, config);
+intent.putExtra(FsConstants.EXTRA_STORE_OPTS, storeOpts);
+startActivityForResult(intent, REQUEST_FILESTACK);
 ```
 
-ProGuard
-========
-Add the following to your ProGuard rules
-````ProGuard
--keepattributes *Annotation*, Signature
+### Setup for cloud authorization
+When the user authorizes their cloud account, they do so inside the default
+device browser, not a `WebView`. Therefore you must set your app to respond to a
+URL redirect so that the app reopens after the authorization. This requires two
+components, an intent filter to respond to the URL, and an entry activity that
+opens for the intent. The entry activity is necessary to maintain the UI state
+and activity stack. For more information about opening an app by URL, see the
+Google documentation on [App Links][app-links].
 
-##== Filepicker ==
--keep class io.filepicker.** { *; }
-
-##== Retrofit ==
--keep class retrofit.** { *; }
--keepclassmembernames interface * {
-    @retrofit.http.* <methods>;
+EntryActivity.java:
+```java
+public class EntryActivity extends AppCompatActivity {
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    // Check to see if this Activity is the root activity
+    if (isTaskRoot()) {
+      // This Activity is the only Activity, so
+      //  the app wasn't running. So start the app from the
+      //  beginning (redirect to MainActivity)
+      Intent mainIntent = getIntent(); // Copy the Intent used to launch me
+      // Launch the real root Activity (launch Intent)
+      mainIntent.setClass(this, MainActivity.class);
+      // I'm done now, so finish()
+      startActivity(mainIntent);
+      finish();
+    } else {
+      // App was already running, so just finish, which will drop the user
+      //  in to the activity that was at the top of the task stack
+      finish();
+    }
+  }
 }
-
-##== Gson ==
--keep class sun.misc.Unsafe { *; }
--keep class com.google.gson.stream.** { *; }
-
-````
-
-Usage
-=====
-
-*For a working implementation of this project see the `sample-studio/` folder.*
-
-###Setting api key###
-
-Api key must be set before making any calls to Filepicker.
-To set api key use
-
-```java
-Filepicker.setKey(MY_API_KEY).
 ```
 
-###Setting application name###
-If you want your application’s name to be visible at the top of Filepicker view, set it with
+Inside AndroidManifest.xml:
+```xml
+<activity
+  android:name=".EntryActivity">
 
-```java
-Filepicker.setAppName(MY_APP_NAME)
+  <intent-filter android:label="@string/app_name">
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <category android:name="android.intent.category.BROWSABLE" />
+    <!-- Accepts URIs that begin with "example://gizmos” -->
+    <data android:scheme="filestackdemo"
+      android:host="auth" />
+    </intent-filter>
+
+  </activity>
 ```
 
-###Getting a file###
-
-To get a file, start Filepicker activity for result.
-
-```java
-Intent intent = new Intent(this, Filepicker.class);
-startActivityForResult(intent, Filepicker.REQUEST_CODE_GETFILE);
-```
-
-Then, receive the Filepicker object on activity result.
+## Receiving selected items
+`FsActivity` returns immediately once a user selects files. The returned
+response will always be an `ArrayList` of `Selection` objects. Receive them in
+your calling activity like so:
 
 ```java
 @Override
 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (requestCode == Filepicker.REQUEST_CODE_GETFILE) {
-      if(resultCode == RESULT_OK) {
+  super.onActivityResult(requestCode, resultCode, data);
 
-        // Filepicker always returns array of FPFile objects
-        ArrayList<FPFile> fpFiles = data.getParcelableArrayListExtra(Filepicker.FPFILES_EXTRA);
-
-        // Option multiple was not set so only 1 object is expected
-        FPFile file = fpFiles.get(0);
-
-        // Do something cool with the result
-      } else {
-        // Handle errors here
-      }
-
+  if (requestCode == REQUEST_FILESTACK && resultCode == RESULT_OK) {
+    Log.d("result", "returned");
+    Serializable extra = data.getSerializableExtra(FsConstants.EXTRA_SELECTION_LIST);
+    ArrayList<Selection> selections = (ArrayList<Selection>) extra;
+    for (Selection selection : selections) {
+      Log.i("filestackSelection", selection.getProvider() + " " + selection.getName());
     }
+  }
 }
 ```
 
-FpFile object contains following fields:
+## Receiving upload status
+Because the actual uploading occurs in a background service, we need to
+register a `BroadcastReceiver` to get a status and resultant `FileLink` for
+each selection. When the picker returns to `onActivityResult()` you receive an
+`ArrayList` of `Selection` objects. When an intent message is received in your
+`BroadcastReceiver`, you will receive a status string, a `Selection` (matching  
+one in the list), and a `FileLink` (if the upload succeeded). As the upload
+progresses, the background service will also put up notifications about its
+ongoing status.
 
-  * container - container in S3 where the file was stored (if it was stored)
-  * url - file link to uploaded file
-  * filename - name of file
-  * localPath - local path of file
-  * key - unique key
-  * type - mimetype
-  * size - size in bytes
-
-All fields’ values can be retrieved using conventional java getters (i.e for field “size”, getter method “getSize()” is used).
-
-###Getting multiple files###
-
+UploadStatusReceiver.java:
 ```java
-Intent intent = new Intent(this, Filepicker.class);
-intent.putExtra("multiple", true);
-```
-###Choosing max files###
+public class UploadStatusReceiver extends BroadcastReceiver {
+  @Override
+  public void onReceive(Context context, Intent intent) {
+    String status = intent.getStringExtra(FsConstants.EXTRA_STATUS);
+    Selection selection = (Selection) intent.getSerializableExtra(FsConstants.EXTRA_SELECTION);
+    FileLink fileLink = (FileLink) intent.getSerializableExtra(FsConstants.EXTRA_FILE_LINK);
 
-```java
-Intent intent = new Intent(this, Filepicker.class);
-intent.putExtra("maxFiles", 20);
-```
-
-###Choosing max file size###
-
-```java
-Intent intent = new Intent(this, Filepicker.class);
-intent.putExtra(“maxSize”, 10*1024*1024);
-```
-
-###Store options###
-
-```java
-Intent intent = new Intent(this, Filepicker.class);
-intent.putExtra("location", "S3");
-intent.putExtra("path", "/example/123.png");
-intent.putExtra("container", "example_bucket");
-intent.putExtra("access", "public");
-```
-
-NOTE: Setting ‘path’ option disables generating unique key value for Filepicker file. When ‘path’ is used with ‘multiple’ option, all stored files will have the same key (which means they won’t be saved in storages like S3 which requires unique key values).
-
-###Choosing services###
-
-By default the following services are available (meaning of keys in brackets is described below):
-
-  * Gallery (GALLERY)
-  * Camera (CAMERA)
-  * Facebook (FACEBOOK)
-  * Amazon Cloud Drive (CLOUDDRIVE)
-  * Dropbox (DROPBOX)
-  * Box (BOX)
-  * Gmail (GMAIL)
-  * Instagram (INSTAGRAM)
-  * Flickr (FLICKR)
-  * Picasa (PICASA)
-  * Github (GITHUB)
-  * Google Drive (GOOGLE_DRIVE)
-  * Evernote (EVERNOTE)
-  * OneDrive (SKYDRIVE)
-
-To use only selected services:
-
-```java
-Intent intent = new Intent(this, Filepicker.class);
-String[] services = {"FACEBOOK", "CAMERA", "GMAIL"};
-intent.putExtra("services", services);
-```
-
-###Choosing mimetypes###
-To see only content files with specific mimetypes within services user:
-
-```java
-Intent intent = new Intent(this, Filepicker.class);
-String[] mimetypes = {"image/*", "application/pdf"};
-intent.putExtra("mimetype", mimetypes);
-```
-
-###Exporting file###
-
-The library offer also a way to export files. It can be used to easily save a taken picture in cloud services.
-Note: export works for the following cloud services: Cloud Drive, Dropbox, Box, Instagram, Flickr, Picasa, Evernote, Skydrive.
-
-```java
-Intent intent = new Intent()
-                    .setAction(Filepicker.ACTION_EXPORT_FILE)
-                    .setClass(this, Filepicker.class)
-                    .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    .setData(MY_FILE_URI);
-
-startActivityForResult(intent, Filepicker.REQUEST_CODE_EXPORT_FILE);
-```
-
-### Security ###
-The library support security options.
-
-```java
-Intent intent = new Intent(this, Filepicker.class);
-intent.putExtra("app_secret", appSecret);
-intent.putExtra("policy_calls", calls);
-intent.putExtra("policy_handle", handle);
-intent.putExtra("policy_expiry", expiry);
-intent.putExtra("policy_max_size", maxSize);
-intent.putExtra("policy_min_size", maxSize);
-intent.putExtra("policy_path", policyPath);
-intent.putExtra("policy_container", policyContainer);
-```
-
-### Error toasts ###
-By default, whenever an error occurs during uploading/downloading files, there is toast message displayed.
-This message can be disabled.
-
-```java
-intent.putExtra("showErrorToast", false);
-```
-
-### Upload local file API call ###
-Local files can be uploaded using the library without making the user go through the library interface.
-
-```java
-Filepicker.uploadLocalFile(uriToLocalFile, context);
-```
-
-If the information about the success, error and progress of this operation is needed, the callback can be provided.
-
-```java
-final String url = "PUT PATH TO LOCAL FILE HERE - something like content://com.android.providers.media.documents/document/image%3A64";
-
-Filepicker.uploadLocalFile(Uri.parse(url), this, new FilepickerCallback() {
-    @Override
-    public void onFileUploadSuccess(FPFile fpFile) {
-      // Do something on success
-    }
-
-    @Override
-    public void onFileUploadError(Throwable error) {
-      // Do something on error
-    }
-
-    @Override
-    public void onFileUploadProgress(Uri uri, float progress) {
-      // Do something on progress
-    }
-});
-```
-
-If the callback is registered then the activity must unregister callbacks onDestroy
-
-```java
-@Override
-protected void onDestroy() {
-    Filepicker.unregistedLocalFileUploadCallbacks();
-    super.onDestroy();
+    Log.i("uploadStatus", selection.getName() + " " + status + " "
+    + (fileLink != null ? fileLink.getHandle() : ""));
+  }
 }
 ```
 
-The set of arguments is the same as specified in [docs](https://developers.filepicker.io/docs/security/).
-Note the “policy” prefix in options.
+Register the receiver in your calling activity's `onCreate()`:
+```java
+IntentFilter intentFilter = new IntentFilter(FsConstants.BROADCAST_UPLOAD);
+UploadStatusReceiver receiver = new UploadStatusReceiver();
+LocalBroadcastManager.getInstance(this).registerReceiver(receiver, intentFilter);
+```
 
-[1]: https://raw.github.com/Ink/filepicker-android/master/sample-studio/sample_screen.png
+## Custom UI using client
+The [base Java SDK][java-sdk] contains a `Client` class that can be used to
+perform both local uploads and cloud integrations. To use it, you would create
+a your config as mentioned above, then create your client with it. If you want,
+you can use the client and get all the same functionality without any of the
+Filestack UI. Reference doc for the `Client` class can be found
+[here][java-sdk-ref].
 
-###Enabling APIs for Google Services###
-
-1. In your web browser navigate to  https://console.developers.google.com and sign in with your Google account.
-2. Select “Dashboard” and click on the “Create Project” button, creating a new project for your app (following Google’s steps).
-3. Once the project is successfully created, click on your project name in the upper bar of the Google console. Select the “Credentials” tab on the left Menu.
-4. Click on the “Create Credentials” button, and select “OAuth Client ID” in the sub-menu.
-5. Select Android in the list and complete the required information based on your app. Click “Create” and close the confirmation popup.
-6. Return to the Dashboard section and click on “Enable API”.
-7. Depending on the services you want to include:
- - **For Google Drive and/or Google Photos**: select “Drive API” under “Google Apps APIs” and click “Enable”.
- - **For Gmail**: select “Gmail API” under “Google Apps APIs” and click “Enable”.
+[screen-recording]: /demo/media/recording.gif
+[app-links]: https://developer.android.com/training/app-links/index.html
+[java-sdk]: https://github.com/filestack/filestack-java
+[java-sdk-ref]: https://filestack.github.io/filestack-java/

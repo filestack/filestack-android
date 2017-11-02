@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/list_item_height"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:clickable="true"
+    android:longClickable="true">
+
+    <View
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/selectableItemBackground" />
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="@dimen/list_icon_size"
+        android:layout_height="@dimen/list_icon_size"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/list_item_horizontal_padding"
+        android:scaleType="centerCrop"
+        android:layout_marginStart="@dimen/list_item_horizontal_padding"/>
+
+    <ImageView
+        app:srcCompat="@drawable/ic_list_checkbox"
+        android:id="@+id/checkbox"
+        android:layout_width="@dimen/list_icon_size"
+        android:layout_height="@dimen/list_icon_size"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/list_item_horizontal_padding"
+        android:scaleType="centerCrop"
+        android:layout_marginStart="@dimen/list_item_horizontal_padding"
+        android:visibility="invisible"/>
+
+    <Space
+        android:id="@+id/center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/icon"
+        android:layout_above="@id/center"
+        style="@style/TextAppearance.AppCompat.Subhead"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:layout_marginEnd="@dimen/list_item_horizontal_padding"/>
+
+    <TextView
+        android:id="@+id/info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/icon"
+        android:layout_below="@id/center"
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/text_secondary"
+        android:layout_marginEnd="@dimen/list_item_horizontal_padding"/>
+
+</RelativeLayout>

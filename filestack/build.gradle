@@ -1,0 +1,100 @@
+plugins {
+    id "com.github.dcendents.android-maven" version "1.5"
+    id 'com.jfrog.bintray' version '1.7.3'
+}
+
+apply plugin: 'com.android.library'
+
+group = 'com.filestack'
+version = file(new File('../VERSION')).text.trim()
+project.archivesBaseName = 'filestack-android'
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion "26.0.1"
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:26.+'
+    testCompile 'junit:junit:4.12'
+    compile 'com.filestack:filestack-java:0.4.0'
+    compile 'com.android.support:design:26.+'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    destinationDir = file("../docs/")
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+bintray {
+    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser')
+            : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey')
+            : System.getenv('BINTRAY_API_KEY')
+    configurations = ['archives']
+    publish = true
+    pkg {
+        repo = 'maven'
+        userOrg = 'filestack'
+        name = 'filestack-android'
+        desc = 'Official Android SDK for Filestack.'
+
+        publicDownloadNumbers = true
+        licenses = ['Apache-2.0']
+
+        websiteUrl = 'https://filestack.com'
+        vcsUrl = 'https://github.com/filestack/filestack-android.git'
+        issueTrackerUrl = 'https://github.com/filestack/filestack-android/issues'
+
+        githubRepo = 'filestack/filestack-android'
+        githubReleaseNotesFile = 'CHANGELOG.md'
+
+        version {
+            name = project.version
+            vcsTag = project.version
+            released = new Date()
+        }
+    }
+}

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:title="@string/picker_drawer_section_device">
+        <menu>
+            <item
+                android:id="@+id/nav_camera_picture"
+                android:icon="@drawable/ic_source_camera_photo"
+                android:title="@string/source_camera_photo"/>
+            <item
+                android:id="@+id/nav_camera_movie"
+                android:icon="@drawable/ic_source_camera_video"
+                android:title="@string/source_camera_video"/>
+            <item
+                android:id="@+id/nav_gallery"
+                android:icon="@drawable/ic_source_device"
+                android:title="@string/source_gallery"/>
+            <item
+                android:id="@+id/nav_device"
+                android:icon="@drawable/ic_source_device"
+                android:title="@string/source_device"
+                android:visible="false"/>
+        </menu>
+    </item>
+
+    <item
+        android:title="@string/picker_drawer_section_clouds_photos">
+        <menu>
+            <item
+                android:id="@+id/nav_facebook"
+                android:icon="@drawable/ic_source_facebook"
+                android:title="@string/source_facebook"
+                android:checkable="true" />
+            <item
+                android:id="@+id/google_photos"
+                android:icon="@drawable/ic_source_google_photos"
+                android:title="@string/source_google_photos"
+                android:checkable="true"/>
+            <item
+                android:id="@+id/instagram"
+                android:icon="@drawable/ic_source_instagram"
+                android:title="@string/source_instagram"
+                android:checkable="true"/>
+        </menu>
+    </item>
+
+    <item
+        android:title="@string/picker_drawer_section_clouds_drives">
+        <menu>
+            <item
+                android:id="@+id/amazon_drive"
+                android:icon="@drawable/ic_source_amazon_drive"
+                android:title="@string/source_amazon_drive"
+                android:checkable="true"/>
+            <item
+                android:id="@+id/box"
+                android:icon="@drawable/ic_source_box"
+                android:title="@string/source_box"
+                android:checkable="true"/>
+            <item
+                android:id="@+id/dropbox"
+                android:icon="@drawable/ic_source_dropbox"
+                android:title="@string/source_dropbox"
+                android:checkable="true"/>
+            <item
+                android:id="@+id/google_drive"
+                android:icon="@drawable/ic_source_google_drive"
+                android:title="@string/source_google_drive"
+                android:checkable="true"/>
+            <item
+                android:id="@+id/onedrive"
+                android:icon="@drawable/ic_source_onedrive"
+                android:title="@string/source_onedrive"
+                android:checkable="true"/>
+        </menu>
+    </item>
+
+    <item
+        android:title="@string/picker_drawer_section_clouds_other">
+        <menu>
+            <item
+                android:id="@+id/github"
+                android:icon="@drawable/ic_source_github"
+                android:title="@string/source_github"
+                android:checkable="true"/>
+            <item
+                android:id="@+id/gmail"
+                android:icon="@drawable/ic_source_gmail"
+                android:title="@string/source_gmail"
+                android:checkable="true"/>
+        </menu>
+    </item>
+
+</menu>

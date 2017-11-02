@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">Filestack Android</string>
+
+    <string name="picker_title">Filestack Picker</string>
+    <string name="picker_drawer_title">Sources</string>
+    <string name="picker_drawer_section_device">Device</string>
+    <string name="picker_drawer_section_clouds_photos">Photos and videos</string>
+    <string name="picker_drawer_section_clouds_drives">Cloud drives</string>
+    <string name="picker_drawer_section_clouds_other">Other</string>
+
+    <string name="nav_drawer_open">Open navigation drawer</string>
+    <string name="nav_drawer_close">Close navigation drawer</string>
+
+    <string name="source_camera_photo">Take photo</string>
+    <string name="source_camera_video">Take video</string>
+    <string name="source_device">File browser</string>
+    <string name="source_gallery">Gallery</string>
+    <string name="source_facebook">Facebook</string>
+    <string name="source_instagram">Instagram</string>
+    <string name="source_google_drive">Google Drive</string>
+    <string name="source_dropbox">Dropbox</string>
+    <string name="source_box">Box</string>
+    <string name="source_github">GitHub</string>
+    <string name="source_gmail">Gmail</string>
+    <string name="source_google_photos">Google Photos</string>
+    <string name="source_onedrive">OneDrive</string>
+    <string name="source_amazon_drive">Amazon Drive</string>
+
+    <string name="menu_view_grid">View as grid</string>
+    <string name="menu_view_list">View as list</string>
+    <string name="menu_logout">Logout</string>
+    <string name="menu_upload">Upload</string>
+
+    <string name="action_settings">Settings</string>
+
+    <string name="auth_description">You need to authenticate with Cloud.\nWe only extract files and never modify or delete them.</string>
+    <string name="auth_title">Select Files From Cloud</string>
+    <string name="auth_button">Connect Cloud</string>
+    <string name="auth_action">The browser will open to connect your account.</string>
+    <string name="auth_icon_description">Cloud Logo</string>
+    <string name="auth_temp_success">Cloud is Authorized</string>
+</resources>
