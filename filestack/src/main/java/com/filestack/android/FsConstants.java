@@ -4,6 +4,7 @@ public class FsConstants {
     public static final String EXTRA_CONFIG = "config";
     public static final String EXTRA_STORE_OPTS = "storeOpts";
     public static final String EXTRA_SELECTION_LIST = "selectionList";
+    public static final String EXTRA_AUTO_UPLOAD = "autoUpload";
 
     public static final String BROADCAST_UPLOAD = "com.filestack.android.BROADCAST_UPLOAD";
 

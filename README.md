@@ -30,13 +30,24 @@ compile 'com.filestack:filestack-android:2.0.0-alpha.1'
 
 ### Launch activity
 ```java
-// Setting a policy and signature is optional
-Config config = new Config("API_KEY", "RETURN_URL", "POLICY", "SIGNATURE");
-// Storage options are also optional
-StorageOptions storeOpts = new StorageOptions();
+// Create an intent to launch FsActivity
 Intent intent = new Intent(this, FsActivity.class);
+
+// Create a config object with your account settings
+// Using security (policy and signature) is optional
+Config config = new Config("API_KEY", "RETURN_URL", "POLICY", "SIGNATURE");
 intent.putExtra(FsConstants.EXTRA_CONFIG, config);
+
+// Setting storage options is also optional
+// We'll default to Filestack S3 if unset
+StorageOptions storeOpts = new StorageOptions();
 intent.putExtra(FsConstants.EXTRA_STORE_OPTS, storeOpts);
+
+// To manually handle uploading, set auto upload to false
+// You can upload the user's selections yourself with the Client class
+intent.putExtra(FsConstants.EXTRA_AUTO_UPLOAD, false);
+
+// Start the activity
 startActivityForResult(intent, REQUEST_FILESTACK);
 ```
 
