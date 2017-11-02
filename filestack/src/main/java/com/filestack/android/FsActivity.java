@@ -146,14 +146,11 @@ public class FsActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        ArrayList<Selection> selections = new ArrayList<>();
-
         switch (requestCode) {
             case REQUEST_MEDIA_CAPTURE:
                 if (resultCode == RESULT_OK) {
                     Util.addMediaToGallery(this, mediaSelection.getPath());
-                    selections.add(mediaSelection);
-                    uploadSelections(selections);
+                    uploadSelections(mediaSelection);
                 }
                 break;
 //            case REQUEST_FILE_BROWSER:
@@ -187,8 +184,8 @@ public class FsActivity extends AppCompatActivity implements
                     String path = Util.getPathFromMediaUri(this, uri);
                     String parts[] = path.split("/");
                     String name = parts[parts.length - 1];
-                    selections.add(new Selection(Sources.DEVICE, path, name));
-                    uploadSelections(selections);
+                    Selection selection = new Selection(Sources.DEVICE, path, name);
+                    uploadSelections(selection);
                 }
                 break;
         }
@@ -386,20 +383,28 @@ public class FsActivity extends AppCompatActivity implements
     }
 
     private void uploadSelections(ArrayList<Selection> selections) {
-        Intent uploadIntent = new Intent(this, UploadService.class);
+        Intent activityIntent = getIntent();
+        boolean autoUpload = activityIntent.getBooleanExtra(FsConstants.EXTRA_AUTO_UPLOAD, true);
 
-        StorageOptions storeOpts =
-                (StorageOptions) getIntent().getSerializableExtra(FsConstants.EXTRA_STORE_OPTS);
-
-        uploadIntent.putExtra(FsConstants.EXTRA_STORE_OPTS, storeOpts);
-        uploadIntent.putExtra(FsConstants.EXTRA_SELECTION_LIST, selections);
-
-        startService(uploadIntent);
+        if (autoUpload) {
+            StorageOptions storeOpts = (StorageOptions) activityIntent
+                    .getSerializableExtra(FsConstants.EXTRA_STORE_OPTS);
+            Intent uploadIntent = new Intent(this, UploadService.class);
+            uploadIntent.putExtra(FsConstants.EXTRA_STORE_OPTS, storeOpts);
+            uploadIntent.putExtra(FsConstants.EXTRA_SELECTION_LIST, selections);
+            startService(uploadIntent);
+        }
 
         Intent data = new Intent();
         data.putExtra(FsConstants.EXTRA_SELECTION_LIST, selections);
         setResult(RESULT_OK, data);
         finish();
+    }
+
+    private void uploadSelections(Selection selection) {
+        ArrayList<Selection> list = new ArrayList<>();
+        list.add(selection);
+        uploadSelections(list);
     }
 
     private void checkPermissions() {

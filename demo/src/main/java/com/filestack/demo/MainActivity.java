@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         StorageOptions storeOpts = new StorageOptions();
         intent.putExtra(FsConstants.EXTRA_CONFIG, config);
         intent.putExtra(FsConstants.EXTRA_STORE_OPTS, storeOpts);
+        intent.putExtra(FsConstants.EXTRA_AUTO_UPLOAD, true);
         startActivityForResult(intent, REQUEST_FILESTACK);
     }
 
