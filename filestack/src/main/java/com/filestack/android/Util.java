@@ -5,9 +5,10 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v4.util.ArrayMap;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.filestack.Client;
@@ -18,11 +19,11 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 
 class Util {
     private static final Map<Integer, SourceInfo> SOURCES = new ArrayMap<>();
-
     private static Client client;
     private static Selection.SimpleSaver selectionSaver;
 
@@ -154,19 +155,26 @@ class Util {
     }
 
     static File createPictureFile(Context context) throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        Locale locale = Locale.getDefault();
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", locale).format(new Date());
         String fileName = "JPEG_" + timeStamp + "_";
         // Store in normal camera directory
-        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+        File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         return File.createTempFile(fileName, ".jpg", storageDir);
     }
 
     static File createMovieFile(Context context) throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        Locale locale = Locale.getDefault();
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", locale).format(new Date());
         String fileName = "MP4_" + timeStamp + "_";
         // Store in normal camera directory
-        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+        File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_MOVIES);
         return File.createTempFile(fileName, ".mp4", storageDir);
+    }
+
+    static Uri getUriForInternalMedia(Context context, File file) {
+        String authority = context.getPackageName() + ".fileprovider";
+        return FileProvider.getUriForFile(context, authority, file);
     }
 
     static void addMediaToGallery(Context context, String path) {

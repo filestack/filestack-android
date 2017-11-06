@@ -1,4 +1,4 @@
-package com.filestack.demo;
+package com.filestack.android.demo;
 
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -46,8 +46,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void openFilestack(View view) {
         Intent intent = new Intent(this, FsActivity.class);
-        Config config = new Config(getString(R.string.api_key), "filestackdemo://auth",
-                getString(R.string.policy), getString(R.string.signature));
+        Config config = new Config(
+                getString(R.string.api_key),
+                getString(R.string.return_url),
+                getString(R.string.policy),
+                getString(R.string.signature));
         StorageOptions storeOpts = new StorageOptions();
         intent.putExtra(FsConstants.EXTRA_CONFIG, config);
         intent.putExtra(FsConstants.EXTRA_STORE_OPTS, storeOpts);

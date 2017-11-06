@@ -1,4 +1,4 @@
-package com.filestack.demo;
+package com.filestack.android.demo;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.filestack.demo", appContext.getPackageName());
+        assertEquals("com.filestack.android.demo", appContext.getPackageName());
     }
 }

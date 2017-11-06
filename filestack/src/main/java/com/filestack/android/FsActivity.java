@@ -16,7 +16,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -262,31 +261,11 @@ public class FsActivity extends AppCompatActivity implements
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
+        boolean showSelected = false;
 
         if (id == R.id.nav_camera_picture || id == R.id.nav_camera_movie) {
-            Intent intent = null;
-            File file = null;
-
-            try {
-                if (id == R.id.nav_camera_picture) {
-                    intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    file = Util.createPictureFile(this);
-                } else {
-                    intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-                    file = Util.createMovieFile(this);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            if (file != null) {
-                mediaSelection = new Selection(
-                        Sources.CAMERA, file.getAbsolutePath(), file.getName());
-                Uri imageUri = FileProvider.getUriForFile(
-                        this, "com.filestack.android.fileprovider", file);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                startActivityForResult(intent, REQUEST_MEDIA_CAPTURE);
-            }
+            Intent intent = createCameraIntent(id);
+            startActivityForResult(intent, REQUEST_MEDIA_CAPTURE);
         } else if (id == R.id.nav_gallery) {
             Intent intent = new Intent();
             intent.setType("image/*,video/*");
@@ -309,13 +288,14 @@ public class FsActivity extends AppCompatActivity implements
             // setThemeColor();
 
             checkAuth();
+            showSelected = true;
         }
 
         if (drawer != null) {
             drawer.closeDrawer(GravityCompat.START);
         }
 
-        return true;
+        return showSelected;
     }
 
     @Override
@@ -354,6 +334,33 @@ public class FsActivity extends AppCompatActivity implements
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this);
+    }
+
+    private Intent createCameraIntent(int id) {
+        Intent intent = null;
+        File file = null;
+
+        try {
+            if (id == R.id.nav_camera_picture) {
+                intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                file = Util.createPictureFile(this);
+            } else {
+                intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+                file = Util.createMovieFile(this);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (file != null) {
+            String path = file.getAbsolutePath();
+            String name = file.getName();
+            mediaSelection = new Selection(Sources.CAMERA, path, name);
+            Uri uri = Util.getUriForInternalMedia(this, file);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        }
+
+        return intent;
     }
 
     private void setNavIconColors() {
