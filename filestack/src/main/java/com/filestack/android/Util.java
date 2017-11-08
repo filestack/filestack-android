@@ -7,8 +7,6 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
-import android.support.v4.util.ArrayMap;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.filestack.Client;
@@ -18,103 +16,128 @@ import com.filestack.Sources;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 class Util {
-    private static final Map<Integer, SourceInfo> SOURCES = new ArrayMap<>();
+    private static final List<String> SOURCES_LIST = new ArrayList<>();
+    private static final Map<String, SourceInfo> SOURCES_MAP = new HashMap<>();
+
     private static Client client;
     private static Selection.SimpleSaver selectionSaver;
 
     static {
-        SOURCES.put(R.id.nav_camera_picture, new SourceInfo(
+        SOURCES_LIST.add(Sources.CAMERA);
+        SOURCES_LIST.add(Sources.DEVICE);
+        SOURCES_LIST.add(Sources.GOOGLE_DRIVE);
+        SOURCES_LIST.add(Sources.FACEBOOK);
+        SOURCES_LIST.add(Sources.INSTAGRAM);
+        SOURCES_LIST.add(Sources.DROPBOX);
+        SOURCES_LIST.add(Sources.GOOGLE_PHOTOS);
+        SOURCES_LIST.add(Sources.ONEDRIVE);
+        SOURCES_LIST.add(Sources.GMAIL);
+        SOURCES_LIST.add(Sources.BOX);
+        SOURCES_LIST.add(Sources.AMAZON_DRIVE);
+        SOURCES_LIST.add(Sources.GITHUB);
+    }
+
+    static {
+        SOURCES_MAP.put(Sources.CAMERA, new SourceInfo(
                 Sources.CAMERA,
-                R.drawable.ic_source_camera_photo,
-                R.string.source_camera_photo,
+                R.drawable.ic_source_camera,
+                R.string.source_camera,
                 R.color.theme_source_camera));
 
-        SOURCES.put(R.id.nav_camera_movie, new SourceInfo(
-                Sources.CAMERA,
-                R.drawable.ic_source_camera_video,
-                R.string.source_camera_video,
-                R.color.theme_source_camera));
-
-        SOURCES.put(R.id.nav_device, new SourceInfo(
+        SOURCES_MAP.put(Sources.DEVICE, new SourceInfo(
                 Sources.DEVICE,
                 R.drawable.ic_source_device,
                 R.string.source_device,
                 R.color.theme_source_device));
 
-        SOURCES.put(R.id.nav_gallery, new SourceInfo(
-                Sources.DEVICE,
-                R.drawable.ic_source_device,
-                R.string.source_gallery,
-                R.color.theme_source_device));
-
-        SOURCES.put(R.id.nav_facebook, new SourceInfo(
+        SOURCES_MAP.put(Sources.FACEBOOK, new SourceInfo(
                 Sources.FACEBOOK,
                 R.drawable.ic_source_facebook,
                 R.string.source_facebook,
                 R.color.theme_source_facebook));
 
-        SOURCES.put(R.id.google_photos, new SourceInfo(
+        SOURCES_MAP.put(Sources.GOOGLE_PHOTOS, new SourceInfo(
                 Sources.GOOGLE_PHOTOS,
                 R.drawable.ic_source_google_photos,
                 R.string.source_google_photos,
                 R.color.theme_source_google_photos));
 
-        SOURCES.put(R.id.instagram, new SourceInfo(
+        SOURCES_MAP.put(Sources.INSTAGRAM, new SourceInfo(
                 Sources.INSTAGRAM,
                 R.drawable.ic_source_instagram,
                 R.string.source_instagram,
                 R.color.theme_source_instagram));
 
-        SOURCES.put(R.id.amazon_drive, new SourceInfo(
+        SOURCES_MAP.put(Sources.AMAZON_DRIVE, new SourceInfo(
                 Sources.AMAZON_DRIVE,
                 R.drawable.ic_source_amazon_drive,
                 R.string.source_amazon_drive,
                 R.color.theme_source_amazon_drive));
 
-        SOURCES.put(R.id.box, new SourceInfo(
+        SOURCES_MAP.put(Sources.BOX, new SourceInfo(
                 Sources.BOX,
                 R.drawable.ic_source_box,
                 R.string.source_box,
                 R.color.theme_source_box));
 
-        SOURCES.put(R.id.dropbox, new SourceInfo(
+        SOURCES_MAP.put(Sources.DROPBOX, new SourceInfo(
                 Sources.DROPBOX,
                 R.drawable.ic_source_dropbox,
                 R.string.source_dropbox,
                 R.color.theme_source_dropbox));
 
-        SOURCES.put(R.id.google_drive, new SourceInfo(
+        SOURCES_MAP.put(Sources.GOOGLE_DRIVE, new SourceInfo(
                 Sources.GOOGLE_DRIVE,
                 R.drawable.ic_source_google_drive,
                 R.string.source_google_drive,
                 R.color.theme_source_google_drive));
 
-        SOURCES.put(R.id.onedrive, new SourceInfo(
+        SOURCES_MAP.put(Sources.ONEDRIVE, new SourceInfo(
                 Sources.ONEDRIVE,
                 R.drawable.ic_source_onedrive,
                 R.string.source_onedrive,
                 R.color.theme_source_onedrive));
 
-        SOURCES.put(R.id.github, new SourceInfo(
+        SOURCES_MAP.put(Sources.GITHUB, new SourceInfo(
                 Sources.GITHUB,
                 R.drawable.ic_source_github,
                 R.string.source_github,
                 R.color.theme_source_github));
 
-        SOURCES.put(R.id.gmail, new SourceInfo(
+        SOURCES_MAP.put(Sources.GMAIL, new SourceInfo(
                 Sources.GMAIL,
                 R.drawable.ic_source_gmail,
                 R.string.source_gmail,
                 R.color.theme_source_gmail));
     }
+
+    static List<String> getDefaultSources() {
+        return SOURCES_LIST.subList(0, 6);
+    }
+
+    static int getSourceIntId(String stringId) {
+        return SOURCES_LIST.indexOf(stringId) + 1;
+    }
+
+    static String getSourceStringId(int intId) {
+        return SOURCES_LIST.get(intId - 1);
+    }
     
-    static SourceInfo getSourceInfo(int id) {
-        return SOURCES.get(id);
+    static SourceInfo getSourceInfo(String stringId) {
+        return SOURCES_MAP.get(stringId);
+    }
+
+    static SourceInfo getSourceInfo(int intId) {
+        String stringId = Util.getSourceStringId(intId);
+        return SOURCES_MAP.get(stringId);
     }
 
     static void textViewReplace(TextView view, String target, String replacement) {

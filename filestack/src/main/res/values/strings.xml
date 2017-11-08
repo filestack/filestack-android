@@ -3,18 +3,12 @@
 
     <string name="picker_title">Filestack Picker</string>
     <string name="picker_drawer_title">Sources</string>
-    <string name="picker_drawer_section_device">Device</string>
-    <string name="picker_drawer_section_clouds_photos">Photos and videos</string>
-    <string name="picker_drawer_section_clouds_drives">Cloud drives</string>
-    <string name="picker_drawer_section_clouds_other">Other</string>
 
     <string name="nav_drawer_open">Open navigation drawer</string>
     <string name="nav_drawer_close">Close navigation drawer</string>
 
-    <string name="source_camera_photo">Take photo</string>
-    <string name="source_camera_video">Take video</string>
-    <string name="source_device">File browser</string>
-    <string name="source_gallery">Gallery</string>
+    <string name="source_camera">Camera</string>
+    <string name="source_device">Device</string>
     <string name="source_facebook">Facebook</string>
     <string name="source_instagram">Instagram</string>
     <string name="source_google_drive">Google Drive</string>
@@ -31,12 +25,15 @@
     <string name="menu_logout">Logout</string>
     <string name="menu_upload">Upload</string>
 
-    <string name="action_settings">Settings</string>
-
     <string name="auth_description">You need to authenticate with Cloud.\nWe only extract files and never modify or delete them.</string>
     <string name="auth_title">Select Files From Cloud</string>
     <string name="auth_button">Connect Cloud</string>
     <string name="auth_action">The browser will open to connect your account.</string>
     <string name="auth_icon_description">Cloud Logo</string>
     <string name="auth_temp_success">Cloud is Authorized</string>
+
+    <string name="camera_take_photo">Take Photo</string>
+    <string name="camera_take_video">Take Video</string>
+
+    <string name="local_files_select_gallery">Select From Gallery</string>
 </resources>

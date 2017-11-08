@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 
 public class CloudListFragment extends Fragment implements FsActivity.BackListener {
     private final static int MIN_GRID_WIDTH = 135;
-    private final static String ARG_CLOUD_INFO_ID = "cloudInfoId";
+    private final static String ARG_SOURCE = "source";
 
     private boolean isListMode = true;
     private CloudListAdapter adapter;
@@ -26,10 +26,10 @@ public class CloudListFragment extends Fragment implements FsActivity.BackListen
     private RecyclerView recyclerView;
     private SourceInfo sourceInfo;
 
-    public static CloudListFragment create(int cloudInfoId) {
+    public static CloudListFragment create(String source) {
         CloudListFragment fragment = new CloudListFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_CLOUD_INFO_ID, cloudInfoId);
+        args.putString(ARG_SOURCE, source);
         fragment.setArguments(args);
         return fragment;
     }
@@ -40,7 +40,7 @@ public class CloudListFragment extends Fragment implements FsActivity.BackListen
         setHasOptionsMenu(true);
 
         Bundle args = getArguments();
-        sourceInfo = Util.getSourceInfo(args.getInt(ARG_CLOUD_INFO_ID));
+        sourceInfo = Util.getSourceInfo(args.getString(ARG_SOURCE));
     }
 
     @Nullable
