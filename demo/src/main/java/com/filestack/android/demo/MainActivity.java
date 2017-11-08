@@ -2,16 +2,17 @@ package com.filestack.android.demo;
 
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
 import com.filestack.Config;
+import com.filestack.Sources;
 import com.filestack.StorageOptions;
-import com.filestack.android.FsConstants;
 import com.filestack.android.FsActivity;
+import com.filestack.android.FsConstants;
 import com.filestack.android.Selection;
 
 import java.io.Serializable;
@@ -55,6 +56,12 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(FsConstants.EXTRA_CONFIG, config);
         intent.putExtra(FsConstants.EXTRA_STORE_OPTS, storeOpts);
         intent.putExtra(FsConstants.EXTRA_AUTO_UPLOAD, true);
+        ArrayList<String> sources = new ArrayList<>();
+        sources.add(Sources.CAMERA);
+        sources.add(Sources.DEVICE);
+        sources.add(Sources.GOOGLE_DRIVE);
+        sources.add(Sources.GITHUB);
+        intent.putExtra(FsConstants.EXTRA_SOURCES, sources);
         startActivityForResult(intent, REQUEST_FILESTACK);
     }
 

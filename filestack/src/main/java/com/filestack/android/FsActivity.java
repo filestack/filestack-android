@@ -24,6 +24,7 @@ import com.filestack.Sources;
 import com.filestack.StorageOptions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.CompletableObserver;
 import io.reactivex.SingleObserver;
@@ -79,9 +80,13 @@ public class FsActivity extends AppCompatActivity implements
         // setNavIconColors();
 
         // Add sources to nav drawer
+        List<String> sources = (List<String>) intent.getSerializableExtra(FsConstants.EXTRA_SOURCES);
+        if (sources == null) {
+            sources = Util.getDefaultSources();
+        }
         Menu menu = nav.getMenu();
         int index = 0;
-        for (String source : Util.getDefaultSources()) {
+        for (String source : sources) {
             int id = Util.getSourceIntId(source);
             SourceInfo info = Util.getSourceInfo(source);
             MenuItem item = menu.add(Menu.NONE, id, index++, info.getTextId());
@@ -101,7 +106,7 @@ public class FsActivity extends AppCompatActivity implements
             Util.getSelectionSaver().clear();
 
             // Open to default source
-            selectedSource = Util.getDefaultSources().get(0);
+            selectedSource = sources.get(0);
             nav.getMenu().performIdentifierAction(Util.getSourceIntId(selectedSource), 0);
             drawer.openDrawer(Gravity.START);
         } else {
