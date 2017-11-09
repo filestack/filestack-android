@@ -51,7 +51,7 @@ public class CloudListFragment extends Fragment implements FsActivity.BackListen
         View baseView = inflater.inflate(R.layout.fragment_cloud_list, container, false);
 
         recyclerView = baseView.findViewById(R.id.recycler);
-        adapter = new CloudListAdapter(sourceInfo.getId());
+        adapter = new CloudListAdapter(sourceInfo.getId(), savedInstanceState);
 
         Context context = recyclerView.getContext();
         Drawable drawable = getResources().getDrawable(R.drawable.list_grid_divider);
@@ -68,6 +68,12 @@ public class CloudListFragment extends Fragment implements FsActivity.BackListen
         setupRecyclerView();
 
         return baseView;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        adapter.saveState(outState);
     }
 
     @Override
