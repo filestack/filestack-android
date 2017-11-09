@@ -79,7 +79,7 @@ public class FsActivity extends AppCompatActivity implements
         // nav.setItemIconTintList(null); // To enable color icons
         // setNavIconColors();
 
-        // Add sources to nav drawer
+        // Add sources to nav menu
         List<String> sources = (List<String>) intent.getSerializableExtra(FsConstants.EXTRA_SOURCES);
         if (sources == null) {
             sources = Util.getDefaultSources();
@@ -108,7 +108,9 @@ public class FsActivity extends AppCompatActivity implements
             // Open to default source
             selectedSource = sources.get(0);
             nav.getMenu().performIdentifierAction(Util.getSourceIntId(selectedSource), 0);
-            drawer.openDrawer(Gravity.START);
+            if (drawer != null) {
+                drawer.openDrawer(Gravity.START);
+            }
         } else {
             // Retrieve current source
             selectedSource = preferences.getString(PREF_SELECTED_SOURCE, null);
@@ -232,7 +234,9 @@ public class FsActivity extends AppCompatActivity implements
             getSupportFragmentManager().beginTransaction().replace(R.id.content, fragment).commit();
         }
 
-        drawer.closeDrawer(GravityCompat.START);
+        if (drawer != null) {
+            drawer.closeDrawer(GravityCompat.START);
+        }
 
         return true;
     }

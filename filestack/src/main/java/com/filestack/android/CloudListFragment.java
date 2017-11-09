@@ -9,20 +9,17 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 public class CloudListFragment extends Fragment implements FsActivity.BackListener {
-    private final static int MIN_GRID_WIDTH = 135;
     private final static String ARG_SOURCE = "source";
 
     private boolean isListMode = true;
     private CloudListAdapter adapter;
     private DividerItemDecoration horizontalDecor, verticalDecor;
-    private int gridColumns;
     private RecyclerView recyclerView;
     private SourceInfo sourceInfo;
 
@@ -59,11 +56,6 @@ public class CloudListFragment extends Fragment implements FsActivity.BackListen
         horizontalDecor.setDrawable(drawable);
         verticalDecor = new DividerItemDecoration(context, DividerItemDecoration.VERTICAL);
         verticalDecor.setDrawable(drawable);
-
-        int widthPx = container.getWidth();
-        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-        int widthDp = Math.round(widthPx / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-        gridColumns = widthDp / MIN_GRID_WIDTH;
 
         setupRecyclerView();
 
@@ -106,9 +98,10 @@ public class CloudListFragment extends Fragment implements FsActivity.BackListen
             recyclerView.removeItemDecoration(horizontalDecor);
             recyclerView.removeItemDecoration(verticalDecor);
         } else  {
+            int numColumns = getResources().getInteger(R.integer.grid_columns);
             adapter.setLayoutId(R.layout.cloud_grid_item);
             recyclerView.setAdapter(adapter);
-            recyclerView.setLayoutManager(new GridLayoutManager(context, gridColumns));
+            recyclerView.setLayoutManager(new GridLayoutManager(context, numColumns));
             recyclerView.addItemDecoration(horizontalDecor);
             recyclerView.addItemDecoration(verticalDecor);
         }
