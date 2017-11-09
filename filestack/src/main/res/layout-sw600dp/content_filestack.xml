@@ -10,8 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:fitsSystemWindows="false"
-        app:elevation="0dp"
-        app:menu="@menu/activity_filestack_drawer" />
+        app:elevation="0dp"/>
 
     <View
         android:id="@+id/divider"

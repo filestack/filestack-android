@@ -47,6 +47,16 @@ intent.putExtra(FsConstants.EXTRA_STORE_OPTS, storeOpts);
 // You can upload the user's selections yourself with the Client class
 intent.putExtra(FsConstants.EXTRA_AUTO_UPLOAD, false);
 
+// To customize the sources list, pass in a list of constants
+// The sources will appear in the order you add them to the list
+// Defaults to Camera, Device, Google Drive, Facebook, Instagram, and Dropbox
+ArrayList<String> sources = new ArrayList<>();
+sources.add(Sources.CAMERA);
+sources.add(Sources.DEVICE);
+sources.add(Sources.GOOGLE_DRIVE);
+sources.add(Sources.GITHUB);
+intent.putExtra(FsConstants.EXTRA_SOURCES, sources);
+
 // Start the activity
 startActivityForResult(intent, REQUEST_FILESTACK);
 ```
