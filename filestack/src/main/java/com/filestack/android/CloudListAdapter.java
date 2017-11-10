@@ -2,7 +2,6 @@ package com.filestack.android;
 
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +31,7 @@ class CloudListAdapter extends RecyclerView.Adapter implements
     private final HashMap<String, ArrayList<CloudItem>> folders;
     private final HashMap<String, String> nextTokens;
     private final String sourceId;
-    private int layoutId;
+    private int viewType;
     private RecyclerView recyclerView;
     private String currentPath;
 
@@ -62,7 +61,7 @@ class CloudListAdapter extends RecyclerView.Adapter implements
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-        View listItemView = inflater.inflate(layoutId, viewGroup, false);
+        View listItemView = inflater.inflate(viewType, viewGroup, false);
         return new CloudListViewHolder(listItemView);
     }
 
@@ -94,6 +93,11 @@ class CloudListAdapter extends RecyclerView.Adapter implements
     @Override
     public long getItemId(int position) {
         return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return viewType;
     }
 
     @Override
@@ -178,8 +182,8 @@ class CloudListAdapter extends RecyclerView.Adapter implements
         outState.putSerializable(STATE_NEXT_TOKENS, nextTokens);
     }
 
-    void setLayoutId(int layoutId) {
-        this.layoutId = layoutId;
+    void setViewType(int viewType) {
+        this.viewType = viewType;
     }
 
     // Private helper methods (alphabetical order)

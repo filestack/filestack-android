@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 
 public class CloudListFragment extends Fragment implements FsActivity.BackListener {
     private final static String ARG_SOURCE = "source";
+    private final static String STATE_IS_LIST_MODE = "isListMode";
 
     private boolean isListMode = true;
     private CloudListAdapter adapter;
@@ -49,6 +50,11 @@ public class CloudListFragment extends Fragment implements FsActivity.BackListen
 
         recyclerView = baseView.findViewById(R.id.recycler);
         adapter = new CloudListAdapter(sourceInfo.getId(), savedInstanceState);
+        recyclerView.setAdapter(adapter);
+
+        if (savedInstanceState != null) {
+            isListMode = savedInstanceState.getBoolean(STATE_IS_LIST_MODE);
+        }
 
         Context context = recyclerView.getContext();
         Drawable drawable = getResources().getDrawable(R.drawable.list_grid_divider);
@@ -57,7 +63,7 @@ public class CloudListFragment extends Fragment implements FsActivity.BackListen
         verticalDecor = new DividerItemDecoration(context, DividerItemDecoration.VERTICAL);
         verticalDecor.setDrawable(drawable);
 
-        setupRecyclerView();
+        setupRecyclerLayout();
 
         return baseView;
     }
@@ -66,6 +72,7 @@ public class CloudListFragment extends Fragment implements FsActivity.BackListen
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         adapter.saveState(outState);
+        outState.putBoolean(STATE_IS_LIST_MODE, isListMode);
     }
 
     @Override
@@ -81,30 +88,34 @@ public class CloudListFragment extends Fragment implements FsActivity.BackListen
                 item.setIcon(R.drawable.ic_menu_list_white);
                 item.setTitle(R.string.menu_view_list);
             }
-            setupRecyclerView();
+            setupRecyclerLayout();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void setupRecyclerView() {
+    private void setupRecyclerLayout() {
         Context context = recyclerView.getContext();
 
+        LinearLayoutManager layout = (LinearLayoutManager) recyclerView.getLayoutManager();
+        int position = layout != null ? layout.findFirstCompletelyVisibleItemPosition() : 0;
+
         if (isListMode) {
-            adapter.setLayoutId(R.layout.cloud_list_item);
-            recyclerView.setAdapter(adapter);
-            recyclerView.setLayoutManager(new LinearLayoutManager((context)));
+            layout = new LinearLayoutManager((context));
+            adapter.setViewType(R.layout.cloud_list_item);
             recyclerView.removeItemDecoration(horizontalDecor);
             recyclerView.removeItemDecoration(verticalDecor);
         } else  {
             int numColumns = getResources().getInteger(R.integer.grid_columns);
-            adapter.setLayoutId(R.layout.cloud_grid_item);
-            recyclerView.setAdapter(adapter);
-            recyclerView.setLayoutManager(new GridLayoutManager(context, numColumns));
+            layout = new GridLayoutManager(context, numColumns);
+            adapter.setViewType(R.layout.cloud_grid_item);
             recyclerView.addItemDecoration(horizontalDecor);
             recyclerView.addItemDecoration(verticalDecor);
         }
+
+        recyclerView.setLayoutManager(layout);
+        layout.scrollToPosition(position);
     }
 
     @Override
