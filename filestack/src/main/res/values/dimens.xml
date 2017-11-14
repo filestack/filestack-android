@@ -19,5 +19,6 @@
     <dimen name="list_text_end_padding">16dp</dimen>
     <dimen name="list_text_vertical_padding">20dp</dimen>
 
+    <dimen name="grid_spacing">4dp</dimen>
     <integer name="grid_columns">3</integer>
 </resources>

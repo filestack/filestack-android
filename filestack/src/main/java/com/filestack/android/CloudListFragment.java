@@ -1,11 +1,9 @@
 package com.filestack.android;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,7 +18,7 @@ public class CloudListFragment extends Fragment implements FsActivity.BackListen
 
     private boolean isListMode = true;
     private CloudListAdapter adapter;
-    private DividerItemDecoration horizontalDecor, verticalDecor;
+    private SpacingDecoration spacer;
     private RecyclerView recyclerView;
     private SourceInfo sourceInfo;
 
@@ -56,12 +54,8 @@ public class CloudListFragment extends Fragment implements FsActivity.BackListen
             isListMode = savedInstanceState.getBoolean(STATE_IS_LIST_MODE);
         }
 
-        Context context = recyclerView.getContext();
-        Drawable drawable = getResources().getDrawable(R.drawable.list_grid_divider);
-        horizontalDecor = new DividerItemDecoration(context, DividerItemDecoration.HORIZONTAL);
-        horizontalDecor.setDrawable(drawable);
-        verticalDecor = new DividerItemDecoration(context, DividerItemDecoration.VERTICAL);
-        verticalDecor.setDrawable(drawable);
+        int spacing = getResources().getDimensionPixelSize(R.dimen.grid_spacing);
+        spacer = new SpacingDecoration(spacing, spacing, false);
 
         setupRecyclerLayout();
 
@@ -104,14 +98,12 @@ public class CloudListFragment extends Fragment implements FsActivity.BackListen
         if (isListMode) {
             layout = new LinearLayoutManager((context));
             adapter.setViewType(R.layout.cloud_list_item);
-            recyclerView.removeItemDecoration(horizontalDecor);
-            recyclerView.removeItemDecoration(verticalDecor);
+            recyclerView.removeItemDecoration(spacer);
         } else  {
             int numColumns = getResources().getInteger(R.integer.grid_columns);
             layout = new GridLayoutManager(context, numColumns);
             adapter.setViewType(R.layout.cloud_grid_item);
-            recyclerView.addItemDecoration(horizontalDecor);
-            recyclerView.addItemDecoration(verticalDecor);
+            recyclerView.addItemDecoration(spacer);
         }
 
         recyclerView.setLayoutManager(layout);
