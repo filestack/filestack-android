@@ -45,6 +45,7 @@ public class FsActivity extends AppCompatActivity implements
     protected static final int REQUEST_GALLERY = RESULT_FIRST_USER + 2;
     private static final String PREF_SELECTED_SOURCE = "selectedSource";
     private static final String PREF_SESSION_TOKEN = "sessionToken";
+    private static final String TAG = "FsActivity";
 
     private BackListener backListener;
     private DrawerLayout drawer;
@@ -99,7 +100,7 @@ public class FsActivity extends AppCompatActivity implements
             // Initialize static client
             Config config = (Config) intent.getSerializableExtra(FsConstants.EXTRA_CONFIG);
             String sessionToken = preferences.getString(PREF_SESSION_TOKEN, null);
-            Log.d("sessionToken", "Retrieving: " + sessionToken);
+            Log.d(TAG, "Retrieving session token" + sessionToken);
             Util.initializeClient(config, sessionToken);
 
             // Clear selected item list
@@ -115,6 +116,11 @@ public class FsActivity extends AppCompatActivity implements
             // Retrieve current source
             selectedSource = preferences.getString(PREF_SELECTED_SOURCE, null);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
         Util.getSelectionSaver().setItemChangeListener(this);
     }
@@ -126,7 +132,7 @@ public class FsActivity extends AppCompatActivity implements
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 
         String sessionToken = Util.getClient().getSessionToken();
-        Log.d("sessionToken", "Saving: " + sessionToken);
+        Log.d(TAG, "Saving session token: " + sessionToken);
         preferences
                 .edit()
                 .putString(PREF_SESSION_TOKEN, sessionToken)
