@@ -43,12 +43,15 @@ public class FsActivity extends AppCompatActivity implements
     protected static final int REQUEST_MEDIA_CAPTURE = RESULT_FIRST_USER;
     // protected static final int REQUEST_FILE_BROWSER = RESULT_FIRST_USER + 1;
     protected static final int REQUEST_GALLERY = RESULT_FIRST_USER + 2;
-    private static final String PREF_SELECTED_SOURCE = "selectedSource";
     private static final String PREF_SESSION_TOKEN = "sessionToken";
+    private static final String STATE_SELECTED_SOURCE = "selectedSource";
+    private static final String STATE_SHOULD_CHECK_AUTH = "shouldCheckAuth";
+    private static final String TAG = "FsActivity";
 
     private BackListener backListener;
     private DrawerLayout drawer;
     private String selectedSource;
+    private boolean shouldCheckAuth;
     private NavigationView nav;
 
     // Activity lifecycle overrides (in sequential order)
@@ -99,7 +102,6 @@ public class FsActivity extends AppCompatActivity implements
             // Initialize static client
             Config config = (Config) intent.getSerializableExtra(FsConstants.EXTRA_CONFIG);
             String sessionToken = preferences.getString(PREF_SESSION_TOKEN, null);
-            Log.d("sessionToken", "Retrieving: " + sessionToken);
             Util.initializeClient(config, sessionToken);
 
             // Clear selected item list
@@ -113,10 +115,20 @@ public class FsActivity extends AppCompatActivity implements
             }
         } else {
             // Retrieve current source
-            selectedSource = preferences.getString(PREF_SELECTED_SOURCE, null);
+            selectedSource = savedInstanceState.getString(STATE_SELECTED_SOURCE);
+            shouldCheckAuth = savedInstanceState.getBoolean(STATE_SHOULD_CHECK_AUTH);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
         Util.getSelectionSaver().setItemChangeListener(this);
+
+        if (shouldCheckAuth) {
+            checkAuth();
+        }
     }
 
     @Override
@@ -126,13 +138,16 @@ public class FsActivity extends AppCompatActivity implements
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 
         String sessionToken = Util.getClient().getSessionToken();
-        Log.d("sessionToken", "Saving: " + sessionToken);
-        preferences
-                .edit()
-                .putString(PREF_SESSION_TOKEN, sessionToken)
-                .putString(PREF_SELECTED_SOURCE, selectedSource)
-                .apply();
+        preferences.edit().putString(PREF_SESSION_TOKEN, sessionToken).apply();
         Util.getSelectionSaver().setItemChangeListener(null);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString(STATE_SELECTED_SOURCE, selectedSource);
+        outState.putBoolean(STATE_SHOULD_CHECK_AUTH, shouldCheckAuth);
     }
 
     // Other Activity overrides (alphabetical order)
@@ -254,12 +269,14 @@ public class FsActivity extends AppCompatActivity implements
         String authUrl = contents.getAuthUrl();
 
         if (authUrl != null) {
+            shouldCheckAuth = true;
             CloudAuthFragment cloudAuthFragment = CloudAuthFragment.create(selectedSource, authUrl);
             FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
             transaction.replace(R.id.content, cloudAuthFragment);
             transaction.commit();
         } else {
+            shouldCheckAuth = false;
             CloudListFragment cloudListFragment = CloudListFragment.create(selectedSource);
             FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
