@@ -38,7 +38,11 @@ public class Selection implements Serializable {
 
         @Override
         public void setItemChangeListener(Listener listener) {
+            if (listener == null) {
+                return;
+            }
             this.listener = listener;
+            this.listener.onEmptyChanged(isEmpty());
         }
 
         @Override
