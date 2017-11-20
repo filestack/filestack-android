@@ -2,6 +2,7 @@ package com.filestack.android;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -15,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.filestack.Sources;
+
+import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
 import static com.filestack.android.FsActivity.REQUEST_GALLERY;
@@ -39,6 +42,7 @@ public class LocalFilesFragment extends Fragment implements
         Intent galleryIntent = new Intent();
         galleryIntent.setType("image/*,video/*");
         galleryIntent.setAction(Intent.ACTION_PICK);
+        galleryIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         if (hasPermissions()) {
             startActivityForResult(galleryIntent, REQUEST_GALLERY);
         }
@@ -49,11 +53,23 @@ public class LocalFilesFragment extends Fragment implements
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_GALLERY && resultCode == RESULT_OK) {
-            Uri uri = data.getData();
-            String path = Util.getPathFromMediaUri(getContext(), uri);
-            String parts[] = path.split("/");
-            String name = parts[parts.length - 1];
-            Util.getSelectionSaver().toggleItem(Sources.DEVICE, path, name);
+            ClipData clipData = data.getClipData();
+            ArrayList<Uri> uris = new ArrayList<>();
+
+            if (clipData != null) {
+                for (int i = 0; i < clipData.getItemCount(); i++) {
+                    uris.add(clipData.getItemAt(i).getUri());
+                }
+            } else {
+                uris.add(data.getData());
+            }
+
+            for (Uri uri : uris) {
+                String path = Util.getPathFromMediaUri(getContext(), uri);
+                String parts[] = path.split("/");
+                String name = parts[parts.length - 1];
+                Util.getSelectionSaver().toggleItem(Sources.DEVICE, path, name);
+            }
         }
     }
 
