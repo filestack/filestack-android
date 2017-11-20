@@ -14,4 +14,6 @@ public class FsConstants {
 
     public static final String STATUS_COMPLETE = "complete";
     public static final String STATUS_FAILED = "failed";
+
+    public static final String NOTIFY_CHANNEL_UPLOAD = "uploadsChannel";
 }
