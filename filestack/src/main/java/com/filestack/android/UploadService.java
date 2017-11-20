@@ -19,7 +19,8 @@ import java.util.Locale;
 
 public class UploadService extends IntentService {
     public static final String SERVICE_NAME = "Filestack Upload Service";
-    public static final String PREF_ID_COUNTER = "idCounter";
+    public static final String PREF_NOTIFICATION_ID_COUNTER = "idCounter";
+    public static final String TAG = "uploadService";
 
     public UploadService() {
         super(SERVICE_NAME);
@@ -28,44 +29,34 @@ public class UploadService extends IntentService {
     @Override
     @SuppressWarnings("unchecked")
     protected void onHandleIntent(Intent intent) {
-        ArrayList<Selection> selections;
-        ArrayList<Selection> localItems;
+        ArrayList<Selection> selections = (ArrayList<Selection>)
+                intent.getSerializableExtra(FsConstants.EXTRA_SELECTION_LIST);
+        StorageOptions storeOpts = (StorageOptions)
+                intent.getSerializableExtra(FsConstants.EXTRA_STORE_OPTS);
 
-        SharedPreferences preferences = getSharedPreferences(getClass().getName(), MODE_PRIVATE);
-        int id = preferences.getInt(PREF_ID_COUNTER, 0);
-
-        selections = (ArrayList<Selection>) intent.getSerializableExtra(FsConstants.EXTRA_SELECTION_LIST);
+        SharedPreferences prefs = getSharedPreferences(getClass().getName(), MODE_PRIVATE);
+        int notifyId = prefs.getInt(PREF_NOTIFICATION_ID_COUNTER, 0);
         int total = selections.size();
-        localItems = new ArrayList<>();
 
+        int i = 0;
         for (Selection item : selections) {
-            Log.d("uploadService", "received: " + item.getProvider() + " " + item.getPath());
+            String name = item.getName();
+            String provider = item.getProvider();
 
-            // Separate local items into their own list
-            // Want to upload cloud items first since that goes faster
+            Log.d(TAG, "received: " + provider + " " + name);
+
+            FileLink fileLink;
             if (isLocal(item)) {
-                selections.remove(item);
-                localItems.add(item);
+                fileLink = uploadLocal(item, storeOpts);
+            } else {
+                fileLink = uploadCloud(item, storeOpts);
             }
+
+            updateNotification(notifyId, ++i, total, name);
+            sendBroadcast(item, fileLink);
         }
 
-        StorageOptions storeOpts =
-                (StorageOptions) intent.getSerializableExtra(FsConstants.EXTRA_STORE_OPTS);
-
-        int count = 0;
-        for (Selection selection : selections) {
-            FileLink fileLink = uploadCloud(selection, storeOpts);
-            updateNotification(id, ++count, total, selection.getName());
-            sendBroadcast(selection, fileLink);
-        }
-
-        for (Selection selection : localItems) {
-            FileLink fileLink = uploadLocal(selection, storeOpts);
-            updateNotification(id, ++count, total, selection.getName());
-            sendBroadcast(selection, fileLink);
-        }
-
-        preferences.edit().putInt(PREF_ID_COUNTER, id+1).apply();
+        prefs.edit().putInt(PREF_NOTIFICATION_ID_COUNTER, notifyId+1).apply();
     }
 
     private boolean isLocal(Selection item) {
