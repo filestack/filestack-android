@@ -21,7 +21,7 @@ New features:
 ## Including In Your Project
 
 ```gradle
-compile 'com.filestack:filestack-android:2.0.0-alpha.1'
+compile 'com.filestack:filestack-android:2.0.0-alpha.2'
 ```
 
 ## Usage
