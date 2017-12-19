@@ -1,22 +1,13 @@
 package com.filestack.android;
 
-import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -26,16 +17,14 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.filestack.CloudResponse;
 import com.filestack.Config;
 import com.filestack.Sources;
 import com.filestack.StorageOptions;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.CompletableObserver;
 import io.reactivex.SingleObserver;
@@ -51,18 +40,19 @@ public class FsActivity extends AppCompatActivity implements
         boolean onBackPressed();
     }
 
-    private static final int REQUEST_MEDIA_CAPTURE = RESULT_FIRST_USER;
-    private static final int REQUEST_FILE_BROWSER = RESULT_FIRST_USER + 1;
-    private static final int REQUEST_GALLERY = RESULT_FIRST_USER + 2;
-    private static final String PREF_SELECTED_SOURCE_ID = "selectedSourceId";
+    protected static final int REQUEST_MEDIA_CAPTURE = RESULT_FIRST_USER;
+    // protected static final int REQUEST_FILE_BROWSER = RESULT_FIRST_USER + 1;
+    protected static final int REQUEST_GALLERY = RESULT_FIRST_USER + 2;
     private static final String PREF_SESSION_TOKEN = "sessionToken";
+    private static final String STATE_SELECTED_SOURCE = "selectedSource";
+    private static final String STATE_SHOULD_CHECK_AUTH = "shouldCheckAuth";
+    private static final String TAG = "FsActivity";
 
     private BackListener backListener;
     private DrawerLayout drawer;
-    private int selectedSourceId;
+    private String selectedSource;
+    private boolean shouldCheckAuth;
     private NavigationView nav;
-    private Selection mediaSelection;
-    private Toolbar toolbar;
 
     // Activity lifecycle overrides (in sequential order)
 
@@ -73,26 +63,13 @@ public class FsActivity extends AppCompatActivity implements
         Intent intent = getIntent();
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 
-        // If we're starting fresh
-        if (savedInstanceState == null) {
-            // Initialize static client
-            Config config = (Config) intent.getSerializableExtra(FsConstants.EXTRA_CONFIG);
-            String sessionToken = preferences.getString(PREF_SESSION_TOKEN, null);
-            Log.d("sessionToken", "Retrieving: " + sessionToken);
-            Util.initializeClient(config, sessionToken);
-
-            // Clear selected item list
-            Util.getSelectionSaver().clear();
-        }
-
-        selectedSourceId = preferences.getInt(PREF_SELECTED_SOURCE_ID, 0);
-        Util.getSelectionSaver().setItemChangeListener(this);
-
-        // Setup view
         setContentView(R.layout.activity_filestack);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        // Setup app bar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // Setup nav drawer
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer != null) {
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -100,26 +77,57 @@ public class FsActivity extends AppCompatActivity implements
             drawer.addDrawerListener(toggle);
             toggle.syncState();
         }
-
         nav = (NavigationView) findViewById(R.id.nav_view);
         nav.setNavigationItemSelectedListener(this);
         // nav.setItemIconTintList(null); // To enable color icons
         // setNavIconColors();
 
-        checkPermissions();
-    }
+        // Add sources to nav menu
+        List<String> sources = (List<String>) intent.getSerializableExtra(FsConstants.EXTRA_SOURCES);
+        if (sources == null) {
+            sources = Util.getDefaultSources();
+        }
+        Menu menu = nav.getMenu();
+        int index = 0;
+        for (String source : sources) {
+            int id = Util.getSourceIntId(source);
+            SourceInfo info = Util.getSourceInfo(source);
+            MenuItem item = menu.add(Menu.NONE, id, index++, info.getTextId());
+            item.setIcon(info.getIconId());
+            item.setCheckable(true);
+        }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+        // Reload or initialize state
+        if (savedInstanceState == null) {
+            // Initialize static client
+            Config config = (Config) intent.getSerializableExtra(FsConstants.EXTRA_CONFIG);
+            String sessionToken = preferences.getString(PREF_SESSION_TOKEN, null);
+            Util.initializeClient(config, sessionToken);
 
-        if (selectedSourceId == 0) {
-            nav.getMenu().performIdentifierAction(R.id.google_drive, 0);
+            // Clear selected item list
+            Util.getSelectionSaver().clear();
+
+            // Open to default source
+            selectedSource = sources.get(0);
+            nav.getMenu().performIdentifierAction(Util.getSourceIntId(selectedSource), 0);
             if (drawer != null) {
                 drawer.openDrawer(Gravity.START);
             }
         } else {
-            nav.getMenu().performIdentifierAction(selectedSourceId, 0);
+            // Retrieve current source
+            selectedSource = savedInstanceState.getString(STATE_SELECTED_SOURCE);
+            shouldCheckAuth = savedInstanceState.getBoolean(STATE_SHOULD_CHECK_AUTH);
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        Util.getSelectionSaver().setItemChangeListener(this);
+
+        if (shouldCheckAuth) {
+            checkAuth();
         }
     }
 
@@ -130,69 +138,19 @@ public class FsActivity extends AppCompatActivity implements
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 
         String sessionToken = Util.getClient().getSessionToken();
-        Log.d("sessionToken", "Saving: " + sessionToken);
-        preferences
-                .edit()
-                .putString(PREF_SESSION_TOKEN, sessionToken)
-                .putInt(PREF_SELECTED_SOURCE_ID, selectedSourceId)
-                .apply();
+        preferences.edit().putString(PREF_SESSION_TOKEN, sessionToken).apply();
         Util.getSelectionSaver().setItemChangeListener(null);
     }
 
-    // Other Activity overrides (alphabetical order)
-
-
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-        ArrayList<Selection> selections = new ArrayList<>();
-
-        switch (requestCode) {
-            case REQUEST_MEDIA_CAPTURE:
-                if (resultCode == RESULT_OK) {
-                    Util.addMediaToGallery(this, mediaSelection.getPath());
-                    selections.add(mediaSelection);
-                    uploadSelections(selections);
-                }
-                break;
-//            case REQUEST_FILE_BROWSER:
-//                if (resultCode == RESULT_OK) {
-//                    ArrayList<Uri> uris = new ArrayList<>();
-//                    ClipData clipData = data.getClipData();
-//
-//                    if (clipData != null) {
-//                        for (int i = 0; i < clipData.getItemCount(); i++) {
-//                            uris.add(clipData.getItemAt(i).getUri());
-//                        }
-//                    } else {
-//                        uris.add(data.getData());
-//                    }
-//
-//                    for (Uri uri : uris) {
-//                        Log.d("localFile", uri.toString());
-//                        String path = Util.getPathFromMediaUri(this, uri);
-//                        String[] parts = path.split("/");
-//                        String name = parts[parts.length-1];
-//                        Selection selection = new Selection(Sources.DEVICE, path, name);
-//                        Log.d("localFile", path + " " + name);
-//                        selections.add(selection);
-//                    }
-//                }
-//                uploadSelections(selections);
-//                break;
-            case REQUEST_GALLERY:
-                if (resultCode == RESULT_OK) {
-                    Uri uri = data.getData();
-                    String path = Util.getPathFromMediaUri(this, uri);
-                    String parts[] = path.split("/");
-                    String name = parts[parts.length - 1];
-                    selections.add(new Selection(Sources.DEVICE, path, name));
-                    uploadSelections(selections);
-                }
-                break;
-        }
+        outState.putString(STATE_SELECTED_SOURCE, selectedSource);
+        outState.putBoolean(STATE_SHOULD_CHECK_AUTH, shouldCheckAuth);
     }
+
+    // Other Activity overrides (alphabetical order)
 
     @Override
     public void onAttachFragment(Fragment fragment) {
@@ -223,7 +181,7 @@ public class FsActivity extends AppCompatActivity implements
         int id = item.getItemId();
 
         if (id == R.id.action_logout) {
-            SourceInfo info = Util.getSourceInfo(selectedSourceId);
+            SourceInfo info = Util.getSourceInfo(selectedSource);
             Util.getClient()
                     .logoutCloudAsync(info.getId())
                     .subscribeOn(Schedulers.io())
@@ -265,53 +223,30 @@ public class FsActivity extends AppCompatActivity implements
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
+        String source = Util.getSourceStringId(id);
+        Fragment fragment = null;
 
-        if (id == R.id.nav_camera_picture || id == R.id.nav_camera_movie) {
-            Intent intent = null;
-            File file = null;
+        if (!source.equals(selectedSource)) {
+            Util.getSelectionSaver().clear();
+        }
 
-            try {
-                if (id == R.id.nav_camera_picture) {
-                    intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    file = Util.createPictureFile(this);
-                } else {
-                    intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-                    file = Util.createMovieFile(this);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        selectedSource = source;
+        nav.setCheckedItem(id);
+//        setThemeColor();
 
-            if (file != null) {
-                mediaSelection = new Selection(
-                        Sources.CAMERA, file.getAbsolutePath(), file.getName());
-                Uri imageUri = FileProvider.getUriForFile(
-                        this, "com.filestack.android.fileprovider", file);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                startActivityForResult(intent, REQUEST_MEDIA_CAPTURE);
-            }
-        } else if (id == R.id.nav_gallery) {
-            Intent intent = new Intent();
-            intent.setType("image/*,video/*");
-            intent.setAction(Intent.ACTION_PICK);
-            startActivityForResult(intent, REQUEST_GALLERY);
-//        } else if (id == R.id.nav_device) {
-//            Intent fileBrowserIntent = new Intent(Intent.ACTION_GET_CONTENT);
-//            fileBrowserIntent.setType("*/*");
-//            fileBrowserIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-//            if (fileBrowserIntent.resolveActivity(getPackageManager()) != null) {
-//                startActivityForResult(fileBrowserIntent, REQUEST_FILE_BROWSER);
-//            }
-        } else {
-            if (id != selectedSourceId) {
-                Util.getSelectionSaver().clear();
-            }
+        switch (source) {
+            case Sources.CAMERA:
+                fragment = new CameraFragment();
+                break;
+            case Sources.DEVICE:
+                fragment = new LocalFilesFragment();
+                break;
+            default:
+                checkAuth();
+        }
 
-            nav.setCheckedItem(id);
-            selectedSourceId = id;
-            // setThemeColor();
-
-            checkAuth();
+        if (fragment != null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.content, fragment).commit();
         }
 
         if (drawer != null) {
@@ -334,13 +269,15 @@ public class FsActivity extends AppCompatActivity implements
         String authUrl = contents.getAuthUrl();
 
         if (authUrl != null) {
-            CloudAuthFragment cloudAuthFragment = CloudAuthFragment.create(selectedSourceId, authUrl);
+            shouldCheckAuth = true;
+            CloudAuthFragment cloudAuthFragment = CloudAuthFragment.create(selectedSource, authUrl);
             FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
             transaction.replace(R.id.content, cloudAuthFragment);
             transaction.commit();
         } else {
-            CloudListFragment cloudListFragment = CloudListFragment.create(selectedSourceId);
+            shouldCheckAuth = false;
+            CloudListFragment cloudListFragment = CloudListFragment.create(selectedSource);
             FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
             transaction.replace(R.id.content, cloudListFragment);
@@ -351,7 +288,7 @@ public class FsActivity extends AppCompatActivity implements
     // Private helper methods (alphabetical order)
 
     private void checkAuth() {
-        SourceInfo info = Util.getSourceInfo(selectedSourceId);
+        SourceInfo info = Util.getSourceInfo(selectedSource);
         Util.getClient()
                 .getCloudItemsAsync(info.getId(), "/")
                 .subscribeOn(Schedulers.io())
@@ -359,42 +296,18 @@ public class FsActivity extends AppCompatActivity implements
                 .subscribe(this);
     }
 
-    private void setNavIconColors() {
-        Menu menu = nav.getMenu();
-        for (int i = 0; i < menu.size(); i++) {
-            Menu subMenu = menu.getItem(i).getSubMenu();
-            for (int j = 0; j < subMenu.size(); j++) {
-                MenuItem item = subMenu.getItem(j);
-                Drawable icon = item.getIcon().mutate();
-                SourceInfo res = Util.getSourceInfo(item.getItemId());
-                icon.setColorFilter(res.getIconId(), PorterDuff.Mode.MULTIPLY);
-                subMenu.getItem(j).setIcon(icon);
-            }
+    protected void uploadSelections(ArrayList<Selection> selections) {
+        Intent activityIntent = getIntent();
+        boolean autoUpload = activityIntent.getBooleanExtra(FsConstants.EXTRA_AUTO_UPLOAD, true);
+
+        if (autoUpload) {
+            StorageOptions storeOpts = (StorageOptions) activityIntent
+                    .getSerializableExtra(FsConstants.EXTRA_STORE_OPTS);
+            Intent uploadIntent = new Intent(this, UploadService.class);
+            uploadIntent.putExtra(FsConstants.EXTRA_STORE_OPTS, storeOpts);
+            uploadIntent.putExtra(FsConstants.EXTRA_SELECTION_LIST, selections);
+            startService(uploadIntent);
         }
-    }
-
-    private void setThemeColor() {
-        SourceInfo info = Util.getSourceInfo(selectedSourceId);
-        View header = nav.getHeaderView(0);
-        if (header != null) {
-            header.setBackgroundResource(info.getColorId());
-        }
-        toolbar.setBackgroundResource(info.getColorId());
-        if (drawer != null) {
-            toolbar.setSubtitle(info.getTextId());
-        }
-    }
-
-    private void uploadSelections(ArrayList<Selection> selections) {
-        Intent uploadIntent = new Intent(this, UploadService.class);
-
-        StorageOptions storeOpts =
-                (StorageOptions) getIntent().getSerializableExtra(FsConstants.EXTRA_STORE_OPTS);
-
-        uploadIntent.putExtra(FsConstants.EXTRA_STORE_OPTS, storeOpts);
-        uploadIntent.putExtra(FsConstants.EXTRA_SELECTION_LIST, selections);
-
-        startService(uploadIntent);
 
         Intent data = new Intent();
         data.putExtra(FsConstants.EXTRA_SELECTION_LIST, selections);
@@ -402,12 +315,29 @@ public class FsActivity extends AppCompatActivity implements
         finish();
     }
 
-    private void checkPermissions() {
-        int permissionCheck = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
-        }
-    }
+//    private void setNavIconColors() {
+//        Menu menu = nav.getMenu();
+//        for (int i = 0; i < menu.size(); i++) {
+//            Menu subMenu = menu.getItem(i).getSubMenu();
+//            for (int j = 0; j < subMenu.size(); j++) {
+//                MenuItem item = subMenu.getItem(j);
+//                Drawable icon = item.getIcon().mutate();
+//                SourceInfo res = Util.getSourceInfo(item.getItemId());
+//                icon.setColorFilter(res.getIconId(), PorterDuff.Mode.MULTIPLY);
+//                subMenu.getItem(j).setIcon(icon);
+//            }
+//        }
+//    }
+
+//    private void setThemeColor() {
+//        SourceInfo info = Util.getSourceInfo(selectedSource);
+//        View header = nav.getHeaderView(0);
+//        if (header != null) {
+//            header.setBackgroundResource(info.getColorId());
+//        }
+//        toolbar.setBackgroundResource(info.getColorId());
+//        if (drawer != null) {
+//            toolbar.setSubtitle(info.getTextId());
+//        }
+//    }
 }

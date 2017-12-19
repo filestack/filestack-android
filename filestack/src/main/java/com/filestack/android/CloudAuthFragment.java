@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 public class CloudAuthFragment extends Fragment implements
         View.OnClickListener,FsActivity.BackListener {
-    private final static String ARG_CLOUD_INFO_ID = "cloudInfoId";
+    private final static String ARG_SOURCE = "source";
     private final static String ARG_AUTH_URL = "authUrl";
 
     private final static int[] TEXT_VIEW_IDS = {
@@ -23,10 +23,10 @@ public class CloudAuthFragment extends Fragment implements
     private SourceInfo sourceInfo;
     private String authUrl;
 
-    public static CloudAuthFragment create(int cloudInfoId, String authUrl) {
+    public static CloudAuthFragment create(String source, String authUrl) {
         CloudAuthFragment fragment = new CloudAuthFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_CLOUD_INFO_ID, cloudInfoId);
+        args.putString(ARG_SOURCE, source);
         args.putString(ARG_AUTH_URL, authUrl);
         fragment.setArguments(args);
         return fragment;
@@ -37,7 +37,7 @@ public class CloudAuthFragment extends Fragment implements
         super.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
-        sourceInfo = Util.getSourceInfo(args.getInt(ARG_CLOUD_INFO_ID));
+        sourceInfo = Util.getSourceInfo(args.getString(ARG_SOURCE));
         authUrl = args.getString(ARG_AUTH_URL);
     }
 

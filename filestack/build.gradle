@@ -1,5 +1,5 @@
 plugins {
-    id "com.github.dcendents.android-maven" version "1.5"
+    id 'com.github.dcendents.android-maven' version '2.0'
     id 'com.jfrog.bintray' version '1.7.3'
 }
 
@@ -11,7 +11,7 @@ project.archivesBaseName = 'filestack-android'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         minSdkVersion 19
@@ -40,7 +40,7 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:26.+'
     testCompile 'junit:junit:4.12'
-    compile 'com.filestack:filestack-java:0.4.0'
+    compile 'com.filestack:filestack-java:0.5.0'
     compile 'com.android.support:design:26.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.squareup.picasso:picasso:2.5.2'
@@ -56,6 +56,13 @@ task javadoc(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
     destinationDir = file("../docs/")
+}
+
+// Add dependencies to javadoc classpath so annotations work
+afterEvaluate {
+    javadoc.classpath += files(android.libraryVariants.collect { variant ->
+        variant.javaCompiler.classpath.files
+    })
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {

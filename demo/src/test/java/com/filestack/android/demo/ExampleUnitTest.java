@@ -1,4 +1,4 @@
-package com.filestack.demo;
+package com.filestack.android.demo;
 
 import org.junit.Test;
 

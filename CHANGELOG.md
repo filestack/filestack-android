@@ -1,3 +1,35 @@
+Change Log
+==========
+
+Version 2.0.0-alpha.2 *(2017-11-20)*
+----------------------------
+
+  * New options and several bug fixes
+  * FS-2208 Fix upload button, auth flow refresh, and local upload crash
+    * Fix: Upload button not showing when it should on initial launch and in
+      other circumstances
+    * Fix: UI not refreshing after returning from auth flow
+    * Fix: Crash when trying to upload multiple local items
+    * Fix: Notifications not showing on Android Oreo
+  * FS-2144 Save UI state on rotate
+    * Fix: Various confusing losses of state and unnecessary data loading that
+      occurred when the device was rotated.
+    * Fix: Divider spacing in grid view mode
+  * FS-2142 Customize which sources are enabled and shown
+    * New: You can now pass an option that specifies which sources are shown in
+      the nav drawer. If the option is omitted, a default set is used.
+  * FS-1970 Select files without automatically uploading
+    * New: You can now pass an option that prevents the picker from uploading
+      files automatically. This way an integrating app can have more control
+      over what and how files are uploaded. The Client class from the base java
+      SDK can be used to perform the uploads manually.
+
+Version 2.0.0-alpha.1 *(2017-11-01)*
+----------------------------
+
+  * First release of 2.0 update
+  * Completely new codebase based on Filestack Java SDK
+
 Version 4.0.2 *(2017-06-19)*
 ----------------------------
   * Fix: Fails on multi-image gallery upload

@@ -21,7 +21,7 @@ New features:
 ## Including In Your Project
 
 ```gradle
-compile 'com.filestack:filestack-android:2.0.0-alpha.1'
+compile 'com.filestack:filestack-android:2.0.0-alpha.2'
 ```
 
 ## Usage
@@ -30,13 +30,34 @@ compile 'com.filestack:filestack-android:2.0.0-alpha.1'
 
 ### Launch activity
 ```java
-// Setting a policy and signature is optional
-Config config = new Config("API_KEY", "RETURN_URL", "POLICY", "SIGNATURE");
-// Storage options are also optional
-StorageOptions storeOpts = new StorageOptions();
+// Create an intent to launch FsActivity
 Intent intent = new Intent(this, FsActivity.class);
+
+// Create a config object with your account settings
+// Using security (policy and signature) is optional
+Config config = new Config("API_KEY", "RETURN_URL", "POLICY", "SIGNATURE");
 intent.putExtra(FsConstants.EXTRA_CONFIG, config);
+
+// Setting storage options is also optional
+// We'll default to Filestack S3 if unset
+StorageOptions storeOpts = new StorageOptions();
 intent.putExtra(FsConstants.EXTRA_STORE_OPTS, storeOpts);
+
+// To manually handle uploading, set auto upload to false
+// You can upload the user's selections yourself with the Client class
+intent.putExtra(FsConstants.EXTRA_AUTO_UPLOAD, false);
+
+// To customize the sources list, pass in a list of constants
+// The sources will appear in the order you add them to the list
+// Defaults to Camera, Device, Google Drive, Facebook, Instagram, and Dropbox
+ArrayList<String> sources = new ArrayList<>();
+sources.add(Sources.CAMERA);
+sources.add(Sources.DEVICE);
+sources.add(Sources.GOOGLE_DRIVE);
+sources.add(Sources.GITHUB);
+intent.putExtra(FsConstants.EXTRA_SOURCES, sources);
+
+// Start the activity
 startActivityForResult(intent, REQUEST_FILESTACK);
 ```
 

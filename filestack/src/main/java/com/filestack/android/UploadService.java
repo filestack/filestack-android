@@ -1,11 +1,14 @@
 package com.filestack.android;
 
+import android.annotation.TargetApi;
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v4.app.NotificationCompat;
+import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -18,54 +21,54 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class UploadService extends IntentService {
-    public static final String SERVICE_NAME = "Filestack Upload Service";
-    public static final String PREF_ID_COUNTER = "idCounter";
+    public static final String SERVICE_NAME = "uploadService";
+    public static final String PREF_NOTIFY_ID_COUNTER = "notifyIdCounter";
+    public static final String TAG = "uploadService";
 
     public UploadService() {
         super(SERVICE_NAME);
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel();
+        }
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     protected void onHandleIntent(Intent intent) {
-        ArrayList<Selection> selections;
-        ArrayList<Selection> localItems;
+        ArrayList<Selection> selections = (ArrayList<Selection>)
+                intent.getSerializableExtra(FsConstants.EXTRA_SELECTION_LIST);
+        StorageOptions storeOpts = (StorageOptions)
+                intent.getSerializableExtra(FsConstants.EXTRA_STORE_OPTS);
 
-        SharedPreferences preferences = getSharedPreferences(getClass().getName(), MODE_PRIVATE);
-        int id = preferences.getInt(PREF_ID_COUNTER, 0);
-
-        selections = (ArrayList<Selection>) intent.getSerializableExtra(FsConstants.EXTRA_SELECTION_LIST);
+        SharedPreferences prefs = getSharedPreferences(getClass().getName(), MODE_PRIVATE);
+        int notifyId = prefs.getInt(PREF_NOTIFY_ID_COUNTER, 0);
         int total = selections.size();
-        localItems = new ArrayList<>();
 
+        int i = 0;
         for (Selection item : selections) {
-            Log.d("uploadService", "received: " + item.getProvider() + " " + item.getPath());
+            String name = item.getName();
+            String provider = item.getProvider();
 
-            // Separate local items into their own list
-            // Want to upload cloud items first since that goes faster
+            Log.d(TAG, "received: " + provider + " " + name);
+
+            FileLink fileLink;
             if (isLocal(item)) {
-                selections.remove(item);
-                localItems.add(item);
+                fileLink = uploadLocal(item, storeOpts);
+            } else {
+                fileLink = uploadCloud(item, storeOpts);
             }
+
+            updateNotification(notifyId, ++i, total, name);
+            sendBroadcast(item, fileLink);
         }
 
-        StorageOptions storeOpts =
-                (StorageOptions) intent.getSerializableExtra(FsConstants.EXTRA_STORE_OPTS);
-
-        int count = 0;
-        for (Selection selection : selections) {
-            FileLink fileLink = uploadCloud(selection, storeOpts);
-            updateNotification(id, ++count, total, selection.getName());
-            sendBroadcast(selection, fileLink);
-        }
-
-        for (Selection selection : localItems) {
-            FileLink fileLink = uploadLocal(selection, storeOpts);
-            updateNotification(id, ++count, total, selection.getName());
-            sendBroadcast(selection, fileLink);
-        }
-
-        preferences.edit().putInt(PREF_ID_COUNTER, id+1).apply();
+        prefs.edit().putInt(PREF_NOTIFY_ID_COUNTER, notifyId+1).apply();
     }
 
     private boolean isLocal(Selection item) {
@@ -96,24 +99,46 @@ public class UploadService extends IntentService {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.O)
+    private void createNotificationChannel() {
+        NotificationManager notificationManager = (NotificationManager)
+                getSystemService(Context.NOTIFICATION_SERVICE);
+
+        String id = FsConstants.NOTIFY_CHANNEL_UPLOAD;
+        CharSequence name = getString(R.string.notify_channel_upload_name);
+        String description = getString(R.string.notify_channel_upload_description);
+        int importance = NotificationManager.IMPORTANCE_DEFAULT;
+
+        NotificationChannel channel = new NotificationChannel(id, name, importance);
+        channel.setDescription(description);
+        notificationManager.createNotificationChannel(channel);
+    }
+
     private void updateNotification(int id, int done, int total, String name) {
         Locale locale = Locale.getDefault();
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+        String channelId = FsConstants.NOTIFY_CHANNEL_UPLOAD;
+        Notification.Builder builder;
 
-        if (total == done) {
-            mBuilder.setContentTitle(String.format(locale, "Uploaded %d files", done));
-            mBuilder.setSmallIcon(R.drawable.ic_menu_upload_done_white);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            builder = new Notification.Builder(this, channelId);
         } else {
-            mBuilder.setContentTitle(String.format(locale, "Uploading %d/%d files", done, total));
-            mBuilder.setSmallIcon(R.drawable.ic_menu_upload_white);
-            mBuilder.setContentText(name);
-            mBuilder.setProgress(total, done, false);
+            builder = new Notification.Builder(this);
         }
 
-        NotificationManager mNotificationManager =
+        if (total == done) {
+            builder.setContentTitle(String.format(locale, "Uploaded %d files", done));
+            builder.setSmallIcon(R.drawable.ic_menu_upload_done_white);
+        } else {
+            builder.setContentTitle(String.format(locale, "Uploading %d/%d files", done, total));
+            builder.setSmallIcon(R.drawable.ic_menu_upload_white);
+            builder.setContentText(name);
+            builder.setProgress(total, done, false);
+        }
+
+        NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        mNotificationManager.notify(id, mBuilder.build());
+        notificationManager.notify(id, builder.build());
     }
 
     private void sendBroadcast(Selection selection, FileLink fileLink) {

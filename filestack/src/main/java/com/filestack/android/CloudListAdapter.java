@@ -1,7 +1,7 @@
 package com.filestack.android;
 
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +10,7 @@ import com.filestack.CloudItem;
 import com.filestack.CloudResponse;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 
 import io.reactivex.SingleObserver;
@@ -22,20 +23,31 @@ class CloudListAdapter extends RecyclerView.Adapter implements
         SingleObserver<CloudResponse>, View.OnClickListener, FsActivity.BackListener {
 
     private static final double LOAD_TRIGGER = 0.50;
+    private final static String STATE_CURRENT_PATH = "currentPath";
+    private final static String STATE_FOLDERS = "folders";
+    private final static String STATE_NEXT_TOKENS= "nextTokens";
 
     private boolean isLoading;
-    private final ArrayMap<String, ArrayList<CloudItem>> folders;
-    private final ArrayMap<String, String> nextTokens;
+    private final HashMap<String, ArrayList<CloudItem>> folders;
+    private final HashMap<String, String> nextTokens;
     private final String sourceId;
-    private int layoutId;
+    private int viewType;
     private RecyclerView recyclerView;
     private String currentPath;
 
-    CloudListAdapter(String sourceId) {
+    CloudListAdapter(String sourceId, Bundle saveInstanceState) {
         this.sourceId = sourceId;
-        this.folders = new ArrayMap<>();
-        this.nextTokens = new ArrayMap<>();
         setHasStableIds(true);
+
+        if (saveInstanceState != null) {
+            currentPath = saveInstanceState.getString(STATE_CURRENT_PATH);
+            folders = (HashMap) saveInstanceState.getSerializable(STATE_FOLDERS);
+            nextTokens = (HashMap) saveInstanceState.getSerializable(STATE_NEXT_TOKENS);
+        } else {
+            folders = new HashMap<>();
+            nextTokens = new HashMap<>();
+            setPath("/");
+        }
     }
 
     // RecyclerView.Adapter overrides (in sequential order)
@@ -49,7 +61,7 @@ class CloudListAdapter extends RecyclerView.Adapter implements
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-        View listItemView = inflater.inflate(layoutId, viewGroup, false);
+        View listItemView = inflater.inflate(viewType, viewGroup, false);
         return new CloudListViewHolder(listItemView);
     }
 
@@ -84,12 +96,14 @@ class CloudListAdapter extends RecyclerView.Adapter implements
     }
 
     @Override
+    public int getItemViewType(int position) {
+        return viewType;
+    }
+
+    @Override
     public int getItemCount() {
-        if (currentPath == null) {
-            setPath("/");
-            return 0;
-        }
-        return folders.get(currentPath).size();
+        ArrayList<CloudItem> folder = folders.get(currentPath);
+        return folder != null ? folder.size(): 0;
     }
 
     // Interface overrides (alphabetical order)
@@ -162,8 +176,14 @@ class CloudListAdapter extends RecyclerView.Adapter implements
         return true;
     }
 
-    void setLayoutId(int layoutId) {
-        this.layoutId = layoutId;
+    void saveState(Bundle outState) {
+        outState.putString(STATE_CURRENT_PATH, currentPath);
+        outState.putSerializable(STATE_FOLDERS, folders);
+        outState.putSerializable(STATE_NEXT_TOKENS, nextTokens);
+    }
+
+    void setViewType(int viewType) {
+        this.viewType = viewType;
     }
 
     // Private helper methods (alphabetical order)
