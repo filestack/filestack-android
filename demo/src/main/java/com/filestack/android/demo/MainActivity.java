@@ -52,9 +52,7 @@ public class MainActivity extends AppCompatActivity {
                 getString(R.string.return_url),
                 getString(R.string.policy),
                 getString(R.string.signature));
-        StorageOptions storeOpts = new StorageOptions();
         intent.putExtra(FsConstants.EXTRA_CONFIG, config);
-        intent.putExtra(FsConstants.EXTRA_STORE_OPTS, storeOpts);
         intent.putExtra(FsConstants.EXTRA_AUTO_UPLOAD, true);
         ArrayList<String> sources = new ArrayList<>();
         sources.add(Sources.CAMERA);
