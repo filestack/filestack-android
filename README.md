@@ -1,14 +1,10 @@
 # filestack-android
 
-Android UI and upload API's for Filestack. Easily upload files from a user's
+UI and upload API for Filestack. Easily upload files from a user's
 local device or cloud services. Provides both a picker activity for easy
 integration as well as a client class for manual control and customization.
 Supports Facebook, Instagram, Google Drive, Dropbox, Box, GitHub, Gmail, Google
 Photos, Microsoft OneDrive, and Amazon Drive.
-
-*The 2.0 version of this library is just being released as of November 2017.*
-*Expect that the API and setup process may change somewhat.*
-*We're aware of some missing basic features that will be added soon.*
 
 New features:
 - Built on new base Java SDK and updated backend API's
@@ -21,7 +17,7 @@ New features:
 ## Including In Your Project
 
 ```gradle
-compile 'com.filestack:filestack-android:2.0.0-alpha.2'
+compile 'com.filestack:filestack-android:5.0.0'
 ```
 
 ## Usage
@@ -40,7 +36,10 @@ intent.putExtra(FsConstants.EXTRA_CONFIG, config);
 
 // Setting storage options is also optional
 // We'll default to Filestack S3 if unset
-StorageOptions storeOpts = new StorageOptions();
+StorageOptions storeOpts = new StorageOptions.Builder()
+  .location("gcs")
+  .container("android-uploads")
+  .build();
 intent.putExtra(FsConstants.EXTRA_STORE_OPTS, storeOpts);
 
 // To manually handle uploading, set auto upload to false
