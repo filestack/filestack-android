@@ -33,7 +33,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class FsActivity extends AppCompatActivity implements
-        SingleObserver<CloudResponse>, CompletableObserver, Selection.Saver.Listener,
+        SingleObserver<CloudResponse>, CompletableObserver, SelectionSaver.Listener,
         NavigationView.OnNavigationItemSelectedListener {
 
     interface BackListener {

@@ -28,7 +28,7 @@ class Util {
     private static final Map<String, SourceInfo> SOURCES_MAP = new HashMap<>();
 
     private static Client client;
-    private static Selection.SimpleSaver selectionSaver;
+    private static SelectionSaver selectionSaver;
 
     static {
         SOURCES_LIST.add(Sources.CAMERA);
@@ -155,9 +155,9 @@ class Util {
         return newPath;
     }
 
-    static Selection.SimpleSaver getSelectionSaver() {
+    static SelectionSaver getSelectionSaver() {
         if (selectionSaver == null) {
-            selectionSaver = new Selection.SimpleSaver();
+            selectionSaver = new SimpleSelectionSaver();
         }
         return selectionSaver;
     }

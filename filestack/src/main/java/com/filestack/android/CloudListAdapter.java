@@ -79,7 +79,7 @@ class CloudListAdapter extends RecyclerView.Adapter implements
         holder.setIcon(item.getThumbnail());
         holder.setOnClickListener(this);
 
-        Selection.Saver selectionSaver = Util.getSelectionSaver();
+        SelectionSaver selectionSaver = Util.getSelectionSaver();
         holder.setSelected(selectionSaver.isSelected(sourceId, item.getPath(), item.getName()));
 
         String nextToken = nextTokens.get(currentPath);
@@ -159,7 +159,7 @@ class CloudListAdapter extends RecyclerView.Adapter implements
             return;
         }
 
-        Selection.Saver selectionSaver = Util.getSelectionSaver();
+        SelectionSaver selectionSaver = Util.getSelectionSaver();
         boolean selected = selectionSaver.toggleItem(sourceId, item.getPath(), item.getName());
         CloudListViewHolder holder = (CloudListViewHolder) recyclerView.findViewHolderForItemId(id);
 
