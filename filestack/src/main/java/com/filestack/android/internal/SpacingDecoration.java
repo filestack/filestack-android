@@ -1,4 +1,4 @@
-package com.filestack.android;
+package com.filestack.android.internal;
 
 import android.graphics.Rect;
 import android.support.v7.widget.GridLayoutManager;

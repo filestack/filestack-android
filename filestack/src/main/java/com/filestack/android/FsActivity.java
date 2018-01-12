@@ -13,7 +13,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,6 +21,15 @@ import com.filestack.CloudResponse;
 import com.filestack.Config;
 import com.filestack.Sources;
 import com.filestack.StorageOptions;
+import com.filestack.android.internal.BackButtonListener;
+import com.filestack.android.internal.CameraFragment;
+import com.filestack.android.internal.CloudAuthFragment;
+import com.filestack.android.internal.CloudListFragment;
+import com.filestack.android.internal.LocalFilesFragment;
+import com.filestack.android.internal.SelectionSaver;
+import com.filestack.android.internal.SourceInfo;
+import com.filestack.android.internal.UploadService;
+import com.filestack.android.internal.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,19 +44,12 @@ public class FsActivity extends AppCompatActivity implements
         SingleObserver<CloudResponse>, CompletableObserver, SelectionSaver.Listener,
         NavigationView.OnNavigationItemSelectedListener {
 
-    interface BackListener {
-        boolean onBackPressed();
-    }
-
-    protected static final int REQUEST_MEDIA_CAPTURE = RESULT_FIRST_USER;
-    // protected static final int REQUEST_FILE_BROWSER = RESULT_FIRST_USER + 1;
-    protected static final int REQUEST_GALLERY = RESULT_FIRST_USER + 2;
     private static final String PREF_SESSION_TOKEN = "sessionToken";
     private static final String STATE_SELECTED_SOURCE = "selectedSource";
     private static final String STATE_SHOULD_CHECK_AUTH = "shouldCheckAuth";
     private static final String TAG = "FsActivity";
 
-    private BackListener backListener;
+    private BackButtonListener backListener;
     private DrawerLayout drawer;
     private String selectedSource;
     private boolean shouldCheckAuth;
@@ -157,10 +158,10 @@ public class FsActivity extends AppCompatActivity implements
         super.onAttachFragment(fragment);
 
         try {
-            backListener = (BackListener) fragment;
+            backListener = (BackButtonListener) fragment;
         } catch (ClassCastException e) {
             String name = fragment.getClass().getName();
-            throw new RuntimeException(name + " must implement BackListener!");
+            throw new RuntimeException(name + " must implement BackButtonListener!");
         }
     }
 
@@ -296,7 +297,7 @@ public class FsActivity extends AppCompatActivity implements
                 .subscribe(this);
     }
 
-    protected void uploadSelections(ArrayList<Selection> selections) {
+    private void uploadSelections(ArrayList<Selection> selections) {
         Intent activityIntent = getIntent();
         boolean autoUpload = activityIntent.getBooleanExtra(FsConstants.EXTRA_AUTO_UPLOAD, true);
 

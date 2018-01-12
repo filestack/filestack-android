@@ -1,4 +1,6 @@
-package com.filestack.android;
+package com.filestack.android.internal;
+
+import com.filestack.android.Selection;
 
 import java.util.ArrayList;
 

@@ -1,6 +1,8 @@
-package com.filestack.android;
+package com.filestack.android.internal;
 
 import android.util.Log;
+
+import com.filestack.android.Selection;
 
 import java.util.ArrayList;
 

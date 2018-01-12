@@ -1,4 +1,4 @@
-package com.filestack.android;
+package com.filestack.android.internal;
 
 import android.Manifest;
 import android.app.Activity;
@@ -16,14 +16,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.filestack.Sources;
+import com.filestack.android.R;
 
 import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
-import static com.filestack.android.FsActivity.REQUEST_GALLERY;
+import static com.filestack.android.internal.Constants.REQUEST_GALLERY;
 
 public class LocalFilesFragment extends Fragment implements
-        FsActivity.BackListener, View.OnClickListener {
+        BackButtonListener, View.OnClickListener {
 
     @Nullable
     @Override

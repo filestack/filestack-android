@@ -1,6 +1,6 @@
-package com.filestack.android;
+package com.filestack.android.internal;
 
-class SourceInfo {
+public class SourceInfo {
     private String id;
     private int iconId;
     private int textId;
@@ -13,19 +13,19 @@ class SourceInfo {
         this.colorId = colorId;
     }
 
-    String getId() {
+    public String getId() {
         return id;
     }
 
-    int getIconId() {
+    public int getIconId() {
         return iconId;
     }
 
-    int getTextId() {
+    public int getTextId() {
         return textId;
     }
 
-    int getColorId() {
+    public int getColorId() {
         return colorId;
     }
 }

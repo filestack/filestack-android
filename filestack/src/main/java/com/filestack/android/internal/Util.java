@@ -1,4 +1,4 @@
-package com.filestack.android;
+package com.filestack.android.internal;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.filestack.Client;
 import com.filestack.Config;
 import com.filestack.Sources;
+import com.filestack.android.R;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +24,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-class Util {
+public class Util {
     private static final List<String> SOURCES_LIST = new ArrayList<>();
     private static final Map<String, SourceInfo> SOURCES_MAP = new HashMap<>();
 
@@ -119,34 +120,34 @@ class Util {
                 R.color.theme_source_gmail));
     }
 
-    static List<String> getDefaultSources() {
+    public static List<String> getDefaultSources() {
         return SOURCES_LIST.subList(0, 6);
     }
 
-    static int getSourceIntId(String stringId) {
+    public static int getSourceIntId(String stringId) {
         return SOURCES_LIST.indexOf(stringId) + 1;
     }
 
-    static String getSourceStringId(int intId) {
+    public static String getSourceStringId(int intId) {
         return SOURCES_LIST.get(intId - 1);
     }
-    
-    static SourceInfo getSourceInfo(String stringId) {
+
+    public static SourceInfo getSourceInfo(String stringId) {
         return SOURCES_MAP.get(stringId);
     }
 
-    static SourceInfo getSourceInfo(int intId) {
+    public static SourceInfo getSourceInfo(int intId) {
         String stringId = Util.getSourceStringId(intId);
         return SOURCES_MAP.get(stringId);
     }
 
-    static void textViewReplace(TextView view, String target, String replacement) {
+    public static void textViewReplace(TextView view, String target, String replacement) {
         String text = view.getText().toString();
         text = text.replace(target, replacement);
         view.setText(text);
     }
 
-    static String trimLastPathSection(String path) {
+    public static String trimLastPathSection(String path) {
         String[] sections = path.split("/");
         String newPath = "/";
         for (int i = 1; i < sections.length - 1; i++) {
@@ -155,14 +156,14 @@ class Util {
         return newPath;
     }
 
-    static SelectionSaver getSelectionSaver() {
+    public static SelectionSaver getSelectionSaver() {
         if (selectionSaver == null) {
             selectionSaver = new SimpleSelectionSaver();
         }
         return selectionSaver;
     }
 
-    static String getPathFromMediaUri(Context context, Uri uri) {
+    public static String getPathFromMediaUri(Context context, Uri uri) {
         Cursor cursor = null;
         try {
             String[] projection = { MediaStore.Images.Media.DATA };
@@ -177,7 +178,7 @@ class Util {
         }
     }
 
-    static File createPictureFile(Context context) throws IOException {
+    public static File createPictureFile(Context context) throws IOException {
         Locale locale = Locale.getDefault();
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", locale).format(new Date());
         String fileName = "JPEG_" + timeStamp + "_";
@@ -186,7 +187,7 @@ class Util {
         return File.createTempFile(fileName, ".jpg", storageDir);
     }
 
-    static File createMovieFile(Context context) throws IOException {
+    public static File createMovieFile(Context context) throws IOException {
         Locale locale = Locale.getDefault();
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", locale).format(new Date());
         String fileName = "MP4_" + timeStamp + "_";
@@ -195,12 +196,12 @@ class Util {
         return File.createTempFile(fileName, ".mp4", storageDir);
     }
 
-    static Uri getUriForInternalMedia(Context context, File file) {
+    public static Uri getUriForInternalMedia(Context context, File file) {
         String authority = context.getPackageName() + ".fileprovider";
         return FileProvider.getUriForFile(context, authority, file);
     }
 
-    static void addMediaToGallery(Context context, String path) {
+    public static void addMediaToGallery(Context context, String path) {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(path);
         Uri contentUri = Uri.fromFile(f);
@@ -208,12 +209,12 @@ class Util {
         context.sendBroadcast(mediaScanIntent);
     }
 
-    static void initializeClient(Config config, String sessionToken) {
+    public static void initializeClient(Config config, String sessionToken) {
         client = new Client(config);
         client.setSessionToken(sessionToken);
     }
 
-    static Client getClient() {
+    public static Client getClient() {
         return client;
     }
 }

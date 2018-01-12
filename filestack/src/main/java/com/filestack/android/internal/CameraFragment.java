@@ -1,4 +1,4 @@
-package com.filestack.android;
+package com.filestack.android.internal;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,16 +13,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.filestack.Sources;
+import com.filestack.android.R;
 
 import java.io.File;
 import java.io.IOException;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
-import static com.filestack.android.FsActivity.REQUEST_MEDIA_CAPTURE;
+import static com.filestack.android.internal.Constants.REQUEST_MEDIA_CAPTURE;
 
-public class CameraFragment extends Fragment implements
-        FsActivity.BackListener, View.OnClickListener {
+public class CameraFragment extends Fragment implements BackButtonListener, View.OnClickListener {
 
     private static final String TYPE_PHOTO = "photo";
     private static final String TYPE_VIDEO = "video";

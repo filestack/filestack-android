@@ -1,4 +1,4 @@
-package com.filestack.android;
+package com.filestack.android.internal;
 
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import com.filestack.CloudItem;
 import com.filestack.CloudResponse;
+import com.filestack.android.FsActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +21,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 class CloudListAdapter extends RecyclerView.Adapter implements
-        SingleObserver<CloudResponse>, View.OnClickListener, FsActivity.BackListener {
+        SingleObserver<CloudResponse>, View.OnClickListener, BackButtonListener {
 
     private static final double LOAD_TRIGGER = 0.50;
     private final static String STATE_CURRENT_PATH = "currentPath";

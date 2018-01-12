@@ -1,4 +1,4 @@
-package com.filestack.android;
+package com.filestack.android.internal;
 
 import android.annotation.TargetApi;
 import android.app.IntentService;
@@ -15,6 +15,9 @@ import android.util.Log;
 import com.filestack.FileLink;
 import com.filestack.Sources;
 import com.filestack.StorageOptions;
+import com.filestack.android.FsConstants;
+import com.filestack.android.R;
+import com.filestack.android.Selection;
 
 import java.io.IOException;
 import java.util.ArrayList;
