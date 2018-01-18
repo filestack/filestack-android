@@ -140,7 +140,6 @@ Inside AndroidManifest.xml:
 ```
 
 ## Receiving selected items
-TODO Update to explain changes in getting Selection items
 `FsActivity` returns immediately once a user selects files. The returned
 response will always be an `ArrayList` of `Selection` objects. Receive them in
 your calling activity like so:
