@@ -65,8 +65,6 @@ public class LocalFilesFragment extends Fragment implements View.OnClickListener
             // Process documents
             for (Uri uri : uris) {
                 Selection selection = processUri(uri);
-                Log.i(TAG, String.format("%s %d %s",
-                        selection.getUri().toString(), selection.getSize(), selection.getName()));
                 Util.getSelectionSaver().toggleItem(selection);
             }
         }

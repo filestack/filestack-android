@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_FILESTACK = RESULT_FIRST_USER;
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +39,11 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_FILESTACK && resultCode == RESULT_OK) {
-            Log.d("result", "returned");
+            Log.i(TAG, "received filestack results");
             Serializable extra = data.getSerializableExtra(FsConstants.EXTRA_SELECTION_LIST);
             ArrayList<Selection> selections = (ArrayList<Selection>) extra;
             for (Selection selection : selections) {
-                Log.i("filestackSelection", selection.getProvider() + " " + selection.getName());
+                Log.i(TAG, selection.getName());
             }
         }
     }

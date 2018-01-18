@@ -65,8 +65,6 @@ public class UploadService extends IntentService {
             String name = item.getName();
             String provider = item.getProvider();
 
-            Log.d(TAG, "received: " + provider + " " + name);
-
             sendProgressNotification(statusId, i, total, name);
             FileLink fileLink = upload(item, storeOpts);
 
@@ -94,8 +92,6 @@ public class UploadService extends IntentService {
         int size = selection.getSize();
         String name = selection.getName();
         String mimeType = selection.getMimeType();
-
-        Log.d(TAG, mimeType);
 
         StorageOptions options = baseOptions.newBuilder()
                 .filename(name)
