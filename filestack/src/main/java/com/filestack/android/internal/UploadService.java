@@ -1,4 +1,4 @@
-package com.filestack.android;
+package com.filestack.android.internal;
 
 import android.annotation.TargetApi;
 import android.app.IntentService;
@@ -8,6 +8,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -15,8 +16,11 @@ import android.util.Log;
 import com.filestack.FileLink;
 import com.filestack.Sources;
 import com.filestack.StorageOptions;
+import com.filestack.android.FsConstants;
+import com.filestack.android.R;
+import com.filestack.android.Selection;
 
-import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -41,13 +45,19 @@ public class UploadService extends IntentService {
     @Override
     @SuppressWarnings("unchecked")
     protected void onHandleIntent(Intent intent) {
-        ArrayList<Selection> selections = (ArrayList<Selection>)
-                intent.getSerializableExtra(FsConstants.EXTRA_SELECTION_LIST);
-        StorageOptions storeOpts = (StorageOptions)
-                intent.getSerializableExtra(FsConstants.EXTRA_STORE_OPTS);
+        ArrayList<Selection> selections;
+        StorageOptions storeOpts;
+
+        selections = intent.getParcelableArrayListExtra(FsConstants.EXTRA_SELECTION_LIST);
+        storeOpts = (StorageOptions) intent.getSerializableExtra(FsConstants.EXTRA_STORE_OPTS);
+        if (storeOpts == null) {
+            storeOpts = new StorageOptions.Builder().build();
+        }
 
         SharedPreferences prefs = getSharedPreferences(getClass().getName(), MODE_PRIVATE);
-        int notifyId = prefs.getInt(PREF_NOTIFY_ID_COUNTER, 0);
+        int notifyCounter = prefs.getInt(PREF_NOTIFY_ID_COUNTER, 0);
+        int statusId = notifyCounter;
+        notifyCounter++;
         int total = selections.size();
 
         int i = 0;
@@ -55,45 +65,54 @@ public class UploadService extends IntentService {
             String name = item.getName();
             String provider = item.getProvider();
 
-            Log.d(TAG, "received: " + provider + " " + name);
+            sendProgressNotification(statusId, i, total, name);
+            FileLink fileLink = upload(item, storeOpts);
 
-            FileLink fileLink;
-            if (isLocal(item)) {
-                fileLink = uploadLocal(item, storeOpts);
+            // If upload fails, decrease total count and show error notification
+            if (fileLink == null) {
+                int errorId = notifyCounter;
+                notifyCounter++;
+                sendErrorNotification(errorId, item.getName());
+                total--;
             } else {
-                fileLink = uploadCloud(item, storeOpts);
+                i++;
             }
 
-            updateNotification(notifyId, ++i, total, name);
+            sendProgressNotification(statusId, i, total, name);
             sendBroadcast(item, fileLink);
         }
 
-        prefs.edit().putInt(PREF_NOTIFY_ID_COUNTER, notifyId+1).apply();
+        prefs.edit().putInt(PREF_NOTIFY_ID_COUNTER, notifyCounter).apply();
     }
 
-    private boolean isLocal(Selection item) {
-        switch (item.getProvider()) {
-            case Sources.CAMERA:
-            case Sources.DEVICE:
-                return true;
-            default:
-                return false;
-        }
-    }
+    private FileLink upload(Selection selection, StorageOptions baseOptions) {
+        String provider = selection.getProvider();
+        String path = selection.getPath();
+        Uri uri = selection.getUri();
+        int size = selection.getSize();
+        String name = selection.getName();
+        String mimeType = selection.getMimeType();
 
-    private FileLink uploadLocal(Selection item, StorageOptions storeOpts) {
+        StorageOptions options = baseOptions.newBuilder()
+                .filename(name)
+                .mimeType(mimeType)
+                .build();
+
         try {
-            return Util.getClient().upload(item.getPath(), false, storeOpts);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private FileLink uploadCloud(Selection item, StorageOptions storeOpts) {
-        try {
-            return Util.getClient().storeCloudItem(item.getProvider(), item.getPath(), storeOpts);
-        } catch (IOException e) {
+            switch (selection.getProvider()) {
+                case Sources.CAMERA:
+                    // TODO This should maybe be unified into an InputStream upload
+                    return Util.getClient().upload(path, false, options);
+                case Sources.DEVICE:
+                    InputStream input = getContentResolver().openInputStream(uri);
+                    return Util.getClient().upload(input, size, false, options);
+                default:
+                    return Util.getClient().storeCloudItem(provider, path, options);
+            }
+        } catch (Exception e) {
+            // TODO Update after fixing synchronous versions of upload methods in Java SDK
+            // Currently these are "block mode" observables and don't properly pass up exceptions
+            // correctly among other issues
             e.printStackTrace();
             return null;
         }
@@ -114,10 +133,17 @@ public class UploadService extends IntentService {
         notificationManager.createNotificationChannel(channel);
     }
 
-    private void updateNotification(int id, int done, int total, String name) {
+    private void sendProgressNotification(int id, int done, int total, String name) {
         Locale locale = Locale.getDefault();
         String channelId = FsConstants.NOTIFY_CHANNEL_UPLOAD;
+        NotificationManager notificationManager;
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         Notification.Builder builder;
+
+        if (total == 0) {
+            notificationManager.cancel(id);
+            return;
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder = new Notification.Builder(this, channelId);
@@ -135,8 +161,24 @@ public class UploadService extends IntentService {
             builder.setProgress(total, done, false);
         }
 
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(id, builder.build());
+    }
+
+    private void sendErrorNotification(int id, String name) {
+        String channelId = FsConstants.NOTIFY_CHANNEL_UPLOAD;
+        NotificationManager notificationManager;
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification.Builder builder;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            builder = new Notification.Builder(this, channelId);
+        } else {
+            builder = new Notification.Builder(this);
+        }
+
+        builder.setContentTitle("Upload failed");
+        builder.setContentText(name);
+        builder.setSmallIcon(R.drawable.ic_menu_upload_fail_white);
 
         notificationManager.notify(id, builder.build());
     }

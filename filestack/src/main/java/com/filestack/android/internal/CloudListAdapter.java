@@ -1,4 +1,4 @@
-package com.filestack.android;
+package com.filestack.android.internal;
 
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 
 import com.filestack.CloudItem;
 import com.filestack.CloudResponse;
+import com.filestack.android.FsActivity;
+import com.filestack.android.Selection;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +22,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 class CloudListAdapter extends RecyclerView.Adapter implements
-        SingleObserver<CloudResponse>, View.OnClickListener, FsActivity.BackListener {
+        SingleObserver<CloudResponse>, View.OnClickListener, BackButtonListener {
 
     private static final double LOAD_TRIGGER = 0.50;
     private final static String STATE_CURRENT_PATH = "currentPath";
@@ -79,8 +81,10 @@ class CloudListAdapter extends RecyclerView.Adapter implements
         holder.setIcon(item.getThumbnail());
         holder.setOnClickListener(this);
 
-        Selection.Saver selectionSaver = Util.getSelectionSaver();
-        holder.setSelected(selectionSaver.isSelected(sourceId, item.getPath(), item.getName()));
+        SelectionSaver selectionSaver = Util.getSelectionSaver();
+        Selection selection = new Selection(sourceId, item.getPath(), item.getMimetype(),
+                item.getName());
+        holder.setSelected(selectionSaver.isSelected(selection));
 
         String nextToken = nextTokens.get(currentPath);
         if (!isLoading) {
@@ -159,8 +163,10 @@ class CloudListAdapter extends RecyclerView.Adapter implements
             return;
         }
 
-        Selection.Saver selectionSaver = Util.getSelectionSaver();
-        boolean selected = selectionSaver.toggleItem(sourceId, item.getPath(), item.getName());
+        SelectionSaver selectionSaver = Util.getSelectionSaver();
+        Selection selection = new Selection(sourceId, item.getPath(), item.getMimetype(),
+                item.getName());
+        boolean selected = selectionSaver.toggleItem(selection);
         CloudListViewHolder holder = (CloudListViewHolder) recyclerView.findViewHolderForItemId(id);
 
         holder.setSelected(selected);

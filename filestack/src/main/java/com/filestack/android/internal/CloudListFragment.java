@@ -1,4 +1,4 @@
-package com.filestack.android;
+package com.filestack.android.internal;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -12,7 +12,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class CloudListFragment extends Fragment implements FsActivity.BackListener {
+import com.filestack.android.FsActivity;
+import com.filestack.android.R;
+
+public class CloudListFragment extends Fragment implements BackButtonListener {
     private final static String ARG_SOURCE = "source";
     private final static String STATE_IS_LIST_MODE = "isListMode";
 

@@ -1,6 +1,25 @@
 Change Log
 ==========
 
+Version 5.0.0 *(2018-01-XX)*
+----------------------------
+
+  TODO Make sure this is correct before release
+
+  ## Notes
+    * Using filestack-java v0.6.0
+    * Corrected version naming to 5.0.0, 2.0.0-alpha was obviously wrong
+  ## Breaking Changes
+    * Selection class uses Parcelable interface instead of Serializable
+    * TODO Update to explain changes in getting Selection items
+    * Selection instances may have a null path (because uri is set instead)
+    * Several classes have been moved to the internal package
+    * Anything inside the internal package should not be considered public API
+  ## Bug Fixes
+    * A notification is displayed at the beginning of a local upload, instead of the completion
+  ## New Features
+    * Upload local files using the Storage Access Framework UI e.g. expanded local file support
+
 Version 2.0.0-alpha.2 *(2017-11-20)*
 ----------------------------
 

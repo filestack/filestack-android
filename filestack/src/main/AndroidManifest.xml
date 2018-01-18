@@ -16,7 +16,7 @@
             android:theme="@style/NoActionBar"/>
 
         <service
-            android:name=".UploadService"
+            android:name=".internal.UploadService"
             android:exported="false"/>
 
     </application>
