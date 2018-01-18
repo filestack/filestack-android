@@ -54,12 +54,6 @@ public class MainActivity extends AppCompatActivity {
                 getString(R.string.signature));
         intent.putExtra(FsConstants.EXTRA_CONFIG, config);
         intent.putExtra(FsConstants.EXTRA_AUTO_UPLOAD, true);
-        ArrayList<String> sources = new ArrayList<>();
-        sources.add(Sources.CAMERA);
-        sources.add(Sources.DEVICE);
-        sources.add(Sources.GOOGLE_DRIVE);
-        sources.add(Sources.GITHUB);
-        intent.putExtra(FsConstants.EXTRA_SOURCES, sources);
         startActivityForResult(intent, REQUEST_FILESTACK);
     }
 

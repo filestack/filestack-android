@@ -13,7 +13,7 @@ public class UploadStatusReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String status = intent.getStringExtra(FsConstants.EXTRA_STATUS);
-        Selection selection = (Selection) intent.getSerializableExtra(FsConstants.EXTRA_SELECTION);
+        Selection selection = intent.getParcelableExtra(FsConstants.EXTRA_SELECTION);
         FileLink fileLink = (FileLink) intent.getSerializableExtra(FsConstants.EXTRA_FILE_LINK);
 
         Log.i("uploadStatus", selection.getName() + " " + status + " "
