@@ -17,7 +17,7 @@ New features:
 ## Including In Your Project
 
 ```gradle
-compile 'com.filestack:filestack-android:5.0.0'
+compile 'com.filestack:filestack-android:5.0.0-0.1.0'
 ```
 
 ## Usage
@@ -36,10 +36,11 @@ intent.putExtra(FsConstants.EXTRA_CONFIG, config);
 
 // Setting storage options is also optional
 // We'll default to Filestack S3 if unset
+// The Filename and MIME type options are ignored and overridden
 StorageOptions storeOpts = new StorageOptions.Builder()
-  .location("gcs")
-  .container("android-uploads")
-  .build();
+    .location("gcs")
+    .container("android-uploads")
+    .build();
 intent.putExtra(FsConstants.EXTRA_STORE_OPTS, storeOpts);
 
 // To manually handle uploading, set auto upload to false
@@ -72,44 +73,42 @@ Google documentation on [App Links][app-links].
 EntryActivity.java:
 ```java
 public class EntryActivity extends AppCompatActivity {
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    // Check to see if this Activity is the root activity
-    if (isTaskRoot()) {
-      // This Activity is the only Activity, so
-      //  the app wasn't running. So start the app from the
-      //  beginning (redirect to MainActivity)
-      Intent mainIntent = getIntent(); // Copy the Intent used to launch me
-      // Launch the real root Activity (launch Intent)
-      mainIntent.setClass(this, MainActivity.class);
-      // I'm done now, so finish()
-      startActivity(mainIntent);
-      finish();
-    } else {
-      // App was already running, so just finish, which will drop the user
-      //  in to the activity that was at the top of the task stack
-      finish();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Check to see if this Activity is the root activity
+        if (isTaskRoot()) {
+            // This Activity is the only Activity, so
+            //  the app wasn't running. So start the app from the
+            //  beginning (redirect to MainActivity)
+            Intent mainIntent = getIntent(); // Copy the Intent used to launch me
+            // Launch the real root Activity (launch Intent)
+            mainIntent.setClass(this, MainActivity.class);
+            // I'm done now, so finish()
+            startActivity(mainIntent);
+            finish();
+        } else {
+            // App was already running, so just finish, which will drop the user
+            //  in to the activity that was at the top of the task stack
+            finish();
+        }
     }
-  }
 }
 ```
 
 Inside AndroidManifest.xml:
 ```xml
-<activity
-  android:name=".EntryActivity">
+<activity android:name=".EntryActivity">
 
-  <intent-filter android:label="@string/app_name">
-    <action android:name="android.intent.action.VIEW" />
-    <category android:name="android.intent.category.DEFAULT" />
-    <category android:name="android.intent.category.BROWSABLE" />
-    <!-- Accepts URIs that begin with "example://gizmos” -->
-    <data android:scheme="filestackdemo"
-      android:host="auth" />
+    <intent-filter android:label="@string/app_name">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <!-- Accepts URIs that begin with "https://demo.android.filestack.com” -->
+        <data android:scheme="https" android:host="demo.android.filestack.com" />
     </intent-filter>
 
-  </activity>
+</activity>
 ```
 
 ## Receiving selected items
@@ -121,16 +120,18 @@ your calling activity like so:
 ```java
 @Override
 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-  super.onActivityResult(requestCode, resultCode, data);
+    super.onActivityResult(requestCode, resultCode, data);
 
-  if (requestCode == REQUEST_FILESTACK && resultCode == RESULT_OK) {
-    Log.d("result", "returned");
-    Serializable extra = data.getSerializableExtra(FsConstants.EXTRA_SELECTION_LIST);
-    ArrayList<Selection> selections = (ArrayList<Selection>) extra;
-    for (Selection selection : selections) {
-      Log.i("filestackSelection", selection.getProvider() + " " + selection.getName());
+    if (requestCode == REQUEST_FILESTACK && resultCode == RESULT_OK) {
+        Log.i(TAG, "received filestack selections");
+        String key = FsConstants.EXTRA_SELECTION_LIST;
+        ArrayList<Selection> selections = data.getParcelableArrayListExtra(key);
+        for (int i = 0; i < selections.size(); i++) {
+            Selection selection = selections.get(i);
+            String msg = String.format(locale, "selection %d: %s", i, selection.getName());
+            Log.i(TAG, msg);
+        }
     }
-  }
 }
 ```
 
@@ -147,23 +148,31 @@ ongoing status.
 UploadStatusReceiver.java:
 ```java
 public class UploadStatusReceiver extends BroadcastReceiver {
-  @Override
-  public void onReceive(Context context, Intent intent) {
-    String status = intent.getStringExtra(FsConstants.EXTRA_STATUS);
-    Selection selection = (Selection) intent.getSerializableExtra(FsConstants.EXTRA_SELECTION);
-    FileLink fileLink = (FileLink) intent.getSerializableExtra(FsConstants.EXTRA_FILE_LINK);
+    private static final String TAG = "UploadStatusReceiver";
 
-    Log.i("uploadStatus", selection.getName() + " " + status + " "
-    + (fileLink != null ? fileLink.getHandle() : ""));
-  }
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        Locale locale = Locale.getDefault();
+        String status = intent.getStringExtra(FsConstants.EXTRA_STATUS);
+        Selection selection = intent.getParcelableExtra(FsConstants.EXTRA_SELECTION);
+        FileLink fileLink = (FileLink) intent.getSerializableExtra(FsConstants.EXTRA_FILE_LINK);
+
+        String name = selection.getName();
+        String handle = fileLink != null ? fileLink.getHandle() : "n/a";
+        String msg = String.format(locale, "upload %s: %s (%s)", status, name, handle);
+        Log.i(TAG, msg);
+    }
 }
 ```
 
 Register the receiver in your calling activity's `onCreate()`:
 ```java
-IntentFilter intentFilter = new IntentFilter(FsConstants.BROADCAST_UPLOAD);
-UploadStatusReceiver receiver = new UploadStatusReceiver();
-LocalBroadcastManager.getInstance(this).registerReceiver(receiver, intentFilter);
+// Be careful to avoid registering multiple receiver instances
+if (savedInstanceState == null) {
+    IntentFilter intentFilter = new IntentFilter(FsConstants.BROADCAST_UPLOAD);
+    UploadStatusReceiver receiver = new UploadStatusReceiver();
+    LocalBroadcastManager.getInstance(this).registerReceiver(receiver, intentFilter);
+}
 ```
 
 ## Custom UI using client
