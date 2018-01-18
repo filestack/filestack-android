@@ -9,14 +9,12 @@ import android.util.Log;
 import android.view.View;
 
 import com.filestack.Config;
-import com.filestack.Sources;
-import com.filestack.StorageOptions;
 import com.filestack.android.FsActivity;
 import com.filestack.android.FsConstants;
 import com.filestack.android.Selection;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_FILESTACK = RESULT_FIRST_USER;
@@ -36,14 +34,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Locale locale = Locale.getDefault();
+
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_FILESTACK && resultCode == RESULT_OK) {
-            Log.i(TAG, "received filestack results");
-            Serializable extra = data.getSerializableExtra(FsConstants.EXTRA_SELECTION_LIST);
-            ArrayList<Selection> selections = (ArrayList<Selection>) extra;
-            for (Selection selection : selections) {
-                Log.i(TAG, selection.getName());
+            Log.i(TAG, "received filestack selections");
+            String key = FsConstants.EXTRA_SELECTION_LIST;
+            ArrayList<Selection> selections = data.getParcelableArrayListExtra(key);
+            for (int i = 0; i < selections.size(); i++) {
+                Selection selection = selections.get(i);
+                String msg = String.format(locale, "selection %d: %s", i, selection.getName());
+                Log.i(TAG, msg);
             }
         }
     }
