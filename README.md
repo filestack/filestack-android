@@ -6,13 +6,9 @@ integration as well as a client class for manual control and customization.
 Supports Facebook, Instagram, Google Drive, Dropbox, Box, GitHub, Gmail, Google
 Photos, Microsoft OneDrive, and Amazon Drive.
 
-New features:
-- Built on new base Java SDK and updated backend API's
-- Multipart uploads and Filestack Intelligent Ingestion support
-- New UI as well as necessary components to create completely custom UI
-- Background upload and notification support
-
-![Demo Screen Recording][screen-recording]
+*While we're appending a pre-release identifier to the latest versions
+(v5.0.0), the SDK is in a usable, reasonably stable state. There may be some
+changes to the public interface but most ongoing changes should be internal.*
 
 ## Including In Your Project
 
@@ -60,6 +56,38 @@ intent.putExtra(FsConstants.EXTRA_SOURCES, sources);
 // Start the activity
 startActivityForResult(intent, REQUEST_FILESTACK);
 ```
+
+### Add file provider for camera source
+To enable users to take photos and videos within the picker, you need to
+define a file provider for your app. This is required to avoid sending
+"file://" URI's to the camera app, which will throw a FileUriExposedException
+on Android Nougat and above. See the [google documentation][camera-docs] for
+more information.
+
+Add a <provider> tag to your AndroidManifest.xml:
+```xml
+<provider
+    android:name="android.support.v4.content.FileProvider"
+    <!-- Change the authority to include your package name. -->
+    android:authorities="com.filestack.android.demo.fileprovider"
+    android:exported="false"
+    android:grantUriPermissions="true">
+    <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/file_paths" />
+</provider>
+```
+
+file_paths.xml:
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-path name="pictures" path="Android/data/com.filestack.android.demo/files/Pictures" />
+    <external-path name="movies" path="Android/data/com.filestack.android.demo/files/Movies" />
+</paths>
+```
+
+We expect the "pictures" and "movies" names to be defined.
 
 ### Setup for cloud authorization
 When the user authorizes their cloud account, they do so inside the default
@@ -187,3 +215,4 @@ Filestack UI. Reference doc for the `Client` class can be found
 [app-links]: https://developer.android.com/training/app-links/index.html
 [java-sdk]: https://github.com/filestack/filestack-java
 [java-sdk-ref]: https://filestack.github.io/filestack-java/
+[camera-docs]: https://developer.android.com/training/camera/photobasics.html

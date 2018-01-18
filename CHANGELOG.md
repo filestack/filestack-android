@@ -1,24 +1,32 @@
 Change Log
 ==========
 
-Version 5.0.0 *(2018-01-XX)*
+Version 5.0.0-0.1.0 *(2018-01-18)*
 ----------------------------
 
-  TODO Make sure this is correct before release
+### Notes
+  * Using filestack-java v0.6.0
+  * **Corrected version naming to 5.0.0-0.1.0 as 2.0.0-alpha.x was obviously
+    wrong**
+  * We're still appending a pre-release (0.1.0) identifier because the public
+    interface may change somewhat, but we consider it usable, reasonably stable
 
-  ## Notes
-    * Using filestack-java v0.6.0
-    * Corrected version naming to 5.0.0, 2.0.0-alpha was obviously wrong
-  ## Breaking Changes
-    * Selection class uses Parcelable interface instead of Serializable
-    * TODO Update to explain changes in getting Selection items
-    * Selection instances may have a null path (because uri is set instead)
-    * Several classes have been moved to the internal package
-    * Anything inside the internal package should not be considered public API
-  ## Bug Fixes
-    * A notification is displayed at the beginning of a local upload, instead of the completion
-  ## New Features
-    * Upload local files using the Storage Access Framework UI e.g. expanded local file support
+### Breaking Changes
+  * Selection class implements Parcelable interface instead of Serializable
+  * As such the method used to retrieve selections from intents has changed
+  * Selection instances may have a null path (because uri is set instead)
+  * Selection instances may have a null uri (because path is set instead)
+  * Several classes have been moved to the internal package
+  * Anything inside the internal package should not be considered public API
+
+### Bug Fixes
+  * A notification is displayed at the beginning of a local upload, instead of
+    the completion
+  * A notification is displayed for failed uploads
+
+### New Features
+  * Select local files using the Storage Access Framework (Files app UI)
+  * Expanded local file support, upload anything, not just photos and videos
 
 Version 2.0.0-alpha.2 *(2017-11-20)*
 ----------------------------
