@@ -1,7 +1,5 @@
 package com.filestack.android.internal;
 
-import android.util.Log;
-
 import com.filestack.android.Selection;
 
 import java.util.ArrayList;
@@ -9,16 +7,6 @@ import java.util.ArrayList;
 public class SimpleSelectionSaver implements SelectionSaver {
     private ArrayList<Selection> selections = new ArrayList<>();
     private Listener listener;
-
-    @Override
-    public boolean toggleItem(String provider, String path, String name) {
-        return toggleItem(new Selection(provider, path, name));
-    }
-
-    @Override
-    public boolean isSelected(String provider, String path, String name) {
-        return isSelected(new Selection(provider, path, name));
-    }
 
     @Override
     public void setItemChangeListener(Listener listener) {
@@ -49,7 +37,8 @@ public class SimpleSelectionSaver implements SelectionSaver {
         return selections.size() == 0;
     }
 
-    private boolean toggleItem(Selection item) {
+    @Override
+    public boolean toggleItem(Selection item) {
         boolean isSaved;
 
         boolean wasEmpty = isEmpty();
@@ -71,14 +60,8 @@ public class SimpleSelectionSaver implements SelectionSaver {
         return isSaved;
     }
 
-    private boolean isSelected(Selection item) {
+    @Override
+    public boolean isSelected(Selection item) {
         return selections.contains(item);
-    }
-
-    private void log() {
-        Log.d("selectedItem", "count: " + Integer.toString(selections.size()));
-        for (Selection item : selections) {
-            Log.d("selectedItem", item.getProvider() + ": " + item.getPath());
-        }
     }
 }

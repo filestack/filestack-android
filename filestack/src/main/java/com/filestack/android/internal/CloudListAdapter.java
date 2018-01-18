@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.filestack.CloudItem;
 import com.filestack.CloudResponse;
 import com.filestack.android.FsActivity;
+import com.filestack.android.Selection;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -81,7 +82,9 @@ class CloudListAdapter extends RecyclerView.Adapter implements
         holder.setOnClickListener(this);
 
         SelectionSaver selectionSaver = Util.getSelectionSaver();
-        holder.setSelected(selectionSaver.isSelected(sourceId, item.getPath(), item.getName()));
+        Selection selection = new Selection(sourceId, item.getPath(), item.getMimetype(),
+                item.getName());
+        holder.setSelected(selectionSaver.isSelected(selection));
 
         String nextToken = nextTokens.get(currentPath);
         if (!isLoading) {
@@ -161,7 +164,9 @@ class CloudListAdapter extends RecyclerView.Adapter implements
         }
 
         SelectionSaver selectionSaver = Util.getSelectionSaver();
-        boolean selected = selectionSaver.toggleItem(sourceId, item.getPath(), item.getName());
+        Selection selection = new Selection(sourceId, item.getPath(), item.getMimetype(),
+                item.getName());
+        boolean selected = selectionSaver.toggleItem(selection);
         CloudListViewHolder holder = (CloudListViewHolder) recyclerView.findViewHolderForItemId(id);
 
         holder.setSelected(selected);

@@ -160,8 +160,7 @@ public class FsActivity extends AppCompatActivity implements
         try {
             backListener = (BackButtonListener) fragment;
         } catch (ClassCastException e) {
-            String name = fragment.getClass().getName();
-            throw new RuntimeException(name + " must implement BackButtonListener!");
+            backListener = null;
         }
     }
 
@@ -169,7 +168,7 @@ public class FsActivity extends AppCompatActivity implements
     public void onBackPressed() {
         if (drawer != null && drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (!backListener.onBackPressed()){
+        } else if (backListener == null || !backListener.onBackPressed()){
             super.onBackPressed();
         }
     }

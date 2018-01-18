@@ -5,8 +5,8 @@ import com.filestack.android.Selection;
 import java.util.ArrayList;
 
 public interface SelectionSaver {
-    boolean toggleItem(String provider, String path, String name);
-    boolean isSelected(String provider, String path, String name);
+    boolean toggleItem(Selection selection);
+    boolean isSelected(Selection selection);
     void setItemChangeListener(Listener listener);
     ArrayList<Selection> getItems();
     void clear();

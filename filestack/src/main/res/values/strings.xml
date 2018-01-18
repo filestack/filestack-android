@@ -35,7 +35,7 @@
     <string name="camera_take_photo">Take Photo</string>
     <string name="camera_take_video">Take Video</string>
 
-    <string name="local_files_select_gallery">Select From Gallery</string>
+    <string name="local_files_select">Select Local Files</string>
 
     <string name="notify_channel_upload_name">Upload Progress</string>
     <string name="notify_channel_upload_description">Progress updates for uploads</string>

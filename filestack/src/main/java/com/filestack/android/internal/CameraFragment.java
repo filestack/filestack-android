@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 
 import com.filestack.Sources;
 import com.filestack.android.R;
+import com.filestack.android.Selection;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,8 +67,10 @@ public class CameraFragment extends Fragment implements BackButtonListener, View
         if (requestCode == REQUEST_MEDIA_CAPTURE && resultCode == RESULT_OK) {
             String path = prefs.getString(PREF_PATH, null);
             String name = prefs.getString(PREF_NAME, null);
+            String mimeType = name.contains("jpg") ? "image/jpeg" : "video/mp4";
             Util.addMediaToGallery(context, path);
-            Util.getSelectionSaver().toggleItem(Sources.CAMERA, path, name);
+            Selection selection = new Selection(Sources.CAMERA, path, mimeType, name);
+            Util.getSelectionSaver().toggleItem(selection);
         }
     }
 
