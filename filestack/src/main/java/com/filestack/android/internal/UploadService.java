@@ -55,7 +55,9 @@ public class UploadService extends IntentService {
         }
 
         SharedPreferences prefs = getSharedPreferences(getClass().getName(), MODE_PRIVATE);
-        int notifyId = prefs.getInt(PREF_NOTIFY_ID_COUNTER, 0);
+        int notifyCounter = prefs.getInt(PREF_NOTIFY_ID_COUNTER, 0);
+        int statusId = notifyCounter;
+        notifyCounter++;
         int total = selections.size();
 
         int i = 0;
@@ -65,14 +67,24 @@ public class UploadService extends IntentService {
 
             Log.d(TAG, "received: " + provider + " " + name);
 
-            updateNotification(notifyId, i, total, name);
+            sendProgressNotification(statusId, i, total, name);
             FileLink fileLink = upload(item, storeOpts);
-            i++;
-            updateNotification(notifyId, i, total, name);
+
+            // If upload fails, decrease total count and show error notification
+            if (fileLink == null) {
+                int errorId = notifyCounter;
+                notifyCounter++;
+                sendErrorNotification(errorId, item.getName());
+                total--;
+            } else {
+                i++;
+            }
+
+            sendProgressNotification(statusId, i, total, name);
             sendBroadcast(item, fileLink);
         }
 
-        prefs.edit().putInt(PREF_NOTIFY_ID_COUNTER, notifyId+1).apply();
+        prefs.edit().putInt(PREF_NOTIFY_ID_COUNTER, notifyCounter).apply();
     }
 
     private FileLink upload(Selection selection, StorageOptions baseOptions) {
@@ -125,10 +137,17 @@ public class UploadService extends IntentService {
         notificationManager.createNotificationChannel(channel);
     }
 
-    private void updateNotification(int id, int done, int total, String name) {
+    private void sendProgressNotification(int id, int done, int total, String name) {
         Locale locale = Locale.getDefault();
         String channelId = FsConstants.NOTIFY_CHANNEL_UPLOAD;
+        NotificationManager notificationManager;
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         Notification.Builder builder;
+
+        if (total == 0) {
+            notificationManager.cancel(id);
+            return;
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder = new Notification.Builder(this, channelId);
@@ -146,8 +165,24 @@ public class UploadService extends IntentService {
             builder.setProgress(total, done, false);
         }
 
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(id, builder.build());
+    }
+
+    private void sendErrorNotification(int id, String name) {
+        String channelId = FsConstants.NOTIFY_CHANNEL_UPLOAD;
+        NotificationManager notificationManager;
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification.Builder builder;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            builder = new Notification.Builder(this, channelId);
+        } else {
+            builder = new Notification.Builder(this);
+        }
+
+        builder.setContentTitle("Upload failed");
+        builder.setContentText(name);
+        builder.setSmallIcon(R.drawable.ic_menu_upload_fail_white);
 
         notificationManager.notify(id, builder.build());
     }
