@@ -26,9 +26,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        IntentFilter intentFilter = new IntentFilter(FsConstants.BROADCAST_UPLOAD);
-        UploadStatusReceiver receiver = new UploadStatusReceiver();
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, intentFilter);
+        if (savedInstanceState == null) {
+            IntentFilter intentFilter = new IntentFilter(FsConstants.BROADCAST_UPLOAD);
+            UploadStatusReceiver receiver = new UploadStatusReceiver();
+            LocalBroadcastManager.getInstance(this).registerReceiver(receiver, intentFilter);
+        }
     }
 
     @Override
