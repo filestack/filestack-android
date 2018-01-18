@@ -1,4 +1,4 @@
-package com.filestack.android;
+package com.filestack.android.internal;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,16 +13,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.filestack.Sources;
+import com.filestack.android.R;
+import com.filestack.android.Selection;
 
 import java.io.File;
 import java.io.IOException;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
-import static com.filestack.android.FsActivity.REQUEST_MEDIA_CAPTURE;
+import static com.filestack.android.internal.Constants.REQUEST_MEDIA_CAPTURE;
 
-public class CameraFragment extends Fragment implements
-        FsActivity.BackListener, View.OnClickListener {
+public class CameraFragment extends Fragment implements BackButtonListener, View.OnClickListener {
 
     private static final String TYPE_PHOTO = "photo";
     private static final String TYPE_VIDEO = "video";
@@ -66,8 +67,10 @@ public class CameraFragment extends Fragment implements
         if (requestCode == REQUEST_MEDIA_CAPTURE && resultCode == RESULT_OK) {
             String path = prefs.getString(PREF_PATH, null);
             String name = prefs.getString(PREF_NAME, null);
+            String mimeType = name.contains("jpg") ? "image/jpeg" : "video/mp4";
             Util.addMediaToGallery(context, path);
-            Util.getSelectionSaver().toggleItem(Sources.CAMERA, path, name);
+            Selection selection = new Selection(Sources.CAMERA, path, mimeType, name);
+            Util.getSelectionSaver().toggleItem(selection);
         }
     }
 

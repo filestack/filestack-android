@@ -1,107 +1,31 @@
 package com.filestack.android;
 
-import android.util.Log;
+import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-import java.io.Serializable;
-import java.util.ArrayList;
+public class Selection implements Parcelable {
+    public static final Parcelable.Creator<Selection> CREATOR = new Creator();
 
-public class Selection implements Serializable {
     private String provider;
     private String path;
+    private Uri uri;
+    private int size;
+    private String mimeType;
     private String name;
 
-    interface Saver {
-        boolean toggleItem(String provider, String path, String name);
-        boolean isSelected(String provider, String path, String name);
-        void setItemChangeListener(Listener listener);
-        ArrayList<Selection> getItems();
-        void clear();
-        boolean isEmpty();
-        interface Listener {
-            void onEmptyChanged(boolean isEmpty);
-        }
-    }
-
-    public static class SimpleSaver implements Saver {
-        private ArrayList<Selection> selections = new ArrayList<>();
-        private Listener listener;
-
-        @Override
-        public boolean toggleItem(String provider, String path, String name) {
-            return toggleItem(new Selection(provider, path, name));
-        }
-
-        @Override
-        public boolean isSelected(String provider, String path, String name) {
-            return isSelected(new Selection(provider, path, name));
-        }
-
-        @Override
-        public void setItemChangeListener(Listener listener) {
-            if (listener == null) {
-                return;
-            }
-            this.listener = listener;
-            this.listener.onEmptyChanged(isEmpty());
-        }
-
-        @Override
-        public ArrayList<Selection> getItems() {
-            return selections;
-        }
-
-        @Override
-        public void clear() {
-            if (selections.size() != 0) {
-                selections.clear();
-                if (listener != null) {
-                    listener.onEmptyChanged(true);
-                }
-            }
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return selections.size() == 0;
-        }
-
-        private boolean toggleItem(Selection item) {
-            boolean isSaved;
-
-            boolean wasEmpty = isEmpty();
-
-            if (isSelected(item)) {
-                selections.remove(item);
-                isSaved = false;
-            } else {
-                selections.add(item);
-                isSaved = true;
-            }
-
-            boolean isEmpty = isEmpty();
-
-            if (listener != null && wasEmpty != isEmpty) {
-                listener.onEmptyChanged(isEmpty);
-            }
-
-            return isSaved;
-        }
-
-        private boolean isSelected(Selection item) {
-            return selections.contains(item);
-        }
-
-        private void log() {
-            Log.d("selectedItem", "count: " + Integer.toString(selections.size()));
-            for (Selection item : selections) {
-                Log.d("selectedItem", item.getProvider() + ": " + item.getPath());
-            }
-        }
-    }
-
-    public Selection(String provider, String path, String name) {
+    public Selection(String provider, String path, String mimeType, String name) {
         this.provider = provider;
         this.path = path;
+        this.mimeType = mimeType;
+        this.name = name;
+    }
+
+    public Selection(String provider, Uri uri, int size, String mimeType, String name) {
+        this.provider = provider;
+        this.uri = uri;
+        this.size = size;
+        this.mimeType = mimeType;
         this.name = name;
     }
 
@@ -115,17 +39,34 @@ public class Selection implements Serializable {
             return false;
         }
 
-        Selection item = (Selection) obj;
+        Selection other = (Selection) obj;
 
-        if (!this.getProvider().equals(item.getProvider())) {
-            return false;
-        } else if (!this.getPath().equals(item.getPath())) {
-            return false;
-        } else if (!this.getName().equals(item.getName())) {
+        if (!this.getProvider().equals(other.getProvider())) {
             return false;
         }
 
-        return true;
+        if (this.getPath() != null) {
+            if (other.getPath() == null) {
+                return false;
+            }
+            if (!this.getPath().equals(other.getPath())) {
+                return false;
+            }
+        }
+
+        if (this.getUri() != null) {
+            if (other.getUri() == null) {
+                return false;
+            }
+            if (!this.getUri().equals(other.getUri())) {
+                return false;
+            }
+            if (this.getSize() != other.getSize()) {
+                return false;
+            }
+        }
+
+        return this.getName().equals(other.getName());
     }
 
     public String getProvider() {
@@ -136,7 +77,55 @@ public class Selection implements Serializable {
         return path;
     }
 
+    public Uri getUri() {
+        return uri;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
     public String getName() {
         return name;
+    }
+
+    // For Parcelable interface
+
+    private static class Creator implements Parcelable.Creator<Selection> {
+        @Override
+        public Selection createFromParcel(Parcel in) {
+            return new Selection(in);
+        }
+
+        @Override
+        public Selection[] newArray(int size) {
+            return new Selection[size];
+        }
+    }
+
+    public int describeContents() {
+        return 0;
+    }
+
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeString(provider);
+        out.writeString(path);
+        out.writeParcelable(uri, flags);
+        out.writeInt(size);
+        out.writeString(mimeType);
+        out.writeString(name);
+    }
+
+    private Selection(Parcel in) {
+        provider = in.readString();
+        path = in.readString();
+        uri = in.readParcelable(Uri.class.getClassLoader());
+        size = in.readInt();
+        mimeType = in.readString();
+        name = in.readString();
     }
 }

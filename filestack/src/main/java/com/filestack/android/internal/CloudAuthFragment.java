@@ -1,4 +1,4 @@
-package com.filestack.android;
+package com.filestack.android.internal;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -12,8 +12,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.filestack.android.FsActivity;
+import com.filestack.android.R;
+
 public class CloudAuthFragment extends Fragment implements
-        View.OnClickListener,FsActivity.BackListener {
+        View.OnClickListener, BackButtonListener {
     private final static String ARG_SOURCE = "source";
     private final static String ARG_AUTH_URL = "authUrl";
 

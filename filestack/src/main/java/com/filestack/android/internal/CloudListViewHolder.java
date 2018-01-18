@@ -1,4 +1,4 @@
-package com.filestack.android;
+package com.filestack.android.internal;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.filestack.android.R;
 import com.squareup.picasso.Picasso;
 
 class CloudListViewHolder extends RecyclerView.ViewHolder {
