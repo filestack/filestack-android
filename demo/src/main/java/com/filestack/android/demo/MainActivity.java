@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.filestack.Config;
+import com.filestack.Sources;
 import com.filestack.android.FsActivity;
 import com.filestack.android.FsConstants;
 import com.filestack.android.Selection;
@@ -59,6 +60,17 @@ public class MainActivity extends AppCompatActivity {
                 getString(R.string.signature));
         intent.putExtra(FsConstants.EXTRA_CONFIG, config);
         intent.putExtra(FsConstants.EXTRA_AUTO_UPLOAD, true);
+
+        ArrayList<String> sources = new ArrayList<>();
+        sources.add(Sources.ONEDRIVE);
+        sources.add(Sources.DEVICE);
+        sources.add(Sources.GOOGLE_DRIVE);
+        sources.add(Sources.DROPBOX);
+        sources.add(Sources.FACEBOOK);
+        sources.add(Sources.INSTAGRAM);
+        intent.putExtra(FsConstants.EXTRA_SOURCES, sources);
+
+
         startActivityForResult(intent, REQUEST_FILESTACK);
     }
 
