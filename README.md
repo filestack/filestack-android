@@ -6,10 +6,6 @@ integration as well as a client class for manual control and customization.
 Supports Facebook, Instagram, Google Drive, Dropbox, Box, GitHub, Gmail, Google
 Photos, Microsoft OneDrive, and Amazon Drive.
 
-*While we're appending a pre-release identifier to the latest versions
-(v5.0.0), the SDK is in a usable, reasonably stable state. There may be some
-changes to the public interface but most ongoing changes should be internal.*
-
 ## Including In Your Project
 
 ```gradle

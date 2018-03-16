@@ -237,9 +237,13 @@ public class FsActivity extends AppCompatActivity implements
         switch (source) {
             case Sources.CAMERA:
                 fragment = new CameraFragment();
+                // Needed to prevent UI bug when selecting local source after cloud source
+                shouldCheckAuth = false;
                 break;
             case Sources.DEVICE:
                 fragment = new LocalFilesFragment();
+                // Needed to prevent UI bug when selecting local source after cloud source
+                shouldCheckAuth = false;
                 break;
             default:
                 checkAuth();
