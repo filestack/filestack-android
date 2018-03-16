@@ -61,16 +61,6 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(FsConstants.EXTRA_CONFIG, config);
         intent.putExtra(FsConstants.EXTRA_AUTO_UPLOAD, true);
 
-        ArrayList<String> sources = new ArrayList<>();
-        sources.add(Sources.ONEDRIVE);
-        sources.add(Sources.DEVICE);
-        sources.add(Sources.GOOGLE_DRIVE);
-        sources.add(Sources.DROPBOX);
-        sources.add(Sources.FACEBOOK);
-        sources.add(Sources.INSTAGRAM);
-        intent.putExtra(FsConstants.EXTRA_SOURCES, sources);
-
-
         startActivityForResult(intent, REQUEST_FILESTACK);
     }
 
