@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.View;
 
 import com.filestack.Config;
-import com.filestack.Sources;
 import com.filestack.android.FsActivity;
 import com.filestack.android.FsConstants;
 import com.filestack.android.Selection;
@@ -60,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
                 getString(R.string.signature));
         intent.putExtra(FsConstants.EXTRA_CONFIG, config);
         intent.putExtra(FsConstants.EXTRA_AUTO_UPLOAD, true);
-
         startActivityForResult(intent, REQUEST_FILESTACK);
     }
 
