@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 5.0.0-0.2.0 *(2018-03-19)*
+----------------------------
+
+### Bug Fixes
+  * Fixes a crash that would occur when a user selected a file from the local device browser, after
+    they had previously viewed a cloud source
+
 Version 5.0.0-0.1.0 *(2018-01-18)*
 ----------------------------
 

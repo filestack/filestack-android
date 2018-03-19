@@ -1,4 +1,4 @@
-# filestack-android
+# Filestack Android SDK
 
 UI and upload API for Filestack. Easily upload files from a user's
 local device or cloud services. Provides both a picker activity for easy
@@ -9,7 +9,7 @@ Photos, Microsoft OneDrive, and Amazon Drive.
 ## Including In Your Project
 
 ```gradle
-compile 'com.filestack:filestack-android:5.0.0-0.1.0'
+compile 'com.filestack:filestack-android:5.0.0-0.2.0'
 ```
 
 ## Usage
