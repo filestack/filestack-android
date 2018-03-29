@@ -1,9 +1,10 @@
 # Filestack Android SDK
 
-UI and upload API for Filestack. Easily upload files from a user's
-local device or cloud services. Provides both a picker activity for easy
-integration as well as a client class for manual control and customization.
-Supports Facebook, Instagram, Google Drive, Dropbox, Box, GitHub, Gmail, Google
+A UI and upload API for Filestack to upload files from a user's
+local device or cloud services. This SDK provides a picker activity for easy
+integration and a client class for manual control and customization.
+
+The Filestack Android SDK supports Facebook, Instagram, Google Drive, Dropbox, Box, GitHub, Gmail, Google
 Photos, Microsoft OneDrive, and Amazon Drive.
 
 ## Including In Your Project
@@ -54,9 +55,7 @@ startActivityForResult(intent, REQUEST_FILESTACK);
 ```
 
 ### Add file provider for camera source
-To enable users to take photos and videos within the picker, you need to
-define a file provider for your app. This is required to avoid sending
-"file://" URI's to the camera app, which will throw a FileUriExposedException
+To enable users to take photos and videos within the picker, a file provider must be defined for the application to avoid sending "file://" URI's to the camera app. Failure to define a file provider will throw a FileUriExposedException
 on Android Nougat and above. See the [google documentation][camera-docs] for
 more information.
 
@@ -83,14 +82,14 @@ file_paths.xml:
 </paths>
 ```
 
-We expect the "pictures" and "movies" names to be defined.
+The "pictures" and "movies" names are expected to be defined.
 
 ### Setup for cloud authorization
-To enable cloud sources, you must setup your app to be openable by URL. This is part of the OAuth (login) flow for each cloud provider. We perform the OAuth flow within the device's default browser (instead of a WebView) because it's a security best practice. You can read more about the security of performing OAuth in WebView's in this Google Developers [blog post][webview-oauth].
+To enable cloud sources, the app must be allowed to be opened by URL. This is part of the OAuth (login) flow for each cloud provider. The OAuth flow is performed within the device's default browser in accordance to OAuth's best security practices. More information about the security of performing OAuth in WebViews can be found in this Google Developers [blog post][webview-oauth].
 
 Setting this up requires three things: an intent filter to respond to the URL, an entry activity that opens for the intent, and a configuration parameter when launching the SDK. The intent filter is what tells the OS the app can be opened by a URL, the entry activity is necessary to maintain a clear activity stack, and the configuration parameter passes the URL to the Filestack API.
 
-To avoid a disambiguation (app chooser) dialog during the OAuth flow, you will need to verify your URL with Google. This (and more information about opening an app by URL) is described in the Android documentation on [App Links][app-links].
+To avoid a disambiguation (app chooser) dialog during the OAuth flow, the URL must be verified with Google. This (and more information about opening an app by URL) is described in the Android documentation on [App Links][app-links].
 
 EntryActivity.java:
 ```java
@@ -135,8 +134,8 @@ Inside AndroidManifest.xml:
 
 ## Receiving selected items
 `FsActivity` returns immediately once a user selects files. The returned
-response will always be an `ArrayList` of `Selection` objects. Receive them in
-your calling activity like so:
+response will always be an `ArrayList` of `Selection` objects. Receive the response in
+the calling activity:
 
 ```java
 @Override
@@ -157,12 +156,10 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 ```
 
 ## Receiving upload status
-Because the actual uploading occurs in a background service, we need to
-register a `BroadcastReceiver` to get a status and resultant `FileLink` for
-each selection. When the picker returns to `onActivityResult()` you receive an
-`ArrayList` of `Selection` objects. When an intent message is received in your
-`BroadcastReceiver`, you will receive a status string, a `Selection` (matching  
-one in the list), and a `FileLink` (if the upload succeeded). As the upload
+Because the actual uploading occurs in a background service, a `BroadcastReceiver` and `FileLink` must be registered to get a status and resultant for each selection. When the picker returns to `onActivityResult()`an
+`ArrayList` of `Selection` objects will be received. When an intent message is received in the
+`BroadcastReceiver`, a status string, a `Selection` (matching  
+one in the list), and a `FileLink` (if the upload succeeded) will be received. As the upload
 progresses, the background service will also put up notifications about its
 ongoing status.
 
@@ -186,7 +183,7 @@ public class UploadStatusReceiver extends BroadcastReceiver {
 }
 ```
 
-Register the receiver in your calling activity's `onCreate()`:
+Register the receiver in the calling activity's `onCreate()`:
 ```java
 // Be careful to avoid registering multiple receiver instances
 if (savedInstanceState == null) {
@@ -198,9 +195,9 @@ if (savedInstanceState == null) {
 
 ## Custom UI using client
 The [base Java SDK][java-sdk] contains a `Client` class that can be used to
-perform both local uploads and cloud integrations. To use it, you would create
-a your config as mentioned above, then create your client with it. If you want,
-you can use the client and get all the same functionality without any of the
+perform both local uploads and cloud integrations. To use the class, create
+a config as mentioned above, then create the client with it. Additionally,
+the client can be used to get all the same functionality without any of the
 Filestack UI. Reference doc for the `Client` class can be found
 [here][java-sdk-ref].
 
