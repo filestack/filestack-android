@@ -86,13 +86,11 @@ file_paths.xml:
 We expect the "pictures" and "movies" names to be defined.
 
 ### Setup for cloud authorization
-When the user authorizes their cloud account, they do so inside the default
-device browser, not a `WebView`. Therefore you must set your app to respond to a
-URL redirect so that the app reopens after the authorization. This requires two
-components, an intent filter to respond to the URL, and an entry activity that
-opens for the intent. The entry activity is necessary to maintain the UI state
-and activity stack. For more information about opening an app by URL, see the
-Google documentation on [App Links][app-links].
+To enable cloud sources, you must setup your app to be openable by URL. This is part of the OAuth (login) flow for each cloud provider. We perform the OAuth flow within the device's default browser (instead of a WebView) because it's a security best practice. You can read more about the security of performing OAuth in WebView's in this Google Developers [blog post][webview-oauth].
+
+Setting this up requires three things: an intent filter to respond to the URL, an entry activity that opens for the intent, and a configuration parameter when launching the SDK. The intent filter is what tells the OS the app can be opened by a URL, the entry activity is necessary to maintain a clear activity stack, and the configuration parameter passes the URL to the Filestack API.
+
+To avoid a disambiguation (app chooser) dialog during the OAuth flow, you will need to verify your URL with Google. This (and more information about opening an app by URL) is described in the Android documentation on [App Links][app-links].
 
 EntryActivity.java:
 ```java
@@ -211,3 +209,4 @@ Filestack UI. Reference doc for the `Client` class can be found
 [java-sdk]: https://github.com/filestack/filestack-java
 [java-sdk-ref]: https://filestack.github.io/filestack-java/
 [camera-docs]: https://developer.android.com/training/camera/photobasics.html
+[webview-oauth]: https://developers.googleblog.com/2016/08/modernizing-oauth-interactions-in-native-apps.html
