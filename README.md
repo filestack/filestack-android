@@ -1,10 +1,15 @@
-<p align="center"><img src="fs-icon.svg" align="center" width="150"/></p>
+<p align="center"><img src="logo.svg" align="center" width="150"/></p>
 <h1 align="center">Filestack Android SDK</h1>
 
 <p align="center">
-  <img src="https://img.shields.io/bintray/v/filestack/maven/filestack-android.svg?longCache=true&style=flat-square">
-  <img src="https://img.shields.io/badge/min_sdk-19_(4.4_kitkat)-lightgrey.svg?longCache=true&style=flat-square">
-  <img src="https://img.shields.io/badge/target_sdk-26_(8.0_oreo)-lightgrey.svg?longCache=true&style=flat-square">
+  <a href="https://bintray.com/filestack/maven/filestack-android">
+    <img src="https://img.shields.io/bintray/v/filestack/maven/filestack-android.svg?longCache=true&style=flat-square">
+  </a>
+  <a href="https://filestack.github.io/filestack-android/">
+    <img src="https://img.shields.io/badge/ref-javadoc-795548.svg?longCache=true&style=flat-square">
+  </a>
+  <img src="https://img.shields.io/badge/min_sdk-19_(4.4_kitkat)-green.svg?longCache=true&style=flat-square">
+  <img src="https://img.shields.io/badge/target_sdk-26_(8.0_oreo)-green.svg?longCache=true&style=flat-square">
 </p>
 
 <p align="center">
@@ -14,8 +19,14 @@
   GitHub, Gmail, Google Drive, Google Photos, Instagram, and OneDrive.
 </p>
 
+## Install
+```gradle
+implementation 'com.filestack:filestack-android:5.0.0-0.2.0'
+```
+
 ## Demo
-A demo app is included in the top-level `demo` folder of this repo. Create and fill out a `keys.xml` file with your own information before running.
+There's a sample project under the `demo` folder of this repo. Create and fill
+out a credentials resource file before running.
 
 src/main/res/values/keys.xml:
 ```xml
@@ -27,14 +38,9 @@ src/main/res/values/keys.xml:
 </resources>
 ```
 
-## Install
-```gradle
-implementation 'com.filestack:filestack-android:5.0.0-0.2.0'
-```
-
 ## Setup
 
-### Add a file provider for camera source
+### Add a file provider for photos and videos
 To enable users to take photos and videos within the picker, you need to define
 a file provider for your app. This is required to avoid sending "file://" URI's
 to the camera app, which will throw a FileUriExposedException on Android Nougat
@@ -64,7 +70,7 @@ file_paths.xml:
 ```
 We expect the "pictures" and "movies" names to be defined.
 
-### Setup an app link for cloud OAuth
+### Add an app link for cloud OAuth flows
 To enable cloud sources, you must setup your app to be openable by URL. This is
 part of the OAuth (login) flow for each cloud provider. We perform the OAuth
 flow within the device's default browser (instead of a WebView) because it's a
@@ -162,7 +168,7 @@ intent.putExtra(FsConstants.EXTRA_SOURCES, sources);
 startActivityForResult(intent, REQUEST_FILESTACK);
 ```
 
-### Receive selected files
+### Receive activity results
 `FsActivity` returns immediately once a user selects files. The returned
 response will always be an `ArrayList` of `Selection` objects. Receive them in
 your calling activity like so:
@@ -185,7 +191,7 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 }
 ```
 
-### Receive upload status
+### Receive upload status broadcasts
 Because the actual uploading occurs in a background service, we need to
 register a `BroadcastReceiver` to get a status and resultant `FileLink` for
 each selection. When the picker returns to `onActivityResult()` you receive an
@@ -231,6 +237,7 @@ SDK][java-sdk] can be used to build a native UI. This SDK adds UI and
 convenience on top of the Java SDK.
 
 [app-links]: https://developer.android.com/training/app-links/index.html
+[bintray]: https://bintray.com/filestack/maven/filestack-android
 [camera-docs]: https://developer.android.com/training/camera/photobasics.html
 [java-sdk-ref]: https://filestack.github.io/filestack-java/
 [java-sdk]: https://github.com/filestack/filestack-java
