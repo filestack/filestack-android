@@ -2,9 +2,9 @@
 <h1 align="center">Filestack Android SDK</h1>
 
 <p align="center">
-  ![Bintray Version][bintray-badge]
-  ![Min SDK Version][min-sdk-badge]
-  ![Target SDK Version][target-sdk-badge]
+  <img src="https://img.shields.io/bintray/v/filestack/maven/filestack-android.svg?longCache=true&style=flat-square">
+  <img src="https://img.shields.io/badge/min_sdk-19_(4.4_kitkat)-lightgrey.svg?longCache=true&style=flat-square">
+  <img src="https://img.shields.io/badge/target_sdk-26_(8.0_oreo)-lightgrey.svg?longCache=true&style=flat-square">
 </p>
 
 <p align="center">
@@ -235,7 +235,3 @@ convenience on top of the Java SDK.
 [java-sdk-ref]: https://filestack.github.io/filestack-java/
 [java-sdk]: https://github.com/filestack/filestack-java
 [webview-oauth]: https://developers.googleblog.com/2016/08/modernizing-oauth-interactions-in-native-apps.html
-
-[bintray-badge]: https://img.shields.io/bintray/v/filestack/maven/filestack-android.svg?longCache=true&style=flat-square
-[min-sdk-badge]: https://img.shields.io/badge/min_sdk-19_(4.4_kitkat)-lightgrey.svg?longCache=true&style=flat-square
-[target-sdk-badge]: https://img.shields.io/badge/target_sdk-26_(8.0_oreo)-lightgrey.svg?longCache=true&style=flat-square
