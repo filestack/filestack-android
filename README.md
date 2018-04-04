@@ -1,4 +1,4 @@
-<p align="center"><img src="logo.svg" align="center" width="150"/></p>
+<p align="center"><img src="logo.svg" align="center" width="100"/></p>
 <h1 align="center">Filestack Android SDK</h1>
 
 <p align="center">
