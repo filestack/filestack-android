@@ -3,7 +3,7 @@
 
 <p align="center">
   <a href="https://bintray.com/filestack/maven/filestack-android">
-    <img src="https://img.shields.io/bintray/v/filestack/maven/filestack-android.svg?longCache=true&style=flat-square">
+    <img src="https://img.shields.io/badge/bintray-v5.0.0--0.2.0-blue.svg?longCache=true&style=flat-square">
   </a>
   <a href="https://filestack.github.io/filestack-android/">
     <img src="https://img.shields.io/badge/ref-javadoc-795548.svg?longCache=true&style=flat-square">
