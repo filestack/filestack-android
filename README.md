@@ -129,6 +129,11 @@ Inside AndroidManifest.xml:
 </activity>
 ```
 
+Pass the URL when building the client configuration:
+```java
+Config config = new Config("API_KEY", "https://demo.android.filestack.com", "POLICY", "SIGNATURE");
+```
+
 ## Upload files
 
 ### Launch activity
