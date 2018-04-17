@@ -1,20 +1,140 @@
-# Filestack Android SDK
+<p align="center"><img src="logo.svg" align="center" width="100"/></p>
+<h1 align="center">Filestack Android SDK</h1>
 
-UI and upload API for Filestack. Easily upload files from a user's
-local device or cloud services. Provides both a picker activity for easy
-integration as well as a client class for manual control and customization.
-Supports Facebook, Instagram, Google Drive, Dropbox, Box, GitHub, Gmail, Google
-Photos, Microsoft OneDrive, and Amazon Drive.
+<p align="center">
+  <a href="https://bintray.com/filestack/maven/filestack-android">
+    <img src="https://img.shields.io/badge/bintray-v5.0.0--0.2.0-blue.svg?longCache=true&style=flat-square">
+  </a>
+  <a href="https://filestack.github.io/filestack-android/">
+    <img src="https://img.shields.io/badge/ref-javadoc-795548.svg?longCache=true&style=flat-square">
+  </a>
+  <img src="https://img.shields.io/badge/min_sdk-19_(4.4_kitkat)-green.svg?longCache=true&style=flat-square">
+  <img src="https://img.shields.io/badge/target_sdk-26_(8.0_oreo)-green.svg?longCache=true&style=flat-square">
+</p>
 
-## Including In Your Project
+<p align="center">
+  Android file uploader for Filestack. Upload local files or select from 10
+  different cloud sources. Uploads from cloud sources transfer cloud to cloud,
+  avoiding large mobile uploads. Supports Amazon Drive, Box, Dropbox, Facebook,
+  GitHub, Gmail, Google Drive, Google Photos, Instagram, and OneDrive.
+</p>
 
+## Install
 ```gradle
-compile 'com.filestack:filestack-android:5.0.0-0.2.0'
+implementation 'com.filestack:filestack-android:5.0.0-0.2.0'
 ```
 
-## Usage
+## Demo
+There's a sample project under the `demo` folder of this repo. Create and fill
+out a credentials resource file before running.
 
-*For a working implementation of this project see the `demo` folder.*
+src/main/res/values/keys.xml:
+```xml
+<resources>
+    <string name="api_key">API_KEY</string>
+    <string name="return_url">RETURN_URL</string>
+    <string name="policy">POLICY</string>
+    <string name="signature">SIGNATURE</string>
+</resources>
+```
+
+## Setup
+
+### Add a file provider for photos and videos
+To enable users to take photos and videos within the picker, you need to define
+a file provider for your app. This is required to avoid sending "file://" URI's
+to the camera app, which will throw a FileUriExposedException on Android Nougat
+and above. See the [google documentation][camera-docs] for more information.
+
+Add a <provider> tag to your AndroidManifest.xml:
+```xml
+<provider
+    android:name="android.support.v4.content.FileProvider"
+    <!-- Change the authority to include your package name. -->
+    android:authorities="com.filestack.android.demo.fileprovider"
+    android:exported="false"
+    android:grantUriPermissions="true">
+    <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/file_paths" />
+</provider>
+```
+
+file_paths.xml:
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-path name="pictures" path="Android/data/com.filestack.android.demo/files/Pictures" />
+    <external-path name="movies" path="Android/data/com.filestack.android.demo/files/Movies" />
+</paths>
+```
+We expect the "pictures" and "movies" names to be defined.
+
+### Add an app link for cloud OAuth flows
+To enable cloud sources, you must setup your app to be openable by URL. This is
+part of the OAuth (login) flow for each cloud provider. We perform the OAuth
+flow within the device's default browser (instead of a WebView) because it's a
+security best practice. You can read more about the security of performing
+OAuth in WebView's in this Google Developers [blog post][webview-oauth].
+
+Setting this up requires three things: an intent filter to respond to the URL,
+an entry activity that opens for the intent, and a configuration parameter when
+launching the SDK. The intent filter is what tells the OS the app can be opened
+by a URL, the entry activity is necessary to maintain a clear activity stack,
+and the configuration parameter passes the URL to the Filestack API.
+
+To avoid a disambiguation (app chooser) dialog during the OAuth flow, you will
+need to verify your URL with Google. This (and more information about opening
+an app by URL) is described in the Android documentation on
+[App Links][app-links].
+
+EntryActivity.java:
+```java
+public class EntryActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Check to see if this Activity is the root activity
+        if (isTaskRoot()) {
+            // This Activity is the only Activity, so
+            //  the app wasn't running. So start the app from the
+            //  beginning (redirect to MainActivity)
+            Intent mainIntent = getIntent(); // Copy the Intent used to launch me
+            // Launch the real root Activity (launch Intent)
+            mainIntent.setClass(this, MainActivity.class);
+            // I'm done now, so finish()
+            startActivity(mainIntent);
+            finish();
+        } else {
+            // App was already running, so just finish, which will drop the user
+            //  in to the activity that was at the top of the task stack
+            finish();
+        }
+    }
+}
+```
+
+Inside AndroidManifest.xml:
+```xml
+<activity android:name=".EntryActivity">
+
+    <intent-filter android:label="@string/app_name">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <!-- Accepts URIs beginning with "https://demo.android.filestack.com” -->
+        <data android:scheme="https" android:host="demo.android.filestack.com" />
+    </intent-filter>
+
+</activity>
+```
+
+Pass the URL when building the client configuration:
+```java
+Config config = new Config("API_KEY", "https://demo.android.filestack.com", "POLICY", "SIGNATURE");
+```
+
+## Upload files
 
 ### Launch activity
 ```java
@@ -53,87 +173,7 @@ intent.putExtra(FsConstants.EXTRA_SOURCES, sources);
 startActivityForResult(intent, REQUEST_FILESTACK);
 ```
 
-### Add file provider for camera source
-To enable users to take photos and videos within the picker, you need to
-define a file provider for your app. This is required to avoid sending
-"file://" URI's to the camera app, which will throw a FileUriExposedException
-on Android Nougat and above. See the [google documentation][camera-docs] for
-more information.
-
-Add a <provider> tag to your AndroidManifest.xml:
-```xml
-<provider
-    android:name="android.support.v4.content.FileProvider"
-    <!-- Change the authority to include your package name. -->
-    android:authorities="com.filestack.android.demo.fileprovider"
-    android:exported="false"
-    android:grantUriPermissions="true">
-    <meta-data
-        android:name="android.support.FILE_PROVIDER_PATHS"
-        android:resource="@xml/file_paths" />
-</provider>
-```
-
-file_paths.xml:
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<paths xmlns:android="http://schemas.android.com/apk/res/android">
-    <external-path name="pictures" path="Android/data/com.filestack.android.demo/files/Pictures" />
-    <external-path name="movies" path="Android/data/com.filestack.android.demo/files/Movies" />
-</paths>
-```
-
-We expect the "pictures" and "movies" names to be defined.
-
-### Setup for cloud authorization
-To enable cloud sources, you must setup your app to be openable by URL. This is part of the OAuth (login) flow for each cloud provider. We perform the OAuth flow within the device's default browser (instead of a WebView) because it's a security best practice. You can read more about the security of performing OAuth in WebView's in this Google Developers [blog post][webview-oauth].
-
-Setting this up requires three things: an intent filter to respond to the URL, an entry activity that opens for the intent, and a configuration parameter when launching the SDK. The intent filter is what tells the OS the app can be opened by a URL, the entry activity is necessary to maintain a clear activity stack, and the configuration parameter passes the URL to the Filestack API.
-
-To avoid a disambiguation (app chooser) dialog during the OAuth flow, you will need to verify your URL with Google. This (and more information about opening an app by URL) is described in the Android documentation on [App Links][app-links].
-
-EntryActivity.java:
-```java
-public class EntryActivity extends AppCompatActivity {
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Check to see if this Activity is the root activity
-        if (isTaskRoot()) {
-            // This Activity is the only Activity, so
-            //  the app wasn't running. So start the app from the
-            //  beginning (redirect to MainActivity)
-            Intent mainIntent = getIntent(); // Copy the Intent used to launch me
-            // Launch the real root Activity (launch Intent)
-            mainIntent.setClass(this, MainActivity.class);
-            // I'm done now, so finish()
-            startActivity(mainIntent);
-            finish();
-        } else {
-            // App was already running, so just finish, which will drop the user
-            //  in to the activity that was at the top of the task stack
-            finish();
-        }
-    }
-}
-```
-
-Inside AndroidManifest.xml:
-```xml
-<activity android:name=".EntryActivity">
-
-    <intent-filter android:label="@string/app_name">
-        <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-        <!-- Accepts URIs that begin with "https://demo.android.filestack.com” -->
-        <data android:scheme="https" android:host="demo.android.filestack.com" />
-    </intent-filter>
-
-</activity>
-```
-
-## Receiving selected items
+### Receive activity results
 `FsActivity` returns immediately once a user selects files. The returned
 response will always be an `ArrayList` of `Selection` objects. Receive them in
 your calling activity like so:
@@ -156,7 +196,7 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 }
 ```
 
-## Receiving upload status
+### Receive upload status broadcasts
 Because the actual uploading occurs in a background service, we need to
 register a `BroadcastReceiver` to get a status and resultant `FileLink` for
 each selection. When the picker returns to `onActivityResult()` you receive an
@@ -196,17 +236,14 @@ if (savedInstanceState == null) {
 }
 ```
 
-## Custom UI using client
-The [base Java SDK][java-sdk] contains a `Client` class that can be used to
-perform both local uploads and cloud integrations. To use it, you would create
-a your config as mentioned above, then create your client with it. If you want,
-you can use the client and get all the same functionality without any of the
-Filestack UI. Reference doc for the `Client` class can be found
-[here][java-sdk-ref].
+## Native UI
+At present this SDK doesn't offer many customization options, but the [Java
+SDK][java-sdk] can be used to build a native UI. This SDK adds UI and
+convenience on top of the Java SDK.
 
-[screen-recording]: /demo/media/recording.gif
 [app-links]: https://developer.android.com/training/app-links/index.html
-[java-sdk]: https://github.com/filestack/filestack-java
-[java-sdk-ref]: https://filestack.github.io/filestack-java/
+[bintray]: https://bintray.com/filestack/maven/filestack-android
 [camera-docs]: https://developer.android.com/training/camera/photobasics.html
+[java-sdk-ref]: https://filestack.github.io/filestack-java/
+[java-sdk]: https://github.com/filestack/filestack-java
 [webview-oauth]: https://developers.googleblog.com/2016/08/modernizing-oauth-interactions-in-native-apps.html
