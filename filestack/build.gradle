@@ -11,7 +11,6 @@ project.archivesBaseName = 'filestack-android'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.2'
 
     defaultConfig {
         minSdkVersion 19
