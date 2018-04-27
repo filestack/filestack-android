@@ -318,30 +318,4 @@ public class FsActivity extends AppCompatActivity implements
         setResult(RESULT_OK, data);
         finish();
     }
-
-//    private void setNavIconColors() {
-//        Menu menu = nav.getMenu();
-//        for (int i = 0; i < menu.size(); i++) {
-//            Menu subMenu = menu.getItem(i).getSubMenu();
-//            for (int j = 0; j < subMenu.size(); j++) {
-//                MenuItem item = subMenu.getItem(j);
-//                Drawable icon = item.getIcon().mutate();
-//                SourceInfo res = Util.getSourceInfo(item.getItemId());
-//                icon.setColorFilter(res.getIconId(), PorterDuff.Mode.MULTIPLY);
-//                subMenu.getItem(j).setIcon(icon);
-//            }
-//        }
-//    }
-
-//    private void setThemeColor() {
-//        SourceInfo info = Util.getSourceInfo(selectedSource);
-//        View header = nav.getHeaderView(0);
-//        if (header != null) {
-//            header.setBackgroundResource(info.getColorId());
-//        }
-//        toolbar.setBackgroundResource(info.getColorId());
-//        if (drawer != null) {
-//            toolbar.setSubtitle(info.getTextId());
-//        }
-//    }
 }
