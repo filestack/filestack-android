@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
+import android.support.v4.content.MimeTypeFilter;
 import android.widget.TextView;
 
 import com.filestack.Client;
@@ -121,7 +122,7 @@ public class Util {
     }
 
     public static List<String> getDefaultSources() {
-        return SOURCES_LIST.subList(0, 6);
+        return new ArrayList<>(SOURCES_LIST.subList(0, 6));
     }
 
     public static int getSourceIntId(String stringId) {
@@ -216,5 +217,9 @@ public class Util {
 
     public static Client getClient() {
         return client;
+    }
+
+    public static boolean mimeAllowed(String[] filters, String mimeType) {
+        return MimeTypeFilter.matches(mimeType, filters) != null;
     }
 }

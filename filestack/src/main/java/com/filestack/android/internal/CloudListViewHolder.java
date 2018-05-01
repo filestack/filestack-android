@@ -67,4 +67,16 @@ class CloudListViewHolder extends RecyclerView.ViewHolder {
             checkboxView.setVisibility(View.INVISIBLE);
         }
     }
+
+    public void setEnabled(boolean enabled) {
+        float alpha = 1.0f;
+        if (!enabled) {
+            alpha = 0.45f;
+        }
+        iconView.setAlpha(alpha);
+        if (nameView != null) {
+            nameView.setAlpha(alpha);
+            infoView.setAlpha(alpha);
+        }
+    }
 }

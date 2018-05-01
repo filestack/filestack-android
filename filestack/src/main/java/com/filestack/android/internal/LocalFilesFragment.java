@@ -10,13 +10,12 @@ import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.MimeTypeMap;
 
 import com.filestack.Sources;
+import com.filestack.android.FsConstants;
 import com.filestack.android.R;
 import com.filestack.android.Selection;
 
@@ -38,11 +37,18 @@ public class LocalFilesFragment extends Fragment implements View.OnClickListener
 
     @Override
     public void onClick(View view) {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        intent.setType("*/*");
-        startActivityForResult(intent, READ_REQUEST_CODE);
+        Intent docIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        docIntent.addCategory(Intent.CATEGORY_OPENABLE);
+        docIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        docIntent.setType("*/*");
+
+        Intent launchIntent = getActivity().getIntent();
+        String[] mimeTypes = launchIntent.getStringArrayExtra(FsConstants.EXTRA_MIME_TYPES);
+        if (mimeTypes != null) {
+            docIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+        }
+
+        startActivityForResult(docIntent, READ_REQUEST_CODE);
     }
 
     @Override
