@@ -169,6 +169,11 @@ sources.add(Sources.GOOGLE_DRIVE);
 sources.add(Sources.GITHUB);
 intent.putExtra(FsConstants.EXTRA_SOURCES, sources);
 
+// Restrict the types of files that can be uploaded
+// Defaults to allowing all
+String[] mimeTypes = {"application/pdf", "image/*", "video/*"};
+intent.putExtra(FsConstants.EXTRA_MIME_TYPES, mimeTypes);
+
 // Start the activity
 startActivityForResult(intent, REQUEST_FILESTACK);
 ```
