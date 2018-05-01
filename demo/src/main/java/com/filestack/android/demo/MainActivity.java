@@ -7,17 +7,24 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 
 import com.filestack.Config;
 import com.filestack.android.FsActivity;
 import com.filestack.android.FsConstants;
 import com.filestack.android.Selection;
+import com.filestack.android.internal.Util;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_FILESTACK = RESULT_FIRST_USER;
+    private static final int REQUEST_SETTINGS = REQUEST_FILESTACK + 1;
     private static final String TAG = "MainActivity";
 
     @Override
@@ -27,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             IntentFilter intentFilter = new IntentFilter(FsConstants.BROADCAST_UPLOAD);
-            UploadStatusReceiver receiver = new UploadStatusReceiver();
+            TextView logView = findViewById(R.id.log);
+            UploadStatusReceiver receiver = new UploadStatusReceiver(logView);
             LocalBroadcastManager.getInstance(this).registerReceiver(receiver, intentFilter);
         }
     }
@@ -50,7 +58,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void openFilestack(View view) {
+    public void settings(View view) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivityForResult(intent, REQUEST_SETTINGS);
+    }
+
+    public void launch(View view) {
         Intent intent = new Intent(this, FsActivity.class);
         Config config = new Config(
                 getString(R.string.api_key),
@@ -62,11 +75,5 @@ public class MainActivity extends AppCompatActivity {
         String[] mimeTypes = {"application/pdf", "image/*", "video/*"};
         intent.putExtra(FsConstants.EXTRA_MIME_TYPES, mimeTypes);
         startActivityForResult(intent, REQUEST_FILESTACK);
-    }
-
-    public void openFileBrowser(View view) {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");
-        startActivityForResult(intent, 0);
     }
 }

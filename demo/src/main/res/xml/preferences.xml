@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <MultiSelectListPreference
+        android:key="upload_sources"
+        android:title="@string/upload_sources_title"
+        android:summary="@string/upload_sources_summary"
+        android:entries="@array/upload_sources_entries"
+        android:entryValues="@array/upload_sources_entry_values"
+        android:defaultValue="@array/upload_sources_default"/>
+
+    <SwitchPreference
+        android:key="auto_upload"
+        android:title="@string/auto_upload_title"
+        android:summary="@string/auto_upload_summary"
+        android:defaultValue="true"/>
+
+    <EditTextPreference
+        android:key="mime_filter"
+        android:title="@string/mime_filter_title"
+        android:summary="@string/mime_filter_summary"
+        android:defaultValue="@string/mime_filter_default" />
+
+    <PreferenceCategory
+        android:title="@string/credentials_category_title">
+
+        <EditTextPreference
+            android:key="api_key"
+            android:title="@string/api_key_title" />
+
+        <EditTextPreference
+            android:key="policy"
+            android:title="@string/policy_title"/>
+
+        <EditTextPreference
+            android:key="signature"
+            android:title="@string/signature_title" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
