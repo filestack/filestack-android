@@ -19,22 +19,26 @@
         android:key="mime_filter"
         android:title="@string/mime_filter_title"
         android:summary="@string/mime_filter_summary"
-        android:defaultValue="@string/mime_filter_default" />
+        android:defaultValue="@string/mime_filter_default"
+        android:textIsSelectable="true" />
 
     <PreferenceCategory
         android:title="@string/credentials_category_title">
 
         <EditTextPreference
             android:key="api_key"
-            android:title="@string/api_key_title" />
+            android:title="@string/api_key_title"
+            android:textIsSelectable="true" />
 
         <EditTextPreference
             android:key="policy"
-            android:title="@string/policy_title"/>
+            android:title="@string/policy_title"
+            android:textIsSelectable="true" />
 
         <EditTextPreference
             android:key="signature"
-            android:title="@string/signature_title" />
+            android:title="@string/signature_title"
+            android:textIsSelectable="true" />
 
     </PreferenceCategory>
 
