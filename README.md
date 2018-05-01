@@ -9,7 +9,7 @@
     <img src="https://img.shields.io/badge/ref-javadoc-795548.svg?longCache=true&style=flat-square">
   </a>
   <img src="https://img.shields.io/badge/min_sdk-19_(4.4_kitkat)-green.svg?longCache=true&style=flat-square">
-  <img src="https://img.shields.io/badge/target_sdk-26_(8.0_oreo)-green.svg?longCache=true&style=flat-square">
+  <img src="https://img.shields.io/badge/target_sdk-27_(8.1_oreo)-green.svg?longCache=true&style=flat-square">
 </p>
 
 <p align="center">
