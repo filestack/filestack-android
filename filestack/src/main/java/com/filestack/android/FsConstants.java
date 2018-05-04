@@ -9,6 +9,7 @@ public class FsConstants {
     public static final String EXTRA_SOURCES = "sources";
     public static final String EXTRA_STATUS = "status";
     public static final String EXTRA_STORE_OPTS = "storeOpts";
+    public static final String EXTRA_MIME_TYPES = "mimeTypes";
 
     public static final String BROADCAST_UPLOAD = "com.filestack.android.BROADCAST_UPLOAD";
 

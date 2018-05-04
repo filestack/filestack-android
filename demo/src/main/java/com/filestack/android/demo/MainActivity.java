@@ -59,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
                 getString(R.string.signature));
         intent.putExtra(FsConstants.EXTRA_CONFIG, config);
         intent.putExtra(FsConstants.EXTRA_AUTO_UPLOAD, true);
+        String[] mimeTypes = {"application/pdf", "image/*", "video/*"};
+        intent.putExtra(FsConstants.EXTRA_MIME_TYPES, mimeTypes);
         startActivityForResult(intent, REQUEST_FILESTACK);
     }
 

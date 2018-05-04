@@ -1,7 +1,9 @@
 package com.filestack.android.internal;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -12,7 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.filestack.android.FsActivity;
+import com.filestack.android.FsConstants;
 import com.filestack.android.R;
 
 public class CloudListFragment extends Fragment implements BackButtonListener {
@@ -44,13 +46,15 @@ public class CloudListFragment extends Fragment implements BackButtonListener {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
         View baseView = inflater.inflate(R.layout.fragment_cloud_list, container, false);
 
         recyclerView = baseView.findViewById(R.id.recycler);
-        adapter = new CloudListAdapter(sourceInfo.getId(), savedInstanceState);
+        Intent intent = requireActivity().getIntent();
+        String[] mimeTypes = intent.getStringArrayExtra(FsConstants.EXTRA_MIME_TYPES);
+        adapter = new CloudListAdapter(sourceInfo.getId(), mimeTypes, savedInstanceState);
         recyclerView.setAdapter(adapter);
 
         if (savedInstanceState != null) {

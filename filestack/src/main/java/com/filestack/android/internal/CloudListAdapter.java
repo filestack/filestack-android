@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 
 import com.filestack.CloudItem;
 import com.filestack.CloudResponse;
-import com.filestack.android.FsActivity;
 import com.filestack.android.Selection;
 
 import java.util.ArrayList;
@@ -36,9 +35,11 @@ class CloudListAdapter extends RecyclerView.Adapter implements
     private int viewType;
     private RecyclerView recyclerView;
     private String currentPath;
+    private String[] mimeTypes;
 
-    CloudListAdapter(String sourceId, Bundle saveInstanceState) {
+    CloudListAdapter(String sourceId, String[] mimeTypes, Bundle saveInstanceState) {
         this.sourceId = sourceId;
+        this.mimeTypes = mimeTypes;
         setHasStableIds(true);
 
         if (saveInstanceState != null) {
@@ -80,6 +81,7 @@ class CloudListAdapter extends RecyclerView.Adapter implements
         holder.setInfo(info);
         holder.setIcon(item.getThumbnail());
         holder.setOnClickListener(this);
+        holder.setEnabled(item.isFolder() || Util.mimeAllowed(mimeTypes, item.getMimetype()));
 
         SelectionSaver selectionSaver = Util.getSelectionSaver();
         Selection selection = new Selection(sourceId, item.getPath(), item.getMimetype(),
@@ -160,6 +162,10 @@ class CloudListAdapter extends RecyclerView.Adapter implements
 
         if (item.isFolder()) {
             setPath(item.getPath());
+            return;
+        }
+
+        if (!Util.mimeAllowed(mimeTypes, item.getMimetype())) {
             return;
         }
 

@@ -9,7 +9,7 @@
     <img src="https://img.shields.io/badge/ref-javadoc-795548.svg?longCache=true&style=flat-square">
   </a>
   <img src="https://img.shields.io/badge/min_sdk-19_(4.4_kitkat)-green.svg?longCache=true&style=flat-square">
-  <img src="https://img.shields.io/badge/target_sdk-26_(8.0_oreo)-green.svg?longCache=true&style=flat-square">
+  <img src="https://img.shields.io/badge/target_sdk-27_(8.1_oreo)-green.svg?longCache=true&style=flat-square">
 </p>
 
 <p align="center">
@@ -168,6 +168,11 @@ sources.add(Sources.DEVICE);
 sources.add(Sources.GOOGLE_DRIVE);
 sources.add(Sources.GITHUB);
 intent.putExtra(FsConstants.EXTRA_SOURCES, sources);
+
+// Restrict the types of files that can be uploaded
+// Defaults to allowing all
+String[] mimeTypes = {"application/pdf", "image/*", "video/*"};
+intent.putExtra(FsConstants.EXTRA_MIME_TYPES, mimeTypes);
 
 // Start the activity
 startActivityForResult(intent, REQUEST_FILESTACK);

@@ -13,6 +13,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -66,28 +67,37 @@ public class FsActivity extends AppCompatActivity implements
 
         setContentView(R.layout.activity_filestack);
 
-        // Setup app bar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        // Create app bar
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Setup nav drawer
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        // Create nav drawer
+        drawer = findViewById(R.id.drawer_layout);
         if (drawer != null) {
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                     this, drawer, toolbar, R.string.nav_drawer_open, R.string.nav_drawer_close);
             drawer.addDrawerListener(toggle);
             toggle.syncState();
         }
-        nav = (NavigationView) findViewById(R.id.nav_view);
+        nav = findViewById(R.id.nav_view);
         nav.setNavigationItemSelectedListener(this);
-        // nav.setItemIconTintList(null); // To enable color icons
-        // setNavIconColors();
 
-        // Add sources to nav menu
+        // Get sources list for nav drawer
         List<String> sources = (List<String>) intent.getSerializableExtra(FsConstants.EXTRA_SOURCES);
         if (sources == null) {
             sources = Util.getDefaultSources();
         }
+
+        // Check if MIME filtering conflicts with camera source
+        String[] mimeTypes = intent.getStringArrayExtra(FsConstants.EXTRA_MIME_TYPES);
+        if (mimeTypes != null && sources.contains(Sources.CAMERA)) {
+            if (!Util.mimeAllowed(mimeTypes, "image/jpeg") && !Util.mimeAllowed(mimeTypes, "video/mp4")) {
+                sources.remove(Sources.CAMERA);
+                Log.w(TAG, "Hiding camera since neither image/jpeg nor video/mp4 MIME type is allowed");
+            }
+        }
+
+        // Add sources to nav drawer
         Menu menu = nav.getMenu();
         int index = 0;
         for (String source : sources) {
@@ -232,7 +242,6 @@ public class FsActivity extends AppCompatActivity implements
 
         selectedSource = source;
         nav.setCheckedItem(id);
-//        setThemeColor();
 
         switch (source) {
             case Sources.CAMERA:
@@ -318,30 +327,4 @@ public class FsActivity extends AppCompatActivity implements
         setResult(RESULT_OK, data);
         finish();
     }
-
-//    private void setNavIconColors() {
-//        Menu menu = nav.getMenu();
-//        for (int i = 0; i < menu.size(); i++) {
-//            Menu subMenu = menu.getItem(i).getSubMenu();
-//            for (int j = 0; j < subMenu.size(); j++) {
-//                MenuItem item = subMenu.getItem(j);
-//                Drawable icon = item.getIcon().mutate();
-//                SourceInfo res = Util.getSourceInfo(item.getItemId());
-//                icon.setColorFilter(res.getIconId(), PorterDuff.Mode.MULTIPLY);
-//                subMenu.getItem(j).setIcon(icon);
-//            }
-//        }
-//    }
-
-//    private void setThemeColor() {
-//        SourceInfo info = Util.getSourceInfo(selectedSource);
-//        View header = nav.getHeaderView(0);
-//        if (header != null) {
-//            header.setBackgroundResource(info.getColorId());
-//        }
-//        toolbar.setBackgroundResource(info.getColorId());
-//        if (drawer != null) {
-//            toolbar.setSubtitle(info.getTextId());
-//        }
-//    }
 }

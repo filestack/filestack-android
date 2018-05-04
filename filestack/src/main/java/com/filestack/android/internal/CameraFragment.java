@@ -6,13 +6,16 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.filestack.Sources;
+import com.filestack.android.FsConstants;
 import com.filestack.android.R;
 import com.filestack.android.Selection;
 
@@ -32,15 +35,30 @@ public class CameraFragment extends Fragment implements BackButtonListener, View
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        View baseView = inflater.inflate(R.layout.fragment_camera, container, false);
+        ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_camera, container, false);
+        Button photoButton = root.findViewById(R.id.take_photo);
+        Button videoButton = root.findViewById(R.id.take_video);
 
-        baseView.findViewById(R.id.take_photo).setOnClickListener(this);
-        baseView.findViewById(R.id.take_video).setOnClickListener(this);
+        Intent intent = requireActivity().getIntent();
+        String[] mimeTypes = intent.getStringArrayExtra(FsConstants.EXTRA_MIME_TYPES);
 
-        return baseView;
+        // Disable buttons if associated MIME type isn't allowed
+        if (mimeTypes != null) {
+            if (!Util.mimeAllowed(mimeTypes, "image/jpeg")) {
+                photoButton.setVisibility(View.GONE);
+            }
+            if (!Util.mimeAllowed(mimeTypes, "video/mp4")) {
+                videoButton.setVisibility(View.GONE);
+            }
+        }
+
+        photoButton.setOnClickListener(this);
+        videoButton.setOnClickListener(this);
+
+        return root;
     }
 
     @Override
