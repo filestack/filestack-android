@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 5.0.0-0.3.0 *(2018-05-21)*
+----------------------------
+
+  * Updated Java SDK to v0.7.0 which includes a fix for storage options being ignored
+  * Added option to restrict file MIME types that can be uploaded
+  * Updated demo application with in-app config and logging
+
 Version 5.0.0-0.2.0 *(2018-03-19)*
 ----------------------------
 
