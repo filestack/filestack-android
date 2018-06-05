@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-path name="pictures" path="Android/data/com.filestack.android.samples.form/files/Pictures" />
+    <external-path name="movies" path="Android/data/com.filestack.android.samples.form/files/Movies" />
+</paths>
