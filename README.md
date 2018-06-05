@@ -24,19 +24,8 @@
 implementation 'com.filestack:filestack-android:5.0.0-0.3.0'
 ```
 
-## Demo
-There's a sample project under the `demo` folder of this repo. Create and fill
-out a credentials resource file before running.
-
-src/main/res/values/keys.xml:
-```xml
-<resources>
-    <string name="api_key">API_KEY</string>
-    <string name="return_url">RETURN_URL</string>
-    <string name="policy">POLICY</string>
-    <string name="signature">SIGNATURE</string>
-</resources>
-```
+## Tester and Samples
+To quickly test out the SDK you can clone this repo and build the development app (located in the `tester` directory). It contains settings UI to customize the picker and set credentials, no code changes necessary. You can also build one of the sample apps (located in the `samples` directory). The tester app is setup as a module of this project but the sample apps are setup as independent projects.
 
 ## Setup
 
