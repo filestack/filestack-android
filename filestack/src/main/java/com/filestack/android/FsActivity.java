@@ -57,7 +57,7 @@ import io.reactivex.schedulers.Schedulers;
  * you must define and register a {{@link android.content.BroadcastReceiver}}. The corresponding
  * {{@link android.content.IntentFilter}} must be created to catch
  * {{@link FsConstants#BROADCAST_UPLOAD}}. Upload metadata is returned as
- * {{@link com.filestack.FileLink}} objects to passed to
+ * {{@link com.filestack.FileLink}} objects passed to
  * {{@link android.content.BroadcastReceiver#onReceive(Context, Intent)}}. The key strings needed to
  * pull results from intents are defined in {{@link FsConstants}}.
  *
