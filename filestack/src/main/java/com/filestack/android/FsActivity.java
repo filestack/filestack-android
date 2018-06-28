@@ -1,5 +1,6 @@
 package com.filestack.android;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -41,6 +42,28 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+/** UI to select and upload files from local and cloud sources.
+ *
+ * This class should be launched through the creation and sending of an {{@link Intent}}.
+ * Options are set by passing values to {@link Intent#putExtra(String, String)}.
+ * The keys and descriptions for these options are defined in {{@link FsConstants}}.
+ *
+ * There are two types of results from this activity, the files a user selects ({{@link Selection}})
+ * and the metadata returned when these selections are uploaded ({{@link com.filestack.FileLink}}).
+ * Automatic uploads can be disabled, in which case you will not receive any of the latter.
+ *
+ * User selections are returned as an {{@link ArrayList}} of {{@link Selection}} objects to
+ * {{@link android.app.Activity#onActivityResult(int, int, Intent)}}. To receive upload metadata,
+ * you must define and register a {{@link android.content.BroadcastReceiver}}. The corresponding
+ * {{@link android.content.IntentFilter}} must be created to catch
+ * {{@link FsConstants#BROADCAST_UPLOAD}}. Upload metadata is returned as
+ * {{@link com.filestack.FileLink}} objects passed to
+ * {{@link android.content.BroadcastReceiver#onReceive(Context, Intent)}}. The key strings needed to
+ * pull results from intents are defined in {{@link FsConstants}}.
+ *
+ * The intent and broadcast mechanisms, and keys defined in {{@link FsConstants}}, are the contract
+ * for this class. The actual code of this class should be considered internal implementation.
+ */
 public class FsActivity extends AppCompatActivity implements
         SingleObserver<CloudResponse>, CompletableObserver, SelectionSaver.Listener,
         NavigationView.OnNavigationItemSelectedListener {
@@ -255,6 +278,8 @@ public class FsActivity extends AppCompatActivity implements
                 shouldCheckAuth = false;
                 break;
             default:
+                // TODO Switching source views shouldn't depend on a network request
+                // If the request to check the auth status takes too long, the UX is broken
                 checkAuth();
         }
 
@@ -280,6 +305,9 @@ public class FsActivity extends AppCompatActivity implements
     @Override
     public void onSuccess(CloudResponse contents) {
         String authUrl = contents.getAuthUrl();
+
+        // TODO Switching source views shouldn't depend on a network request
+        // If the request to check the auth status takes too long, the UX is broken
 
         if (authUrl != null) {
             shouldCheckAuth = true;

@@ -20,6 +20,26 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+/**
+ * Loads metadata for a user's cloud contents from Cloud API (cloudrouter) into the UI of
+ * {{@link CloudListFragment}}. {{@link CloudListFragment}}, {{@link CloudListAdapter}}, and
+ * {{@link CloudListViewHolder}} work together to create the cloud sources list. This works like an
+ * "infinite scroll" list; We don't have an upfront count or a concept of pages. When the user
+ * scrolls past a certain threshold count of items relative to what we have data for, we
+ * automatically load more items. We know we've loaded all the items when the Cloud API doesn't
+ * return a "next" token.
+ *
+ * As we load items, we save them into a hash map. We map path strings to lists of cloud items in
+ * that path. We have to combine folder navigation with the fact that we don't know everything
+ * that's inside a folder until we reach the end, so we also keep a hash map of path strings to
+ * "next" token strings. For example if the user goes back a directory, and scrolls further than
+ * before, we need to remember the "next" token from the last request made for that path. We could
+ * simplify this and just reload items with directory changes, but this was done to make navigating
+ * back and forth faster.
+ *
+ * @see <a href="https://developer.android.com/guide/topics/ui/layout/recyclerview">
+ *     https://developer.android.com/guide/topics/ui/layout/recyclerview</a>
+ */
 class CloudListAdapter extends RecyclerView.Adapter implements
         SingleObserver<CloudResponse>, View.OnClickListener, BackButtonListener {
 
@@ -133,6 +153,8 @@ class CloudListAdapter extends RecyclerView.Adapter implements
         String nextToken = cloudContents.getNextToken();
         nextTokens.put(currentPath, nextToken);
         if (oldSize == 0) {
+            // The new path may have fewer items than the old path
+            // If we don't clear all item views, we could end up displaying items from the old path
             notifyDataSetChanged();
         } else {
             notifyItemRangeInserted(oldSize, newSize - oldSize);
@@ -188,6 +210,7 @@ class CloudListAdapter extends RecyclerView.Adapter implements
         return true;
     }
 
+    // Save the items we've loaded on orientation changes etc
     void saveState(Bundle outState) {
         outState.putString(STATE_CURRENT_PATH, currentPath);
         outState.putSerializable(STATE_FOLDERS, folders);
@@ -215,6 +238,8 @@ class CloudListAdapter extends RecyclerView.Adapter implements
             folders.put(path, new ArrayList<CloudItem>());
             loadMoreData();
         } else {
+            // Causes all item views to be rebound with data from the new path
+            // We don't need this in the other case because it gets called in loadMoreData()
             notifyDataSetChanged();
         }
     }

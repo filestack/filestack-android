@@ -23,6 +23,12 @@ import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_FIRST_USER;
 
+/**
+ * Handles opening system file browser and processing results for local file selection.
+ *
+ * @see <a href="https://developer.android.com/guide/topics/providers/document-provider">
+ *     https://developer.android.com/guide/topics/providers/document-provider</a>
+ */
 public class LocalFilesFragment extends Fragment implements View.OnClickListener {
     private static final int READ_REQUEST_CODE = RESULT_FIRST_USER;
     private static final String TAG = "LocalFilesFragment";

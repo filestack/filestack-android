@@ -25,12 +25,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+/** Shared, static utility methods. */
 public class Util {
     private static final List<String> SOURCES_LIST = new ArrayList<>();
     private static final Map<String, SourceInfo> SOURCES_MAP = new HashMap<>();
 
     private static Client client;
     private static SelectionSaver selectionSaver;
+
+    // Pull together the ids to different types of resources for each file selection source
+    // There might be a cleaner way to do this, but the only alternative I found was res arrays
 
     static {
         SOURCES_LIST.add(Sources.CAMERA);
@@ -125,18 +129,23 @@ public class Util {
         return new ArrayList<>(SOURCES_LIST.subList(0, 6));
     }
 
+
+    // Used for the nav drawer
     public static int getSourceIntId(String stringId) {
         return SOURCES_LIST.indexOf(stringId) + 1;
     }
 
+    // Used for the nav drawer
     public static String getSourceStringId(int intId) {
         return SOURCES_LIST.get(intId - 1);
     }
 
+    // It's easier to save a string or int on orientation or other changes, so we have lookups
     public static SourceInfo getSourceInfo(String stringId) {
         return SOURCES_MAP.get(stringId);
     }
 
+    // It's easier to save a string or int on orientation or other changes, so we have lookups
     public static SourceInfo getSourceInfo(int intId) {
         String stringId = Util.getSourceStringId(intId);
         return SOURCES_MAP.get(stringId);
@@ -148,6 +157,8 @@ public class Util {
         view.setText(text);
     }
 
+    // Used to navigate back a directory in the cloud source list.
+    /** Removes the last part of a file path. */
     public static String trimLastPathSection(String path) {
         String[] sections = path.split("/");
         String newPath = "/";
@@ -157,6 +168,8 @@ public class Util {
         return newPath;
     }
 
+    // We keep a singleton list of selections since it's accessed by multiple classes
+    // TODO The selection saving might be done in a better way, without a singleton
     public static SelectionSaver getSelectionSaver() {
         if (selectionSaver == null) {
             selectionSaver = new SimpleSelectionSaver();
@@ -179,6 +192,11 @@ public class Util {
         }
     }
 
+    // TODO Paths used for media should be changed to system-wide folders instead of app-internal
+    // Right now we're storing photos and videos to directories that are internal to the app
+    // It would make more sense for media captured using the SDK to be saved like the camera app
+
+    /** Create a file with a path appropriate to save a photo. Uses directory internal to app. */
     public static File createPictureFile(Context context) throws IOException {
         Locale locale = Locale.getDefault();
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", locale).format(new Date());
@@ -188,6 +206,7 @@ public class Util {
         return File.createTempFile(fileName, ".jpg", storageDir);
     }
 
+    /** Create a file with a path appropriate to save a video. Uses directory internal to app. */
     public static File createMovieFile(Context context) throws IOException {
         Locale locale = Locale.getDefault();
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", locale).format(new Date());
@@ -197,11 +216,16 @@ public class Util {
         return File.createTempFile(fileName, ".mp4", storageDir);
     }
 
+    // We need to get a URI from a file provider to avoid causing a FileUriExposedException
+    // If we don't do this, we'll get the exception when sending the URI to the camera app
+    // See the FileProvider example in https://developer.android.com/training/camera/photobasics
     public static Uri getUriForInternalMedia(Context context, File file) {
         String authority = context.getPackageName() + ".fileprovider";
         return FileProvider.getUriForFile(context, authority, file);
     }
 
+    // TODO This doesn't seem to work
+    /** Make media accessible outside the app. */
     public static void addMediaToGallery(Context context, String path) {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(path);
@@ -210,6 +234,7 @@ public class Util {
         context.sendBroadcast(mediaScanIntent);
     }
 
+    /** Create the Java SDK client and set a session token. The token maintains cloud auth state. */
     public static void initializeClient(Config config, String sessionToken) {
         client = new Client(config);
         client.setSessionToken(sessionToken);
@@ -219,6 +244,7 @@ public class Util {
         return client;
     }
 
+    /** Returns true if the MIME type is allowed by the filters. */
     public static boolean mimeAllowed(String[] filters, String mimeType) {
         return MimeTypeFilter.matches(mimeType, filters) != null;
     }

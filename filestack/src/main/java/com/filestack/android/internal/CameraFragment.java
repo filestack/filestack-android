@@ -26,6 +26,9 @@ import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
 import static com.filestack.android.internal.Constants.REQUEST_MEDIA_CAPTURE;
 
+/**
+ * Handles launching intents to capture photos and videos using the device's default camera app.
+ */
 public class CameraFragment extends Fragment implements BackButtonListener, View.OnClickListener {
 
     private static final String TYPE_PHOTO = "photo";

@@ -1,5 +1,6 @@
 package com.filestack.android.internal;
 
+/** Holds res info about a "source" files can be selected from e.g. local, google, facebook. */
 public class SourceInfo {
     private String id;
     private int iconId;
