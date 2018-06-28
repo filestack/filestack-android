@@ -21,9 +21,9 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 /**
- * Loads metadata of a user's cloud contents from Cloud API (cloudrouter) into the UI of
+ * Loads metadata for a user's cloud contents from Cloud API (cloudrouter) into the UI of
  * {{@link CloudListFragment}}. {{@link CloudListFragment}}, {{@link CloudListAdapter}}, and
- * {{@link CloudListViewHolder}} work together to form the cloud sources list. This works like an
+ * {{@link CloudListViewHolder}} work together to create the cloud sources list. This works like an
  * "infinite scroll" list; We don't have an upfront count or a concept of pages. When the user
  * scrolls past a certain threshold count of items relative to what we have data for, we
  * automatically load more items. We know we've loaded all the items when the Cloud API doesn't
@@ -32,9 +32,9 @@ import io.reactivex.schedulers.Schedulers;
  * As we load items, we save them into a hash map. We map path strings to lists of cloud items in
  * that path. We have to combine folder navigation with the fact that we don't know everything
  * that's inside a folder until we reach the end, so we also keep a hash map of path strings to
- * "next" token strings. For example if the user goes back a directory, and starts scrolling
- * further, we need to remember the "next" token we got for the last request made for that path.
- * We could just reload this data with navigation changes, but this was done to make navigating
+ * "next" token strings. For example if the user goes back a directory, and scrolls further than
+ * before, we need to remember the "next" token from the last request made for that path. We could
+ * simplify this and just reload items with directory changes, but this was done to make navigating
  * back and forth faster.
  *
  * @see <a href="https://developer.android.com/guide/topics/ui/layout/recyclerview">
@@ -239,6 +239,7 @@ class CloudListAdapter extends RecyclerView.Adapter implements
             loadMoreData();
         } else {
             // Causes all item views to be rebound with data from the new path
+            // We don't need this in the other case because it gets called in loadMoreData()
             notifyDataSetChanged();
         }
     }

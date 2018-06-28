@@ -19,7 +19,7 @@ import com.filestack.android.R;
 
 /**
  * Mostly configures a contained {{@link RecyclerView}}. {{@link CloudListFragment}},
- * {{@link CloudListAdapter}}, and {{@link CloudListViewHolder}} work together to form the cloud
+ * {{@link CloudListAdapter}}, and {{@link CloudListViewHolder}} work together to create the cloud
  * sources list.
  *
  * @see <a href="https://developer.android.com/guide/topics/ui/layout/recyclerview">

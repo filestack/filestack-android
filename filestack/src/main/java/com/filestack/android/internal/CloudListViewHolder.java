@@ -10,9 +10,9 @@ import com.filestack.android.R;
 import com.squareup.picasso.Picasso;
 
 /**
- * Holds references to view elements inside individual {{@link CloudListFragment}} list items.
+ * Holds references to view elements inside {{@link RecyclerView}} list items.
  * {{@link CloudListFragment}}, {{@link CloudListAdapter}}, and {{@link CloudListViewHolder}} work
- * together to form the cloud sources list.
+ * together to create the cloud sources list.
  *
  * @see <a href="https://developer.android.com/guide/topics/ui/layout/recyclerview">
  *     https://developer.android.com/guide/topics/ui/layout/recyclerview</a>
