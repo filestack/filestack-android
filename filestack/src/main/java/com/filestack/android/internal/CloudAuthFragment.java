@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.filestack.android.FsActivity;
 import com.filestack.android.R;
 
+/** Displays "cloud auth required" message and creates an intent to open the link in the browser. */
 public class CloudAuthFragment extends Fragment implements
         View.OnClickListener, BackButtonListener {
     private final static String ARG_SOURCE = "source";

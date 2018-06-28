@@ -17,6 +17,14 @@ import android.view.ViewGroup;
 import com.filestack.android.FsConstants;
 import com.filestack.android.R;
 
+/**
+ * Mostly configures a contained {{@link RecyclerView}}. {{@link CloudListFragment}},
+ * {{@link CloudListAdapter}}, and {{@link CloudListViewHolder}} work together to form the cloud
+ * sources list.
+ *
+ * @see <a href="https://developer.android.com/guide/topics/ui/layout/recyclerview">
+ *     https://developer.android.com/guide/topics/ui/layout/recyclerview</a>
+ */
 public class CloudListFragment extends Fragment implements BackButtonListener {
     private final static String ARG_SOURCE = "source";
     private final static String STATE_IS_LIST_MODE = "isListMode";

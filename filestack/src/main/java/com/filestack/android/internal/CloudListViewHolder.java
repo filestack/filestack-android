@@ -9,6 +9,14 @@ import android.widget.TextView;
 import com.filestack.android.R;
 import com.squareup.picasso.Picasso;
 
+/**
+ * Holds references to view elements inside individual {{@link CloudListFragment}} list items.
+ * {{@link CloudListFragment}}, {{@link CloudListAdapter}}, and {{@link CloudListViewHolder}} work
+ * together to form the cloud sources list.
+ *
+ * @see <a href="https://developer.android.com/guide/topics/ui/layout/recyclerview">
+ *     https://developer.android.com/guide/topics/ui/layout/recyclerview</a>
+ */
 class CloudListViewHolder extends RecyclerView.ViewHolder {
     private View itemView;
     private TextView nameView;
