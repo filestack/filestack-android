@@ -278,6 +278,8 @@ public class FsActivity extends AppCompatActivity implements
                 shouldCheckAuth = false;
                 break;
             default:
+                // TODO Switching source views shouldn't depend on a network request
+                // If the request to check the auth status takes too long, the UX is broken
                 checkAuth();
         }
 
@@ -303,6 +305,9 @@ public class FsActivity extends AppCompatActivity implements
     @Override
     public void onSuccess(CloudResponse contents) {
         String authUrl = contents.getAuthUrl();
+
+        // TODO Switching source views shouldn't depend on a network request
+        // If the request to check the auth status takes too long, the UX is broken
 
         if (authUrl != null) {
             shouldCheckAuth = true;
