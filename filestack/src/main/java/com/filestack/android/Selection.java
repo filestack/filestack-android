@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/** Metadata for a user selection (but not yet upload) of a local or cloud file. */
 public class Selection implements Parcelable {
     public static final Parcelable.Creator<Selection> CREATOR = new Creator();
 
@@ -14,6 +15,7 @@ public class Selection implements Parcelable {
     private String mimeType;
     private String name;
 
+    /** Constructor for cloud file. */
     public Selection(String provider, String path, String mimeType, String name) {
         this.provider = provider;
         this.path = path;
@@ -21,6 +23,7 @@ public class Selection implements Parcelable {
         this.name = name;
     }
 
+    /** Constructor for local file. */
     public Selection(String provider, Uri uri, int size, String mimeType, String name) {
         this.provider = provider;
         this.uri = uri;
@@ -69,18 +72,22 @@ public class Selection implements Parcelable {
         return this.getName().equals(other.getName());
     }
 
+    /** The source this file came from. */
     public String getProvider() {
         return provider;
     }
 
+    /** The path of this file in a cloud provider. Null if a local file. */
     public String getPath() {
         return path;
     }
 
+    /** The Android system URI of this file. Null if a cloud file. */
     public Uri getUri() {
         return uri;
     }
 
+    /** Size in bytes. */
     public int getSize() {
         return size;
     }

@@ -4,6 +4,7 @@ import com.filestack.android.Selection;
 
 import java.util.ArrayList;
 
+/** Manages a user's file selections. Used to save selections and notify others about changes. */
 public interface SelectionSaver {
     boolean toggleItem(Selection selection);
     boolean isSelected(Selection selection);

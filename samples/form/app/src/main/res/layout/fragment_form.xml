@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" style="@style/FormBase">
+
+    <ImageView android:id="@+id/img" style="@style/FormImage"/>
+
+    <Button android:id="@+id/sel_img_btn" style="@style/FormItem"
+        android:layout_alignBottom="@id/img"
+        android:text="Select"/>
+
+    <EditText android:id="@+id/name" style="@style/FormText"
+        android:layout_below="@id/sel_img_btn" android:layout_marginTop="16dp"
+        android:hint="First Last" android:inputType="textPersonName" />
+
+    <EditText android:id="@+id/email" style="@style/FormText"
+        android:layout_below="@id/name"
+        android:hint="you@example.com" android:inputType="textEmailAddress"/>
+
+    <Button android:id="@+id/crt_act_btn" style="@style/FormItem"
+        android:layout_alignParentBottom="true"
+        android:text="Create Account"/>
+
+</RelativeLayout>

@@ -1,0 +1,59 @@
+<resources>
+    <string name="app_name">Filestack</string>
+    <string name="return_url">https://demo.android.filestack.com/</string>
+    <string name="settings_button_text">Settings</string>
+    <string name="launch_button_text">Open Picker</string>
+    <string name="error_no_api_key">API key must be set.</string>
+
+    <string name="upload_sources_title">Upload Sources</string>
+    <string name="upload_sources_summary">Specify which upload sources to enable</string>
+    <string-array name="upload_sources_entries">
+        <item>Facebook</item>
+        <item>Instagram</item>
+        <item>Google Drive</item>
+        <item>Dropbox</item>
+        <item>Box</item>
+        <item>GitHub</item>
+        <item>Gmail</item>
+        <item>Google Photos</item>
+        <item>OneDrive</item>
+        <item>Amazon Drive</item>
+        <item>Camera</item>
+        <item>Device</item>
+    </string-array>
+    <string-array name="upload_sources_entry_values">
+        <item>facebook</item>
+        <item>instagram</item>
+        <item>googledrive</item>
+        <item>dropbox</item>
+        <item>box</item>
+        <item>github</item>
+        <item>gmail</item>
+        <item>picasa</item>
+        <item>onedrive</item>
+        <item>clouddrive</item>
+        <item>camera</item>
+        <item>device</item>
+    </string-array>
+    <string-array name="upload_sources_default">
+        <item>camera</item>
+        <item>device</item>
+        <item>googledrive</item>
+        <item>facebook</item>
+        <item>instagram</item>
+        <item>dropbox</item>
+    </string-array>
+
+    <string name="auto_upload_title">Enable Auto Upload</string>
+    <string name="auto_upload_summary">Automatically uploads files after picker closes</string>
+
+    <string name="mime_filter_title">MIME Filter</string>
+    <string name="mime_filter_summary">Restricts the types of files that can be uploaded</string>
+    <string name="mime_filter_default">application/pdf,video/*,image/*</string>
+
+    <string name="credentials_category_title">Credentials</string>
+    <string name="api_key_title">API Key</string>
+    <string name="policy_title">Policy</string>
+    <string name="signature_title">Signature</string>
+
+</resources>

@@ -4,6 +4,9 @@ import com.filestack.android.Selection;
 
 import java.util.ArrayList;
 
+/**
+ * Implementation of {{@link SelectionSaver}}. Just saves selections to an {{@link ArrayList}}.
+ */
 public class SimpleSelectionSaver implements SelectionSaver {
     private ArrayList<Selection> selections = new ArrayList<>();
     private Listener listener;

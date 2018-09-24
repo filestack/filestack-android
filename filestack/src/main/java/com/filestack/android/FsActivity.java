@@ -1,5 +1,6 @@
 package com.filestack.android;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,6 +42,28 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+/** UI to select and upload files from local and cloud sources.
+ *
+ * This class should be launched through the creation and sending of an {{@link Intent}}.
+ * Options are set by passing values to {@link Intent#putExtra(String, String)}.
+ * The keys and descriptions for these options are defined in {{@link FsConstants}}.
+ *
+ * There are two types of results from this activity, the files a user selects ({{@link Selection}})
+ * and the metadata returned when these selections are uploaded ({{@link com.filestack.FileLink}}).
+ * Automatic uploads can be disabled, in which case you will not receive any of the latter.
+ *
+ * User selections are returned as an {{@link ArrayList}} of {{@link Selection}} objects to
+ * {{@link android.app.Activity#onActivityResult(int, int, Intent)}}. To receive upload metadata,
+ * you must define and register a {{@link android.content.BroadcastReceiver}}. The corresponding
+ * {{@link android.content.IntentFilter}} must be created to catch
+ * {{@link FsConstants#BROADCAST_UPLOAD}}. Upload metadata is returned as
+ * {{@link com.filestack.FileLink}} objects passed to
+ * {{@link android.content.BroadcastReceiver#onReceive(Context, Intent)}}. The key strings needed to
+ * pull results from intents are defined in {{@link FsConstants}}.
+ *
+ * The intent and broadcast mechanisms, and keys defined in {{@link FsConstants}}, are the contract
+ * for this class. The actual code of this class should be considered internal implementation.
+ */
 public class FsActivity extends AppCompatActivity implements
         SingleObserver<CloudResponse>, CompletableObserver, SelectionSaver.Listener,
         NavigationView.OnNavigationItemSelectedListener {
@@ -66,28 +90,37 @@ public class FsActivity extends AppCompatActivity implements
 
         setContentView(R.layout.activity_filestack);
 
-        // Setup app bar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        // Create app bar
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Setup nav drawer
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        // Create nav drawer
+        drawer = findViewById(R.id.drawer_layout);
         if (drawer != null) {
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                     this, drawer, toolbar, R.string.nav_drawer_open, R.string.nav_drawer_close);
             drawer.addDrawerListener(toggle);
             toggle.syncState();
         }
-        nav = (NavigationView) findViewById(R.id.nav_view);
+        nav = findViewById(R.id.nav_view);
         nav.setNavigationItemSelectedListener(this);
-        // nav.setItemIconTintList(null); // To enable color icons
-        // setNavIconColors();
 
-        // Add sources to nav menu
+        // Get sources list for nav drawer
         List<String> sources = (List<String>) intent.getSerializableExtra(FsConstants.EXTRA_SOURCES);
         if (sources == null) {
             sources = Util.getDefaultSources();
         }
+
+        // Check if MIME filtering conflicts with camera source
+        String[] mimeTypes = intent.getStringArrayExtra(FsConstants.EXTRA_MIME_TYPES);
+        if (mimeTypes != null && sources.contains(Sources.CAMERA)) {
+            if (!Util.mimeAllowed(mimeTypes, "image/jpeg") && !Util.mimeAllowed(mimeTypes, "video/mp4")) {
+                sources.remove(Sources.CAMERA);
+                Log.w(TAG, "Hiding camera since neither image/jpeg nor video/mp4 MIME type is allowed");
+            }
+        }
+
+        // Add sources to nav drawer
         Menu menu = nav.getMenu();
         int index = 0;
         for (String source : sources) {
@@ -232,7 +265,6 @@ public class FsActivity extends AppCompatActivity implements
 
         selectedSource = source;
         nav.setCheckedItem(id);
-//        setThemeColor();
 
         switch (source) {
             case Sources.CAMERA:
@@ -246,6 +278,8 @@ public class FsActivity extends AppCompatActivity implements
                 shouldCheckAuth = false;
                 break;
             default:
+                // TODO Switching source views shouldn't depend on a network request
+                // If the request to check the auth status takes too long, the UX is broken
                 checkAuth();
         }
 
@@ -271,6 +305,9 @@ public class FsActivity extends AppCompatActivity implements
     @Override
     public void onSuccess(CloudResponse contents) {
         String authUrl = contents.getAuthUrl();
+
+        // TODO Switching source views shouldn't depend on a network request
+        // If the request to check the auth status takes too long, the UX is broken
 
         if (authUrl != null) {
             shouldCheckAuth = true;
@@ -318,30 +355,4 @@ public class FsActivity extends AppCompatActivity implements
         setResult(RESULT_OK, data);
         finish();
     }
-
-//    private void setNavIconColors() {
-//        Menu menu = nav.getMenu();
-//        for (int i = 0; i < menu.size(); i++) {
-//            Menu subMenu = menu.getItem(i).getSubMenu();
-//            for (int j = 0; j < subMenu.size(); j++) {
-//                MenuItem item = subMenu.getItem(j);
-//                Drawable icon = item.getIcon().mutate();
-//                SourceInfo res = Util.getSourceInfo(item.getItemId());
-//                icon.setColorFilter(res.getIconId(), PorterDuff.Mode.MULTIPLY);
-//                subMenu.getItem(j).setIcon(icon);
-//            }
-//        }
-//    }
-
-//    private void setThemeColor() {
-//        SourceInfo info = Util.getSourceInfo(selectedSource);
-//        View header = nav.getHeaderView(0);
-//        if (header != null) {
-//            header.setBackgroundResource(info.getColorId());
-//        }
-//        toolbar.setBackgroundResource(info.getColorId());
-//        if (drawer != null) {
-//            toolbar.setSubtitle(info.getTextId());
-//        }
-//    }
 }

@@ -24,6 +24,17 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Locale;
 
+/**
+ * If the auto upload option is left enabled, a user's selections will be sent to this service
+ * when {@link com.filestack.android.FsActivity} is closed (upload button is clicked). In this
+ * service we upload files (or makes calls for cloud to cloud transfers) and send up notification
+ * messages on the progress.
+ *
+ * TODO Use async version of Java SDK upload so we can show incremental progress for large uploads
+ * TODO Refactor for Android O background execution limits, update to JobScheduler
+ * https://developer.android.com/about/versions/oreo/background
+ * TODO Add option to disable notifications
+ */
 public class UploadService extends IntentService {
     public static final String SERVICE_NAME = "uploadService";
     public static final String PREF_NOTIFY_ID_COUNTER = "notifyIdCounter";
