@@ -4,6 +4,7 @@ plugins {
 }
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 group = 'com.filestack'
 version = file(new File('../VERSION')).text.trim()
@@ -45,6 +46,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testImplementation 'junit:junit:4.12'
+    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
 task sourcesJar(type: Jar) {
