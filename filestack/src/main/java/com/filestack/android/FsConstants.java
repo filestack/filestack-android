@@ -12,6 +12,12 @@ public class FsConstants {
     public static final String EXTRA_STORE_OPTS = "storeOpts";
     /** Expects string array. Sets MIME types that are allowed to be selected. */
     public static final String EXTRA_MIME_TYPES = "mimeTypes";
+    /**
+     * Expects boolean. If true, multiple files can be selected for upload.
+     * Settings this value to false restricts the selection to only one file.
+     * Defaults to true.
+     */
+    public static final String EXTRA_ALLOW_MULTIPLE_FILES = "multipleFiles";
 
     /** Action for upload broadcast intent filter. */
     public static final String BROADCAST_UPLOAD = "com.filestack.android.BROADCAST_UPLOAD";

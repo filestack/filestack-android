@@ -5,9 +5,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import com.filestack.CloudItem;
 import com.filestack.CloudResponse;
+import com.filestack.android.R;
 import com.filestack.android.Selection;
 
 import java.util.ArrayList;
@@ -40,7 +42,7 @@ import io.reactivex.schedulers.Schedulers;
  * @see <a href="https://developer.android.com/guide/topics/ui/layout/recyclerview">
  *     https://developer.android.com/guide/topics/ui/layout/recyclerview</a>
  */
-class CloudListAdapter extends RecyclerView.Adapter implements
+class CloudListAdapter extends RecyclerView.Adapter<CloudListViewHolder> implements
         SingleObserver<CloudResponse>, View.OnClickListener, BackButtonListener {
 
     private static final double LOAD_TRIGGER = 0.50;
@@ -56,12 +58,14 @@ class CloudListAdapter extends RecyclerView.Adapter implements
     private RecyclerView recyclerView;
     private String currentPath;
     private String[] mimeTypes;
+    private Selector selector;
 
-    CloudListAdapter(String sourceId, String[] mimeTypes, Bundle saveInstanceState) {
+    CloudListAdapter(String sourceId, String[] mimeTypes, Bundle saveInstanceState,
+                     Selector selector) {
         this.sourceId = sourceId;
         this.mimeTypes = mimeTypes;
+        this.selector = selector;
         setHasStableIds(true);
-
         if (saveInstanceState != null) {
             currentPath = saveInstanceState.getString(STATE_CURRENT_PATH);
             folders = (HashMap) saveInstanceState.getSerializable(STATE_FOLDERS);
@@ -73,8 +77,6 @@ class CloudListAdapter extends RecyclerView.Adapter implements
         }
     }
 
-    // RecyclerView.Adapter overrides (in sequential order)
-
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
@@ -82,17 +84,16 @@ class CloudListAdapter extends RecyclerView.Adapter implements
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public CloudListViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
         View listItemView = inflater.inflate(viewType, viewGroup, false);
         return new CloudListViewHolder(listItemView);
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(CloudListViewHolder holder, int i) {
         ArrayList<CloudItem> items = folders.get(currentPath);
         CloudItem item = items.get(i);
-        CloudListViewHolder holder = (CloudListViewHolder) viewHolder;
 
         holder.setId(i);
         holder.setName(item.getName());
@@ -102,12 +103,11 @@ class CloudListAdapter extends RecyclerView.Adapter implements
         holder.setIcon(item.getThumbnail());
         holder.setOnClickListener(this);
         holder.setEnabled(item.isFolder() || Util.mimeAllowed(mimeTypes, item.getMimetype()));
-
-        SelectionSaver selectionSaver = Util.getSelectionSaver();
-        Selection selection = new Selection(sourceId, item.getPath(), item.getMimetype(),
-                item.getName());
-        holder.setSelected(selectionSaver.isSelected(selection));
-
+        int tintColor = holder.itemView.getResources().getColor(R.color.primary_dark);
+        holder.setSelectionTint(tintColor);
+        
+        Selection selection = SelectionFactory.from(sourceId, item);
+        holder.setSelected(selector.isSelected(selection));
         String nextToken = nextTokens.get(currentPath);
         if (!isLoading) {
             if (nextToken != null && i >= (LOAD_TRIGGER * items.size())) {
@@ -191,10 +191,10 @@ class CloudListAdapter extends RecyclerView.Adapter implements
             return;
         }
 
-        SelectionSaver selectionSaver = Util.getSelectionSaver();
+        SelectionFactory.from(sourceId, item);
         Selection selection = new Selection(sourceId, item.getPath(), item.getMimetype(),
                 item.getName());
-        boolean selected = selectionSaver.toggleItem(selection);
+        boolean selected = selector.toggle(selection);
         CloudListViewHolder holder = (CloudListViewHolder) recyclerView.findViewHolderForItemId(id);
 
         holder.setSelected(selected);
