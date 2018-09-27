@@ -9,7 +9,7 @@
     tools:openDrawer="start">
 
     <include
-        layout="@layout/app_bar_filestack"
+        layout="@layout/filestack__app_bar_filestack"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -19,6 +19,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="false"
-        app:headerLayout="@layout/nav_header_filestack"/>
+        app:headerLayout="@layout/filestack__nav_header_filestack"/>
 
 </android.support.v4.widget.DrawerLayout>

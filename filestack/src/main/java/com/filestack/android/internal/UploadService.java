@@ -10,7 +10,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.filestack.FileLink;
@@ -36,9 +35,8 @@ import java.util.Locale;
  * TODO Add option to disable notifications
  */
 public class UploadService extends IntentService {
-    public static final String SERVICE_NAME = "uploadService";
-    public static final String PREF_NOTIFY_ID_COUNTER = "notifyIdCounter";
-    public static final String TAG = "uploadService";
+    private static final String SERVICE_NAME = "uploadService";
+    private static final String PREF_NOTIFY_ID_COUNTER = "notifyIdCounter";
 
     public UploadService() {
         super(SERVICE_NAME);
@@ -74,7 +72,6 @@ public class UploadService extends IntentService {
         int i = 0;
         for (Selection item : selections) {
             String name = item.getName();
-            String provider = item.getProvider();
 
             sendProgressNotification(statusId, i, total, name);
             FileLink fileLink = upload(item, storeOpts);
@@ -135,8 +132,8 @@ public class UploadService extends IntentService {
                 getSystemService(Context.NOTIFICATION_SERVICE);
 
         String id = FsConstants.NOTIFY_CHANNEL_UPLOAD;
-        CharSequence name = getString(R.string.notify_channel_upload_name);
-        String description = getString(R.string.notify_channel_upload_description);
+        CharSequence name = getString(R.string.filestack__notify_channel_upload_name);
+        String description = getString(R.string.filestack__notify_channel_upload_description);
         int importance = NotificationManager.IMPORTANCE_DEFAULT;
 
         NotificationChannel channel = new NotificationChannel(id, name, importance);
@@ -158,10 +155,10 @@ public class UploadService extends IntentService {
 
         if (total == done) {
             builder.setContentTitle(String.format(locale, "Uploaded %d files", done));
-            builder.setSmallIcon(R.drawable.ic_menu_upload_done_white);
+            builder.setSmallIcon(R.drawable.filestack__ic_menu_upload_done_white);
         } else {
             builder.setContentTitle(String.format(locale, "Uploading %d/%d files", done, total));
-            builder.setSmallIcon(R.drawable.ic_menu_upload_white);
+            builder.setSmallIcon(R.drawable.filestack__ic_menu_upload_white);
             builder.setContentText(name);
             builder.setProgress(total, done, false);
         }
@@ -177,7 +174,7 @@ public class UploadService extends IntentService {
 
         builder.setContentTitle("Upload failed");
         builder.setContentText(name);
-        builder.setSmallIcon(R.drawable.ic_menu_upload_fail_white);
+        builder.setSmallIcon(R.drawable.filestack__ic_menu_upload_fail_white);
 
         notificationManager.notify(id, builder.build());
     }

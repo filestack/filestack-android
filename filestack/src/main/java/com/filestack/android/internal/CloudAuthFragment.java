@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.filestack.android.FsActivity;
 import com.filestack.android.R;
 
 /** Displays "cloud auth required" message and creates an intent to open the link in the browser. */
@@ -50,19 +49,18 @@ public class CloudAuthFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        View baseView = inflater.inflate(R.layout.fragment_auth, container, false);
+        View baseView = inflater.inflate(R.layout.filestack__fragment_auth, container, false);
 
         ImageView iconView = baseView.findViewById(R.id.icon);
         iconView.setImageResource(sourceInfo.getIconId());
 
-        // Replace placeholder text with actual cloud name
         String target = "Cloud";
         String replacement = getString(sourceInfo.getTextId());
         for (int id : TEXT_VIEW_IDS) {
             TextView textView = baseView.findViewById(id);
             Util.textViewReplace(textView, target, replacement);
         }
-
+        
         Button button = baseView.findViewById(R.id.button);
         button.setOnClickListener(this);
 
@@ -71,10 +69,6 @@ public class CloudAuthFragment extends Fragment implements
 
     @Override
     public void onClick(View view) {
-//        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-//        CustomTabsIntent customTabsIntent = builder.build();
-//        customTabsIntent.launchUrl(getContext(), Uri.parse(authUrl));
-
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(authUrl));
         startActivity(intent);

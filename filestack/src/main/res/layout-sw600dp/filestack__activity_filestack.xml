@@ -7,7 +7,7 @@
     tools:context="com.filestack.android.FsActivity">
 
     <include
-        layout="@layout/app_bar_filestack"
+        layout="@layout/filestack__app_bar_filestack"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_toEndOf="@id/nav_view"

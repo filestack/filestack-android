@@ -9,7 +9,7 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-
+        int id = com.filestack.android.R.string.filestack__auth_action;
         getFragmentManager().beginTransaction()
                 .replace(R.id.fragment, new SettingsFragment())
                 .commit();

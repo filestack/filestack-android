@@ -59,7 +59,7 @@ public class CloudListFragment extends Fragment implements BackButtonListener {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        View baseView = inflater.inflate(R.layout.fragment_cloud_list, container, false);
+        View baseView = inflater.inflate(R.layout.filestack__fragment_cloud_list, container, false);
 
         recyclerView = baseView.findViewById(R.id.recycler);
         Intent intent = requireActivity().getIntent();
@@ -76,7 +76,7 @@ public class CloudListFragment extends Fragment implements BackButtonListener {
             isListMode = savedInstanceState.getBoolean(STATE_IS_LIST_MODE);
         }
 
-        int spacing = getResources().getDimensionPixelSize(R.dimen.grid_spacing);
+        int spacing = getResources().getDimensionPixelSize(R.dimen.filestack__grid_spacing);
         spacer = new SpacingDecoration(spacing, spacing, false);
 
         setupRecyclerLayout();
@@ -98,11 +98,11 @@ public class CloudListFragment extends Fragment implements BackButtonListener {
         if (id == R.id.action_toggle_list_grid) {
             isListMode = !isListMode;
             if (isListMode) {
-                item.setIcon(R.drawable.ic_menu_grid_white);
-                item.setTitle(R.string.menu_view_grid);
+                item.setIcon(R.drawable.filestack__ic_menu_grid_white);
+                item.setTitle(R.string.filestack__menu_view_grid);
             } else  {
-                item.setIcon(R.drawable.ic_menu_list_white);
-                item.setTitle(R.string.menu_view_list);
+                item.setIcon(R.drawable.filestack__ic_menu_list_white);
+                item.setTitle(R.string.filestack__menu_view_list);
             }
             setupRecyclerLayout();
             return true;
@@ -119,12 +119,12 @@ public class CloudListFragment extends Fragment implements BackButtonListener {
 
         if (isListMode) {
             layout = new LinearLayoutManager((context));
-            adapter.setViewType(R.layout.cloud_list_item);
+            adapter.setViewType(R.layout.filestack__cloud_list_item);
             recyclerView.removeItemDecoration(spacer);
         } else  {
-            int numColumns = getResources().getInteger(R.integer.grid_columns);
+            int numColumns = getResources().getInteger(R.integer.filestack__grid_columns);
             layout = new GridLayoutManager(context, numColumns);
-            adapter.setViewType(R.layout.cloud_grid_item);
+            adapter.setViewType(R.layout.filestack__cloud_grid_item);
             recyclerView.addItemDecoration(spacer);
         }
 

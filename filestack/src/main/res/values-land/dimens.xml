@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="nav_header_height">48dp</dimen>
-    <integer name="grid_columns">5</integer>
+    <dimen name="filestack__nav_header_height">48dp</dimen>
+    <integer name="filestack__grid_columns">5</integer>
 </resources>

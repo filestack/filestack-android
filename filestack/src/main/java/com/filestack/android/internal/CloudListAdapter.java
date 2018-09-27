@@ -5,7 +5,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import com.filestack.CloudItem;
 import com.filestack.CloudResponse;
@@ -54,11 +53,12 @@ class CloudListAdapter extends RecyclerView.Adapter<CloudListViewHolder> impleme
     private final HashMap<String, ArrayList<CloudItem>> folders;
     private final HashMap<String, String> nextTokens;
     private final String sourceId;
+    private final String[] mimeTypes;
+    private final Selector selector;
     private int viewType;
     private RecyclerView recyclerView;
     private String currentPath;
-    private String[] mimeTypes;
-    private Selector selector;
+
 
     CloudListAdapter(String sourceId, String[] mimeTypes, Bundle saveInstanceState,
                      Selector selector) {
@@ -103,7 +103,7 @@ class CloudListAdapter extends RecyclerView.Adapter<CloudListViewHolder> impleme
         holder.setIcon(item.getThumbnail());
         holder.setOnClickListener(this);
         holder.setEnabled(item.isFolder() || Util.mimeAllowed(mimeTypes, item.getMimetype()));
-        int tintColor = holder.itemView.getResources().getColor(R.color.primary_dark);
+        int tintColor = holder.itemView.getResources().getColor(R.color.filestack__primary_dark);
         holder.setSelectionTint(tintColor);
         
         Selection selection = SelectionFactory.from(sourceId, item);
@@ -131,8 +131,6 @@ class CloudListAdapter extends RecyclerView.Adapter<CloudListViewHolder> impleme
         ArrayList<CloudItem> folder = folders.get(currentPath);
         return folder != null ? folder.size(): 0;
     }
-
-    // Interface overrides (alphabetical order)
 
     @Override
     public void onSubscribe(@NonNull Disposable d) { }
@@ -191,9 +189,8 @@ class CloudListAdapter extends RecyclerView.Adapter<CloudListViewHolder> impleme
             return;
         }
 
-        SelectionFactory.from(sourceId, item);
-        Selection selection = new Selection(sourceId, item.getPath(), item.getMimetype(),
-                item.getName());
+
+        Selection selection = SelectionFactory.from(sourceId, item);
         boolean selected = selector.toggle(selection);
         CloudListViewHolder holder = (CloudListViewHolder) recyclerView.findViewHolderForItemId(id);
 

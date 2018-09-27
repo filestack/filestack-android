@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary_light">#FFE0B2</color>
-    <color name="primary">#FF9800</color>
-    <color name="primary_dark">#F57C00</color>
-    <color name="accent">#448AFF</color>
-    <color name="text_secondary">#89000000</color>
+    <color name="filestack__primary_light">#FFE0B2</color>
+    <color name="filestack__primary">#FF9800</color>
+    <color name="filestack__primary_dark">#F57C00</color>
+    <color name="filestack__accent">#448AFF</color>
+    <color name="filestack__text_secondary">#89000000</color>
 
     <!-- Had the idea to customize app bar based on source. -->
-    <color name="theme_source_camera">#212121</color>
-    <color name="theme_source_device">#212121</color>
-    <color name="theme_source_facebook">#212121</color>
-    <color name="theme_source_google_photos">#212121</color>
-    <color name="theme_source_instagram">#212121</color>
-    <color name="theme_source_amazon_drive">#212121</color>
-    <color name="theme_source_box">#212121</color>
-    <color name="theme_source_dropbox">#212121</color>
-    <color name="theme_source_google_drive">#212121</color>
-    <color name="theme_source_onedrive">#212121</color>
-    <color name="theme_source_github">#212121</color>
-    <color name="theme_source_gmail">#212121</color>
+    <color name="filestack__theme_source">#212121</color>
+    <color name="filestack__theme_source_camera">@color/filestack__theme_source</color>
+    <color name="filestack__theme_source_device">@color/filestack__theme_source</color>
+    <color name="filestack__theme_source_facebook">@color/filestack__theme_source</color>
+    <color name="filestack__theme_source_google_photos">@color/filestack__theme_source</color>
+    <color name="filestack__theme_source_instagram">@color/filestack__theme_source</color>
+    <color name="filestack__theme_source_amazon_drive">@color/filestack__theme_source</color>
+    <color name="filestack__theme_source_box">@color/filestack__theme_source</color>
+    <color name="filestack__theme_source_dropbox">@color/filestack__theme_source</color>
+    <color name="filestack__theme_source_google_drive">@color/filestack__theme_source</color>
+    <color name="filestack__theme_source_onedrive">@color/filestack__theme_source</color>
+    <color name="filestack__theme_source_github">@color/filestack__theme_source</color>
+    <color name="filestack__theme_source_gmail">@color/filestack__theme_source</color>
 </resources>
