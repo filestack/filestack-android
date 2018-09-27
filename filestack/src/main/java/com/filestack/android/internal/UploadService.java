@@ -2,7 +2,6 @@ package com.filestack.android.internal;
 
 import android.annotation.TargetApi;
 import android.app.IntentService;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -10,8 +9,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.filestack.FileLink;
 import com.filestack.Sources;
@@ -149,17 +149,11 @@ public class UploadService extends IntentService {
         String channelId = FsConstants.NOTIFY_CHANNEL_UPLOAD;
         NotificationManager notificationManager;
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification.Builder builder;
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId);
 
         if (total == 0) {
             notificationManager.cancel(id);
             return;
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            builder = new Notification.Builder(this, channelId);
-        } else {
-            builder = new Notification.Builder(this);
         }
 
         if (total == done) {
@@ -179,13 +173,7 @@ public class UploadService extends IntentService {
         String channelId = FsConstants.NOTIFY_CHANNEL_UPLOAD;
         NotificationManager notificationManager;
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification.Builder builder;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            builder = new Notification.Builder(this, channelId);
-        } else {
-            builder = new Notification.Builder(this);
-        }
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId);
 
         builder.setContentTitle("Upload failed");
         builder.setContentText(name);
