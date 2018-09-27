@@ -61,7 +61,7 @@ public class CloudAuthFragment extends Fragment implements
             TextView textView = baseView.findViewById(id);
             Util.textViewReplace(textView, target, replacement);
         }
-
+        
         Button button = baseView.findViewById(R.id.button);
         button.setOnClickListener(this);
 
