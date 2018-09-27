@@ -10,7 +10,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.filestack.FileLink;
@@ -36,9 +35,8 @@ import java.util.Locale;
  * TODO Add option to disable notifications
  */
 public class UploadService extends IntentService {
-    public static final String SERVICE_NAME = "uploadService";
-    public static final String PREF_NOTIFY_ID_COUNTER = "notifyIdCounter";
-    public static final String TAG = "uploadService";
+    private static final String SERVICE_NAME = "uploadService";
+    private static final String PREF_NOTIFY_ID_COUNTER = "notifyIdCounter";
 
     public UploadService() {
         super(SERVICE_NAME);
@@ -74,7 +72,6 @@ public class UploadService extends IntentService {
         int i = 0;
         for (Selection item : selections) {
             String name = item.getName();
-            String provider = item.getProvider();
 
             sendProgressNotification(statusId, i, total, name);
             FileLink fileLink = upload(item, storeOpts);

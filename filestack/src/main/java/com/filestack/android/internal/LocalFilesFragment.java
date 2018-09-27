@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.filestack.Sources;
 import com.filestack.android.FsConstants;
 import com.filestack.android.R;
 import com.filestack.android.Selection;
@@ -32,7 +31,6 @@ import static android.app.Activity.RESULT_FIRST_USER;
 public class LocalFilesFragment extends Fragment implements View.OnClickListener {
     private static final String ARG_ALLOW_MULTIPLE_FILES = "multipleFiles";
     private static final int READ_REQUEST_CODE = RESULT_FIRST_USER;
-    private static final String TAG = "LocalFilesFragment";
 
     public static Fragment newInstance(boolean allowMultipleFiles) {
         Fragment fragment = new LocalFilesFragment();
@@ -79,23 +77,20 @@ public class LocalFilesFragment extends Fragment implements View.OnClickListener
     }
 
     @Override
-    // Receive selected documents and process them
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
 
         if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             ClipData clipData = resultData.getClipData();
             ArrayList<Uri> uris = new ArrayList<>();
 
-            // Multiple documents were selected
             if (clipData != null) {
                 for (int i = 0; i < clipData.getItemCount(); i++) {
                     uris.add(clipData.getItemAt(i).getUri());
                 }
-            } else { // Single document was selected
+            } else {
                 uris.add(resultData.getData());
             }
 
-            // Process documents
             for (Uri uri : uris) {
                 Selection selection = processUri(uri);
                 Util.getSelectionSaver().toggleItem(selection);
@@ -103,8 +98,7 @@ public class LocalFilesFragment extends Fragment implements View.OnClickListener
         }
     }
 
-    // Get metadata for specified URI and return it loaded into Selector instance
-    public Selection processUri(Uri uri) {
+    private Selection processUri(Uri uri) {
         ContentResolver resolver = getActivity().getContentResolver();
 
         Cursor cursor = null;
@@ -122,8 +116,7 @@ public class LocalFilesFragment extends Fragment implements View.OnClickListener
                 String name = cursor.getString(nameIndex);
                 int size = cursor.getInt(sizeIndex);
                 String mimeType = resolver.getType(uri);
-
-                return new Selection(Sources.DEVICE, uri, size, mimeType, name);
+                return SelectionFactory.from(uri, size, mimeType, name);
             } else {
                 return null;
             }
