@@ -93,6 +93,7 @@ public class FsActivity extends AppCompatActivity implements
         // Create app bar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(R.string.picker_title);
 
         // Create nav drawer
         drawer = findViewById(R.id.drawer_layout);
@@ -262,6 +263,9 @@ public class FsActivity extends AppCompatActivity implements
         if (!source.equals(selectedSource)) {
             Util.getSelectionSaver().clear();
         }
+
+        SourceInfo sourceInfo = Util.getSourceInfo(source);
+        getSupportActionBar().setSubtitle(sourceInfo.getTextId());
 
         selectedSource = source;
         nav.setCheckedItem(id);
