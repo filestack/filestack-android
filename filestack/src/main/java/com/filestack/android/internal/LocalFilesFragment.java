@@ -52,19 +52,30 @@ public class LocalFilesFragment extends Fragment implements View.OnClickListener
 
     @Override
     public void onClick(View view) {
-        Intent docIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        docIntent.addCategory(Intent.CATEGORY_OPENABLE);
-        boolean allowMultipleFiles = getArguments().getBoolean(ARG_ALLOW_MULTIPLE_FILES, true);
-        docIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultipleFiles);
-        docIntent.setType("*/*");
+        startFilePicker();
+    }
 
-        Intent launchIntent = getActivity().getIntent();
-        String[] mimeTypes = launchIntent.getStringArrayExtra(FsConstants.EXTRA_MIME_TYPES);
-        if (mimeTypes != null) {
-            docIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+    private void startFilePicker() {
+        final Intent intent;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            boolean allowMultipleFiles = getArguments().getBoolean(ARG_ALLOW_MULTIPLE_FILES, true);
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultipleFiles);
+            intent.setType("*/*");
+
+            Intent launchIntent = getActivity().getIntent();
+            String[] mimeTypes = launchIntent.getStringArrayExtra(FsConstants.EXTRA_MIME_TYPES);
+            if (mimeTypes != null) {
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+            }
+            startActivityForResult(intent, READ_REQUEST_CODE);
+        } else {
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("*/*");
+            startActivityForResult(intent, READ_REQUEST_CODE);
         }
-
-        startActivityForResult(docIntent, READ_REQUEST_CODE);
+        startActivityForResult(intent, READ_REQUEST_CODE);
     }
 
     @Override
