@@ -1,5 +1,12 @@
 Change Log
 ==========
+Version 5.1.0 *(2018-09-27)*
+----------------------------
+
+ * [Feature] Single file choice can now be enforced with `FsConstants.EXTRA_ALLOW_MULTIPLE_FILES` flag. This flag defaults to **true** which means that without setting it to false, a user can choose multiple files to upload.
+ * [UI change] Source name (like Dropbox/Facebook) is now displayed in Action Bar.
+ * [UI fix] Checkmarks of selected files are now properly tinted. 
+ * Java SDK has been updated to the recent version (`0.8.2`).
 
 Version 5.0.0-0.3.0 *(2018-05-21)*
 ----------------------------
