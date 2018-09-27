@@ -33,43 +33,31 @@ public class Selection implements Parcelable {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        if (!(obj instanceof Selection)) {
+        Selection selection = (Selection) o;
+
+        if (size != selection.size) return false;
+        if (provider != null ? !provider.equals(selection.provider) : selection.provider != null)
             return false;
-        }
-
-        Selection other = (Selection) obj;
-
-        if (!this.getProvider().equals(other.getProvider())) {
+        if (path != null ? !path.equals(selection.path) : selection.path != null) return false;
+        if (uri != null ? !uri.equals(selection.uri) : selection.uri != null) return false;
+        if (mimeType != null ? !mimeType.equals(selection.mimeType) : selection.mimeType != null)
             return false;
-        }
+        return name != null ? name.equals(selection.name) : selection.name == null;
+    }
 
-        if (this.getPath() != null) {
-            if (other.getPath() == null) {
-                return false;
-            }
-            if (!this.getPath().equals(other.getPath())) {
-                return false;
-            }
-        }
-
-        if (this.getUri() != null) {
-            if (other.getUri() == null) {
-                return false;
-            }
-            if (!this.getUri().equals(other.getUri())) {
-                return false;
-            }
-            if (this.getSize() != other.getSize()) {
-                return false;
-            }
-        }
-
-        return this.getName().equals(other.getName());
+    @Override
+    public int hashCode() {
+        int result = provider != null ? provider.hashCode() : 0;
+        result = 31 * result + (path != null ? path.hashCode() : 0);
+        result = 31 * result + (uri != null ? uri.hashCode() : 0);
+        result = 31 * result + size;
+        result = 31 * result + (mimeType != null ? mimeType.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        return result;
     }
 
     /** The source this file came from. */
