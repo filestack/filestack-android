@@ -79,6 +79,8 @@ public class FsActivity extends AppCompatActivity implements
     private boolean shouldCheckAuth;
     private NavigationView nav;
 
+    private boolean allowMultipleFiles;
+
     // Activity lifecycle overrides (in sequential order)
 
     @Override
@@ -111,6 +113,8 @@ public class FsActivity extends AppCompatActivity implements
         if (sources == null) {
             sources = Util.getDefaultSources();
         }
+
+        allowMultipleFiles = intent.getBooleanExtra(FsConstants.EXTRA_ALLOW_MULTIPLE_FILES, true);
 
         // Check if MIME filtering conflicts with camera source
         String[] mimeTypes = intent.getStringArrayExtra(FsConstants.EXTRA_MIME_TYPES);
@@ -277,7 +281,7 @@ public class FsActivity extends AppCompatActivity implements
                 shouldCheckAuth = false;
                 break;
             case Sources.DEVICE:
-                fragment = new LocalFilesFragment();
+                fragment = LocalFilesFragment.newInstance(allowMultipleFiles);
                 // Needed to prevent UI bug when selecting local source after cloud source
                 shouldCheckAuth = false;
                 break;
@@ -322,7 +326,7 @@ public class FsActivity extends AppCompatActivity implements
             transaction.commit();
         } else {
             shouldCheckAuth = false;
-            CloudListFragment cloudListFragment = CloudListFragment.create(selectedSource);
+            CloudListFragment cloudListFragment = CloudListFragment.create(selectedSource, allowMultipleFiles);
             FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
             transaction.replace(R.id.content, cloudListFragment);

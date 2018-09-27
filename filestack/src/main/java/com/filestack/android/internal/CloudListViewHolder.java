@@ -1,6 +1,9 @@
 package com.filestack.android.internal;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.support.annotation.ColorInt;
+import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,7 +21,6 @@ import com.squareup.picasso.Picasso;
  *     https://developer.android.com/guide/topics/ui/layout/recyclerview</a>
  */
 class CloudListViewHolder extends RecyclerView.ViewHolder {
-    private View itemView;
     private TextView nameView;
     private TextView infoView;
     private ImageView iconView;
@@ -26,7 +28,6 @@ class CloudListViewHolder extends RecyclerView.ViewHolder {
 
     CloudListViewHolder(View listItemView) {
         super(listItemView);
-        this.itemView = listItemView;
         this.nameView = listItemView.findViewById(R.id.name);
         this.infoView = listItemView.findViewById(R.id.info);
         this.iconView = listItemView.findViewById(R.id.icon);
@@ -60,12 +61,12 @@ class CloudListViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    void setOnClickListener(View.OnClickListener listener) {
-        itemView.setOnClickListener(listener);
+    public void setSelectionTint(@ColorInt int color) {
+        ImageViewCompat.setImageTintList(checkboxView, ColorStateList.valueOf(color));
     }
 
-    void setOnLongClickListener(View.OnLongClickListener listener) {
-        itemView.setOnLongClickListener(listener);
+    void setOnClickListener(View.OnClickListener listener) {
+        itemView.setOnClickListener(listener);
     }
 
     void setSelected(boolean selected) {

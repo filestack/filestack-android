@@ -30,8 +30,17 @@ import static android.app.Activity.RESULT_FIRST_USER;
  *     https://developer.android.com/guide/topics/providers/document-provider</a>
  */
 public class LocalFilesFragment extends Fragment implements View.OnClickListener {
+    private static final String ARG_ALLOW_MULTIPLE_FILES = "multipleFiles";
     private static final int READ_REQUEST_CODE = RESULT_FIRST_USER;
     private static final String TAG = "LocalFilesFragment";
+
+    public static Fragment newInstance(boolean allowMultipleFiles) {
+        Fragment fragment = new LocalFilesFragment();
+        Bundle args = new Bundle();
+        args.putBoolean(ARG_ALLOW_MULTIPLE_FILES, allowMultipleFiles);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Nullable
     @Override
@@ -45,7 +54,8 @@ public class LocalFilesFragment extends Fragment implements View.OnClickListener
     public void onClick(View view) {
         Intent docIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         docIntent.addCategory(Intent.CATEGORY_OPENABLE);
-        docIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        boolean allowMultipleFiles = getArguments().getBoolean(ARG_ALLOW_MULTIPLE_FILES, true);
+        docIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultipleFiles);
         docIntent.setType("*/*");
 
         Intent launchIntent = getActivity().getIntent();
@@ -82,7 +92,7 @@ public class LocalFilesFragment extends Fragment implements View.OnClickListener
         }
     }
 
-    // Get metadata for specified URI and return it loaded into Selection instance
+    // Get metadata for specified URI and return it loaded into Selector instance
     public Selection processUri(Uri uri) {
         ContentResolver resolver = getActivity().getContentResolver();
 

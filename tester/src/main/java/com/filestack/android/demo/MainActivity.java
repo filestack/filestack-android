@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
         Config config = new Config(apiKey, getString(R.string.return_url), policy, signature);
         intent.putExtra(FsConstants.EXTRA_CONFIG, config);
+        intent.putExtra(FsConstants.EXTRA_ALLOW_MULTIPLE_FILES, false);
 
         startActivityForResult(intent, REQUEST_FILESTACK);
     }
