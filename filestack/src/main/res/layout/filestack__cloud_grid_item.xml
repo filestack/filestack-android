@@ -17,7 +17,7 @@
         android:scaleType="centerCrop"/>
 
     <ImageView
-        app:srcCompat="@drawable/ic_list_checkbox"
+        app:srcCompat="@drawable/filestack__ic_list_checkbox"
         android:id="@+id/checkbox"
         android:layout_width="24dp"
         android:layout_height="24dp"

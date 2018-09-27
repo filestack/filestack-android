@@ -135,8 +135,8 @@ public class UploadService extends IntentService {
                 getSystemService(Context.NOTIFICATION_SERVICE);
 
         String id = FsConstants.NOTIFY_CHANNEL_UPLOAD;
-        CharSequence name = getString(R.string.notify_channel_upload_name);
-        String description = getString(R.string.notify_channel_upload_description);
+        CharSequence name = getString(R.string.filestack__notify_channel_upload_name);
+        String description = getString(R.string.filestack__notify_channel_upload_description);
         int importance = NotificationManager.IMPORTANCE_DEFAULT;
 
         NotificationChannel channel = new NotificationChannel(id, name, importance);
@@ -158,10 +158,10 @@ public class UploadService extends IntentService {
 
         if (total == done) {
             builder.setContentTitle(String.format(locale, "Uploaded %d files", done));
-            builder.setSmallIcon(R.drawable.ic_menu_upload_done_white);
+            builder.setSmallIcon(R.drawable.filestack__ic_menu_upload_done_white);
         } else {
             builder.setContentTitle(String.format(locale, "Uploading %d/%d files", done, total));
-            builder.setSmallIcon(R.drawable.ic_menu_upload_white);
+            builder.setSmallIcon(R.drawable.filestack__ic_menu_upload_white);
             builder.setContentText(name);
             builder.setProgress(total, done, false);
         }
@@ -177,7 +177,7 @@ public class UploadService extends IntentService {
 
         builder.setContentTitle("Upload failed");
         builder.setContentText(name);
-        builder.setSmallIcon(R.drawable.ic_menu_upload_fail_white);
+        builder.setSmallIcon(R.drawable.filestack__ic_menu_upload_fail_white);
 
         notificationManager.notify(id, builder.build());
     }

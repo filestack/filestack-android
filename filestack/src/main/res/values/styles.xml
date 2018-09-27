@@ -1,18 +1,18 @@
 <resources>
 
-    <style name="NoActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="FilestackNoActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accent</item>
+        <item name="colorPrimary">@color/filestack__primary</item>
+        <item name="colorPrimaryDark">@color/filestack__primary_dark</item>
+        <item name="colorAccent">@color/filestack__accent</item>
     </style>
 
-    <style name="AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="FilestackAppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="FilestackPopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="NavItem">
+    <style name="FilestackNavItem">
         <item name="android:checkable">true</item>
     </style>
 </resources>

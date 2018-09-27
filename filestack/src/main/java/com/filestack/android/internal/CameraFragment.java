@@ -41,7 +41,7 @@ public class CameraFragment extends Fragment implements BackButtonListener, View
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_camera, container, false);
+        ViewGroup root = (ViewGroup) inflater.inflate(R.layout.filestack__fragment_camera, container, false);
         Button photoButton = root.findViewById(R.id.take_photo);
         Button videoButton = root.findViewById(R.id.take_video);
 

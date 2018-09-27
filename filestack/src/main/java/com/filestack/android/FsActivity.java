@@ -90,18 +90,18 @@ public class FsActivity extends AppCompatActivity implements
         Intent intent = getIntent();
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 
-        setContentView(R.layout.activity_filestack);
+        setContentView(R.layout.filestack__activity_filestack);
 
         // Create app bar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.picker_title);
+        getSupportActionBar().setTitle(R.string.filestack__picker_title);
 
         // Create nav drawer
         drawer = findViewById(R.id.drawer_layout);
         if (drawer != null) {
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                    this, drawer, toolbar, R.string.nav_drawer_open, R.string.nav_drawer_close);
+                    this, drawer, toolbar, R.string.filestack__nav_drawer_open, R.string.filestack__nav_drawer_close);
             drawer.addDrawerListener(toggle);
             toggle.syncState();
         }
@@ -235,7 +235,7 @@ public class FsActivity extends AppCompatActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.filestack, menu);
+        getMenuInflater().inflate(R.menu.filestack__menu, menu);
         return true;
     }
 

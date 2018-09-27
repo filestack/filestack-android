@@ -24,6 +24,8 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
+        resourcePrefix 'filestack__'
     }
     buildTypes {
         release {

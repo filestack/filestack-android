@@ -5,7 +5,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import com.filestack.CloudItem;
 import com.filestack.CloudResponse;
@@ -103,7 +102,7 @@ class CloudListAdapter extends RecyclerView.Adapter<CloudListViewHolder> impleme
         holder.setIcon(item.getThumbnail());
         holder.setOnClickListener(this);
         holder.setEnabled(item.isFolder() || Util.mimeAllowed(mimeTypes, item.getMimetype()));
-        int tintColor = holder.itemView.getResources().getColor(R.color.primary_dark);
+        int tintColor = holder.itemView.getResources().getColor(R.color.filestack__primary_dark);
         holder.setSelectionTint(tintColor);
         
         Selection selection = SelectionFactory.from(sourceId, item);

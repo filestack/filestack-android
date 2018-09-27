@@ -29,7 +29,7 @@
         android:layout_toEndOf="@id/divider"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:context="com.filestack.android.FsActivity"
-        tools:showIn="@layout/app_bar_filestack"
+        tools:showIn="@layout/filestack__app_bar_filestack"
         android:layout_toRightOf="@id/divider" />
 
 </RelativeLayout>
