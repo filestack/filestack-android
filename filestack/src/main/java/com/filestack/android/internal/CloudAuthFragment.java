@@ -54,7 +54,6 @@ public class CloudAuthFragment extends Fragment implements
         ImageView iconView = baseView.findViewById(R.id.icon);
         iconView.setImageResource(sourceInfo.getIconId());
 
-        // Replace placeholder text with actual cloud name
         String target = "Cloud";
         String replacement = getString(sourceInfo.getTextId());
         for (int id : TEXT_VIEW_IDS) {
@@ -70,10 +69,6 @@ public class CloudAuthFragment extends Fragment implements
 
     @Override
     public void onClick(View view) {
-//        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-//        CustomTabsIntent customTabsIntent = builder.build();
-//        customTabsIntent.launchUrl(getContext(), Uri.parse(authUrl));
-
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(authUrl));
         startActivity(intent);

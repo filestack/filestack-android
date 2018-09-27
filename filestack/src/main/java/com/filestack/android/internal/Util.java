@@ -2,10 +2,8 @@ package com.filestack.android.internal;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v4.content.MimeTypeFilter;
 import android.widget.TextView;
@@ -32,9 +30,6 @@ public class Util {
 
     private static Client client;
     private static SelectionSaver selectionSaver;
-
-    // Pull together the ids to different types of resources for each file selection source
-    // There might be a cleaner way to do this, but the only alternative I found was res arrays
 
     static {
         SOURCES_LIST.add(Sources.CAMERA);
@@ -129,25 +124,15 @@ public class Util {
         return new ArrayList<>(SOURCES_LIST.subList(0, 6));
     }
 
-
-    // Used for the nav drawer
     public static int getSourceIntId(String stringId) {
         return SOURCES_LIST.indexOf(stringId) + 1;
     }
 
-    // Used for the nav drawer
     public static String getSourceStringId(int intId) {
         return SOURCES_LIST.get(intId - 1);
     }
 
-    // It's easier to save a string or int on orientation or other changes, so we have lookups
     public static SourceInfo getSourceInfo(String stringId) {
-        return SOURCES_MAP.get(stringId);
-    }
-
-    // It's easier to save a string or int on orientation or other changes, so we have lookups
-    public static SourceInfo getSourceInfo(int intId) {
-        String stringId = Util.getSourceStringId(intId);
         return SOURCES_MAP.get(stringId);
     }
 
@@ -157,39 +142,22 @@ public class Util {
         view.setText(text);
     }
 
-    // Used to navigate back a directory in the cloud source list.
     /** Removes the last part of a file path. */
     public static String trimLastPathSection(String path) {
         String[] sections = path.split("/");
-        String newPath = "/";
+        StringBuilder newPath = new StringBuilder("/");
         for (int i = 1; i < sections.length - 1; i++) {
-            newPath += sections[i] + "/";
+            newPath.append(sections[i]).append("/");
         }
-        return newPath;
+        return newPath.toString();
     }
 
-    // We keep a singleton list of selections since it's accessed by multiple classes
     // TODO The selection saving might be done in a better way, without a singleton
     public static SelectionSaver getSelectionSaver() {
         if (selectionSaver == null) {
             selectionSaver = new SimpleSelectionSaver();
         }
         return selectionSaver;
-    }
-
-    public static String getPathFromMediaUri(Context context, Uri uri) {
-        Cursor cursor = null;
-        try {
-            String[] projection = { MediaStore.Images.Media.DATA };
-            cursor = context.getContentResolver().query(uri,  projection, null, null, null);
-            int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            return cursor.getString(columnIndex);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
     }
 
     // TODO Paths used for media should be changed to system-wide folders instead of app-internal

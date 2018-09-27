@@ -81,7 +81,6 @@ public class FsActivity extends AppCompatActivity implements
 
     private boolean allowMultipleFiles;
 
-    // Activity lifecycle overrides (in sequential order)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,12 +91,10 @@ public class FsActivity extends AppCompatActivity implements
 
         setContentView(R.layout.filestack__activity_filestack);
 
-        // Create app bar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.filestack__picker_title);
 
-        // Create nav drawer
         drawer = findViewById(R.id.drawer_layout);
         if (drawer != null) {
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -108,7 +105,6 @@ public class FsActivity extends AppCompatActivity implements
         nav = findViewById(R.id.nav_view);
         nav.setNavigationItemSelectedListener(this);
 
-        // Get sources list for nav drawer
         List<String> sources = (List<String>) intent.getSerializableExtra(FsConstants.EXTRA_SOURCES);
         if (sources == null) {
             sources = Util.getDefaultSources();
@@ -116,7 +112,6 @@ public class FsActivity extends AppCompatActivity implements
 
         allowMultipleFiles = intent.getBooleanExtra(FsConstants.EXTRA_ALLOW_MULTIPLE_FILES, true);
 
-        // Check if MIME filtering conflicts with camera source
         String[] mimeTypes = intent.getStringArrayExtra(FsConstants.EXTRA_MIME_TYPES);
         if (mimeTypes != null && sources.contains(Sources.CAMERA)) {
             if (!Util.mimeAllowed(mimeTypes, "image/jpeg") && !Util.mimeAllowed(mimeTypes, "video/mp4")) {
@@ -125,7 +120,6 @@ public class FsActivity extends AppCompatActivity implements
             }
         }
 
-        // Add sources to nav drawer
         Menu menu = nav.getMenu();
         int index = 0;
         for (String source : sources) {
@@ -136,24 +130,19 @@ public class FsActivity extends AppCompatActivity implements
             item.setCheckable(true);
         }
 
-        // Reload or initialize state
         if (savedInstanceState == null) {
-            // Initialize static client
             Config config = (Config) intent.getSerializableExtra(FsConstants.EXTRA_CONFIG);
             String sessionToken = preferences.getString(PREF_SESSION_TOKEN, null);
             Util.initializeClient(config, sessionToken);
 
-            // Clear selected item list
             Util.getSelectionSaver().clear();
 
-            // Open to default source
             selectedSource = sources.get(0);
             nav.getMenu().performIdentifierAction(Util.getSourceIntId(selectedSource), 0);
             if (drawer != null) {
                 drawer.openDrawer(Gravity.START);
             }
         } else {
-            // Retrieve current source
             selectedSource = savedInstanceState.getString(STATE_SELECTED_SOURCE);
             shouldCheckAuth = savedInstanceState.getBoolean(STATE_SHOULD_CHECK_AUTH);
         }
@@ -189,8 +178,6 @@ public class FsActivity extends AppCompatActivity implements
         outState.putBoolean(STATE_SHOULD_CHECK_AUTH, shouldCheckAuth);
     }
 
-    // Other Activity overrides (alphabetical order)
-
     @Override
     public void onAttachFragment(Fragment fragment) {
         super.onAttachFragment(fragment);
@@ -213,11 +200,7 @@ public class FsActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         if (id == R.id.action_logout) {
             SourceInfo info = Util.getSourceInfo(selectedSource);
             Util.getClient()
@@ -244,8 +227,6 @@ public class FsActivity extends AppCompatActivity implements
         menu.findItem(R.id.action_upload).setVisible(!Util.getSelectionSaver().isEmpty());
         return true;
     }
-
-    // Interface overrides (alphabetical order)
 
     @Override
     public void onComplete() {
@@ -286,8 +267,6 @@ public class FsActivity extends AppCompatActivity implements
                 shouldCheckAuth = false;
                 break;
             default:
-                // TODO Switching source views shouldn't depend on a network request
-                // If the request to check the auth status takes too long, the UX is broken
                 checkAuth();
         }
 
@@ -315,7 +294,6 @@ public class FsActivity extends AppCompatActivity implements
         String authUrl = contents.getAuthUrl();
 
         // TODO Switching source views shouldn't depend on a network request
-        // If the request to check the auth status takes too long, the UX is broken
 
         if (authUrl != null) {
             shouldCheckAuth = true;
@@ -333,8 +311,6 @@ public class FsActivity extends AppCompatActivity implements
             transaction.commit();
         }
     }
-
-    // Private helper methods (alphabetical order)
 
     private void checkAuth() {
         SourceInfo info = Util.getSourceInfo(selectedSource);

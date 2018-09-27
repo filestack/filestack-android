@@ -53,11 +53,12 @@ class CloudListAdapter extends RecyclerView.Adapter<CloudListViewHolder> impleme
     private final HashMap<String, ArrayList<CloudItem>> folders;
     private final HashMap<String, String> nextTokens;
     private final String sourceId;
+    private final String[] mimeTypes;
+    private final Selector selector;
     private int viewType;
     private RecyclerView recyclerView;
     private String currentPath;
-    private String[] mimeTypes;
-    private Selector selector;
+
 
     CloudListAdapter(String sourceId, String[] mimeTypes, Bundle saveInstanceState,
                      Selector selector) {
@@ -131,8 +132,6 @@ class CloudListAdapter extends RecyclerView.Adapter<CloudListViewHolder> impleme
         return folder != null ? folder.size(): 0;
     }
 
-    // Interface overrides (alphabetical order)
-
     @Override
     public void onSubscribe(@NonNull Disposable d) { }
 
@@ -190,9 +189,8 @@ class CloudListAdapter extends RecyclerView.Adapter<CloudListViewHolder> impleme
             return;
         }
 
-        SelectionFactory.from(sourceId, item);
-        Selection selection = new Selection(sourceId, item.getPath(), item.getMimetype(),
-                item.getName());
+
+        Selection selection = SelectionFactory.from(sourceId, item);
         boolean selected = selector.toggle(selection);
         CloudListViewHolder holder = (CloudListViewHolder) recyclerView.findViewHolderForItemId(id);
 

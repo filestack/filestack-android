@@ -15,7 +15,12 @@ public class Selection implements Parcelable {
     private String mimeType;
     private String name;
 
-    /** Constructor for cloud file. */
+    /** Constructor for local file.
+     *
+     * @deprecated Creation of this class should not be available to any consumers of the library.
+     *     Access to this class is scheduled to be removed in future versions.
+     * */
+    @Deprecated
     public Selection(String provider, String path, String mimeType, String name) {
         this.provider = provider;
         this.path = path;
@@ -23,7 +28,12 @@ public class Selection implements Parcelable {
         this.name = name;
     }
 
-    /** Constructor for local file. */
+    /** Constructor for local file.
+     *
+     * @deprecated Creation of this class should not be available to any consumers of the library.
+     *     Access to this class is scheduled to be removed in future versions.
+     * */
+    @Deprecated
     public Selection(String provider, Uri uri, int size, String mimeType, String name) {
         this.provider = provider;
         this.uri = uri;
@@ -87,8 +97,6 @@ public class Selection implements Parcelable {
     public String getName() {
         return name;
     }
-
-    // For Parcelable interface
 
     private static class Creator implements Parcelable.Creator<Selection> {
         @Override
