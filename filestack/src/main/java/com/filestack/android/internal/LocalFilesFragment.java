@@ -107,7 +107,9 @@ public class LocalFilesFragment extends Fragment implements View.OnClickListener
     public Selection processUri(Uri uri) {
         ContentResolver resolver = getActivity().getContentResolver();
 
-        try (Cursor cursor = resolver.query(uri, null, null, null, null, null)) {
+        Cursor cursor = null;
+        try {
+            cursor = resolver.query(uri, null, null, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
                 int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
                 int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
@@ -124,6 +126,10 @@ public class LocalFilesFragment extends Fragment implements View.OnClickListener
                 return new Selection(Sources.DEVICE, uri, size, mimeType, name);
             } else {
                 return null;
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
             }
         }
     }
