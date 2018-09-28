@@ -54,75 +54,75 @@ public class Util {
     static {
         SOURCES_MAP.put(Sources.CAMERA, new SourceInfo(
                 Sources.CAMERA,
-                R.drawable.ic_source_camera,
-                R.string.source_camera,
-                R.color.theme_source_camera));
+                R.drawable.filestack__ic_source_camera,
+                R.string.filestack__source_camera,
+                R.color.filestack__theme_source_camera));
 
         SOURCES_MAP.put(Sources.DEVICE, new SourceInfo(
                 Sources.DEVICE,
-                R.drawable.ic_source_device,
-                R.string.source_device,
-                R.color.theme_source_device));
+                R.drawable.filestack__ic_source_device,
+                R.string.filestack__source_device,
+                R.color.filestack__theme_source_device));
 
         SOURCES_MAP.put(Sources.FACEBOOK, new SourceInfo(
                 Sources.FACEBOOK,
-                R.drawable.ic_source_facebook,
-                R.string.source_facebook,
-                R.color.theme_source_facebook));
+                R.drawable.filestack__ic_source_facebook,
+                R.string.filestack__source_facebook,
+                R.color.filestack__theme_source_facebook));
 
         SOURCES_MAP.put(Sources.GOOGLE_PHOTOS, new SourceInfo(
                 Sources.GOOGLE_PHOTOS,
-                R.drawable.ic_source_google_photos,
-                R.string.source_google_photos,
-                R.color.theme_source_google_photos));
+                R.drawable.filestack__ic_source_google_photos,
+                R.string.filestack__source_google_photos,
+                R.color.filestack__theme_source_google_photos));
 
         SOURCES_MAP.put(Sources.INSTAGRAM, new SourceInfo(
                 Sources.INSTAGRAM,
-                R.drawable.ic_source_instagram,
-                R.string.source_instagram,
-                R.color.theme_source_instagram));
+                R.drawable.filestack__ic_source_instagram,
+                R.string.filestack__source_instagram,
+                R.color.filestack__theme_source_instagram));
 
         SOURCES_MAP.put(Sources.AMAZON_DRIVE, new SourceInfo(
                 Sources.AMAZON_DRIVE,
-                R.drawable.ic_source_amazon_drive,
-                R.string.source_amazon_drive,
-                R.color.theme_source_amazon_drive));
+                R.drawable.filestack__ic_source_amazon_drive,
+                R.string.filestack__source_amazon_drive,
+                R.color.filestack__theme_source_amazon_drive));
 
         SOURCES_MAP.put(Sources.BOX, new SourceInfo(
                 Sources.BOX,
-                R.drawable.ic_source_box,
-                R.string.source_box,
-                R.color.theme_source_box));
+                R.drawable.filestack__ic_source_box,
+                R.string.filestack__source_box,
+                R.color.filestack__theme_source_box));
 
         SOURCES_MAP.put(Sources.DROPBOX, new SourceInfo(
                 Sources.DROPBOX,
-                R.drawable.ic_source_dropbox,
-                R.string.source_dropbox,
-                R.color.theme_source_dropbox));
+                R.drawable.filestack__ic_source_dropbox,
+                R.string.filestack__source_dropbox,
+                R.color.filestack__theme_source_dropbox));
 
         SOURCES_MAP.put(Sources.GOOGLE_DRIVE, new SourceInfo(
                 Sources.GOOGLE_DRIVE,
-                R.drawable.ic_source_google_drive,
-                R.string.source_google_drive,
-                R.color.theme_source_google_drive));
+                R.drawable.filestack__ic_source_google_drive,
+                R.string.filestack__source_google_drive,
+                R.color.filestack__theme_source_google_drive));
 
         SOURCES_MAP.put(Sources.ONEDRIVE, new SourceInfo(
                 Sources.ONEDRIVE,
-                R.drawable.ic_source_onedrive,
-                R.string.source_onedrive,
-                R.color.theme_source_onedrive));
+                R.drawable.filestack__ic_source_onedrive,
+                R.string.filestack__source_onedrive,
+                R.color.filestack__theme_source_onedrive));
 
         SOURCES_MAP.put(Sources.GITHUB, new SourceInfo(
                 Sources.GITHUB,
-                R.drawable.ic_source_github,
-                R.string.source_github,
-                R.color.theme_source_github));
+                R.drawable.filestack__ic_source_github,
+                R.string.filestack__source_github,
+                R.color.filestack__theme_source_github));
 
         SOURCES_MAP.put(Sources.GMAIL, new SourceInfo(
                 Sources.GMAIL,
-                R.drawable.ic_source_gmail,
-                R.string.source_gmail,
-                R.color.theme_source_gmail));
+                R.drawable.filestack__ic_source_gmail,
+                R.string.filestack__source_gmail,
+                R.color.filestack__theme_source_gmail));
     }
 
     public static List<String> getDefaultSources() {

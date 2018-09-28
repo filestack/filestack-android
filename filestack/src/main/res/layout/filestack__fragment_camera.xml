@@ -5,6 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <Button
+        android:id="@+id/take_video"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/filestack__camera_take_video"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/take_photo" />
+
     <ImageView
         android:id="@+id/icon"
         android:layout_width="96dp"
@@ -14,23 +27,23 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:alpha="0.54"
-        android:contentDescription="@string/auth_icon_description"
-        app:layout_constraintBottom_toTopOf="@+id/select_gallery"
+        android:contentDescription="@string/filestack__auth_icon_description"
+        app:layout_constraintBottom_toTopOf="@+id/take_photo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
-        app:srcCompat="@drawable/ic_source_device" />
+        app:srcCompat="@drawable/filestack__ic_source_camera" />
 
     <Button
-        android:id="@+id/select_gallery"
+        android:id="@+id/take_photo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:text="@string/local_files_select"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/filestack__camera_take_photo"
+        app:layout_constraintBottom_toTopOf="@+id/take_video"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/icon" />

@@ -45,7 +45,7 @@ public class LocalFilesFragment extends Fragment implements View.OnClickListener
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
-        View view = inflater.inflate(R.layout.fragment_local_files, container, false);
+        View view = inflater.inflate(R.layout.filestack__fragment_local_files, container, false);
         view.findViewById(R.id.select_gallery).setOnClickListener(this);
         return view;
     }
