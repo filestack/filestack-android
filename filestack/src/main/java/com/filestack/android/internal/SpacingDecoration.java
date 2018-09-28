@@ -16,10 +16,10 @@ import android.view.View;
  * {@link GridLayoutManager}, and {@link StaggeredGridLayoutManager}. Only handles vertical
  * orientation.
  */
-public class SpacingDecoration extends RecyclerView.ItemDecoration {
-    private int hSpacing = 0;
-    private int vSpacing = 0;
-    private boolean includeEdge = false;
+class SpacingDecoration extends RecyclerView.ItemDecoration {
+    private final int hSpacing;
+    private final int vSpacing;
+    private final boolean includeEdge;
 
     SpacingDecoration(int hSpacing, int vSpacing, boolean includeEdge) {
         this.hSpacing = hSpacing;

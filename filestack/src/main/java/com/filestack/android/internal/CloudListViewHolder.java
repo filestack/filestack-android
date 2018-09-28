@@ -34,10 +34,6 @@ class CloudListViewHolder extends RecyclerView.ViewHolder {
         this.checkboxView = listItemView.findViewById(R.id.checkbox);
     }
 
-    public int getId() {
-        return itemView.getId();
-    }
-
     public void setId(int id) {
         itemView.setId(id);
     }
@@ -61,7 +57,7 @@ class CloudListViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    public void setSelectionTint(@ColorInt int color) {
+    void setSelectionTint(@ColorInt int color) {
         ImageViewCompat.setImageTintList(checkboxView, ColorStateList.valueOf(color));
     }
 
@@ -77,7 +73,7 @@ class CloudListViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    public void setEnabled(boolean enabled) {
+    void setEnabled(boolean enabled) {
         float alpha = 1.0f;
         if (!enabled) {
             alpha = 0.45f;
