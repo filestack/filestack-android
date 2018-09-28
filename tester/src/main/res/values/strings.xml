@@ -47,6 +47,9 @@
     <string name="auto_upload_title">Enable Auto Upload</string>
     <string name="auto_upload_summary">Automatically uploads files after picker closes</string>
 
+    <string name="allow_multiple_files_title">Multiple file pick</string>
+    <string name="allow_multiple_files_summary">Allow multiple files to be selected</string>
+
     <string name="mime_filter_title">MIME Filter</string>
     <string name="mime_filter_summary">Restricts the types of files that can be uploaded</string>
     <string name="mime_filter_default">application/pdf,video/*,image/*</string>
