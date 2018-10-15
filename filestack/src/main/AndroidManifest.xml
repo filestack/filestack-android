@@ -10,8 +10,18 @@
 
         <activity
             android:name=".FsActivity"
+            android:launchMode="singleTop"
             android:label="@string/filestack__picker_title"
-            android:theme="@style/FilestackNoActionBar"/>
+            android:theme="@style/FilestackNoActionBar">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="filestack"/>
+            </intent-filter>
+
+        </activity>
 
         <service
             android:name=".internal.UploadService"

@@ -59,64 +59,6 @@ file_paths.xml:
 
 The "pictures" and "movies" names are expected to be defined.
 
-### Setup for Cloud Authorization
-To enable cloud sources, the app must be allowed to be opened by URL. This is part of the OAuth (login) flow for each cloud provider. The OAuth flow is performed within the device's default browser in accordance to OAuth's best security practices. More information about the security of performing OAuth in WebViews can be found in this Google Developers [blog post][webview-oauth].
-
-
-Setting this up requires three things: an intent filter to respond to the URL,
-an entry activity that opens for the intent, and a configuration parameter when
-launching the SDK. The intent filter is what tells the OS the app can be opened
-by a URL, the entry activity is necessary to maintain a clear activity stack,
-and the configuration parameter passes the URL to the Filestack API.
-
-To avoid a disambiguation (app chooser) dialog during the OAuth flow, the URL must be verified with Google. This (and more information about opening an app by URL) is described in the Android documentation on [App Links][app-links].
-
-EntryActivity.java:
-```java
-public class EntryActivity extends AppCompatActivity {
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Check to see if this Activity is the root activity
-        if (isTaskRoot()) {
-            // This Activity is the only Activity, so
-            //  the app wasn't running. So start the app from the
-            //  beginning (redirect to MainActivity)
-            Intent mainIntent = getIntent(); // Copy the Intent used to launch me
-            // Launch the real root Activity (launch Intent)
-            mainIntent.setClass(this, MainActivity.class);
-            // I'm done now, so finish()
-            startActivity(mainIntent);
-            finish();
-        } else {
-            // App was already running, so just finish, which will drop the user
-            //  in to the activity that was at the top of the task stack
-            finish();
-        }
-    }
-}
-```
-
-Inside AndroidManifest.xml:
-```xml
-<activity android:name=".EntryActivity">
-
-    <intent-filter android:label="@string/app_name">
-        <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-        <!-- Accepts URIs beginning with "https://demo.android.filestack.com” -->
-        <data android:scheme="https" android:host="demo.android.filestack.com" />
-    </intent-filter>
-
-</activity>
-```
-
-Pass the URL when building the client configuration:
-```java
-Config config = new Config("API_KEY", "https://demo.android.filestack.com", "POLICY", "SIGNATURE");
-```
-
 ## Upload files
 
 ### Launch activity
