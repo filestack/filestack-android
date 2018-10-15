@@ -73,7 +73,6 @@ public class LocalFilesFragment extends Fragment implements View.OnClickListener
             intent.setType("*/*");
             startActivityForResult(intent, READ_REQUEST_CODE);
         }
-        startActivityForResult(intent, READ_REQUEST_CODE);
     }
 
     @Override
