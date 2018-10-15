@@ -226,6 +226,9 @@ At present this SDK doesn't offer many customization options, but the [Java
 SDK][java-sdk] can be used to build a native UI. This SDK adds UI and
 convenience on top of the Java SDK.
 
+## Proguard
+Filestack Android SDK definies its own `consumerProguardRule` to ensure that no additional configuration on consumer side is required.
+
 ## Deployment
 _This is for Filestack devs._ Deployments are made to Bintray. You must have an account that's been added to the Filestack organization to deploy. Also make sure to follow general Filestack release guidelines. "BINTRAY_USER" and "BINTRAY_API_KEY" environment variables are required. To run:
 
