@@ -1,5 +1,17 @@
 Change Log
 ==========
+Version 5.2.0 *(2018-10-15)*
+----------------------------
+
+ * [Feature] SDK now contains `consumer-proguard-rules.pro` file which should automatically resolve any issues with ProGuard. Please, see the **tester** module to see an example implementation.
+ * [Feature] **Tester** module allows to choose between single and multi file picking
+ * [Change] Cloud authentication is now based on `Chrome Custom Tabs`
+ * [Change] Removed an access to some of the flags that should be only used internally
+ * [Change] `ConstraintLayout` is no longer a dependency
+ * [Change] All SDK's resources are now prefixed with `filestack__`. This is in order to avoid using them unintentionally.
+ * **Minimum supported API level is now 16** (previously it was 19). Keep in mind that a default system file picker has been introduced in API 19 (KitKat), so you need to verify that there is an app on user's system that can handle `ACTION_GET_CONTENT` intent.
+ * Java SDK has been updated to the recent version (`0.9.0`).
+
 Version 5.1.0 *(2018-09-27)*
 ----------------------------
 
