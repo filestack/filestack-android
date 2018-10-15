@@ -36,6 +36,4 @@ public class FsConstants {
     /** Indicates an upload failed. */
     public static final String STATUS_FAILED = "failed";
 
-    /** Internal use. Channel for upload notifications. */
-    public static final String NOTIFY_CHANNEL_UPLOAD = "uploadsChannel";
 }
