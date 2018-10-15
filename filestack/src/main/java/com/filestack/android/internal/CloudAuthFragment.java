@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +16,7 @@ import android.widget.TextView;
 import com.filestack.android.R;
 
 /** Displays "cloud auth required" message and creates an intent to open the link in the browser. */
-public class CloudAuthFragment extends Fragment implements
-        View.OnClickListener, BackButtonListener {
+public class CloudAuthFragment extends Fragment implements BackButtonListener {
     private final static String ARG_SOURCE = "source";
     private final static String ARG_AUTH_URL = "authUrl";
 
@@ -62,16 +62,19 @@ public class CloudAuthFragment extends Fragment implements
         }
         
         Button button = baseView.findViewById(R.id.button);
-        button.setOnClickListener(this);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openAuthPage(authUrl);
+            }
+        });
 
         return baseView;
     }
 
-    @Override
-    public void onClick(View view) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(authUrl));
-        startActivity(intent);
+    private void openAuthPage(String authUrl) {
+        CustomTabsIntent intent = new CustomTabsIntent.Builder().build();
+        intent.launchUrl(requireContext(), Uri.parse(authUrl));
     }
 
     @Override
