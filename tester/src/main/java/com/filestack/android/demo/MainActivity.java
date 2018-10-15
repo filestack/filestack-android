@@ -97,7 +97,9 @@ public class MainActivity extends AppCompatActivity {
 
         Config config = new Config(apiKey, getString(R.string.return_url), policy, signature);
         intent.putExtra(FsConstants.EXTRA_CONFIG, config);
-        intent.putExtra(FsConstants.EXTRA_ALLOW_MULTIPLE_FILES, false);
+
+        boolean allowMultipleFiles = sharedPref.getBoolean("allow_multiple_files", true);
+        intent.putExtra(FsConstants.EXTRA_ALLOW_MULTIPLE_FILES, allowMultipleFiles);
 
         startActivityForResult(intent, REQUEST_FILESTACK);
     }

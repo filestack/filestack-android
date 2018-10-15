@@ -15,6 +15,12 @@
         android:summary="@string/auto_upload_summary"
         android:defaultValue="true"/>
 
+    <SwitchPreference
+        android:key="allow_multiple_files"
+        android:title="@string/allow_multiple_files_title"
+        android:summary="@string/allow_multiple_files_summary"
+        android:defaultValue="true"/>
+
     <EditTextPreference
         android:key="mime_filter"
         android:title="@string/mime_filter_title"
