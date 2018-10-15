@@ -9,6 +9,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -324,14 +325,13 @@ public class FsActivity extends AppCompatActivity implements
     private void uploadSelections(ArrayList<Selection> selections) {
         Intent activityIntent = getIntent();
         boolean autoUpload = activityIntent.getBooleanExtra(FsConstants.EXTRA_AUTO_UPLOAD, true);
-
         if (autoUpload) {
             StorageOptions storeOpts = (StorageOptions) activityIntent
                     .getSerializableExtra(FsConstants.EXTRA_STORE_OPTS);
             Intent uploadIntent = new Intent(this, UploadService.class);
             uploadIntent.putExtra(FsConstants.EXTRA_STORE_OPTS, storeOpts);
             uploadIntent.putExtra(FsConstants.EXTRA_SELECTION_LIST, selections);
-            startService(uploadIntent);
+            ContextCompat.startForegroundService(this, uploadIntent);
         }
 
         Intent data = new Intent();
