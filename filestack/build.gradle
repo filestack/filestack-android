@@ -7,7 +7,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 group = 'com.filestack'
-version = file(new File('../VERSION')).text.trim()
+version = '5.2.0'
 project.archivesBaseName = 'filestack-android'
 
 android {
@@ -26,6 +26,8 @@ android {
         }
 
         resourcePrefix 'filestack__'
+        buildConfigField "String", "FILESTACK_ANDROID_VERSION", "\"$version\""
+
     }
     buildTypes {
         release {
