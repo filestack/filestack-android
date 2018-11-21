@@ -73,6 +73,7 @@ FilestackPicker picker = new FilestackPicker.Builder()
                     .sources(...)
                     .mimeTypes(...)
                     .multipleFilesSelectionEnabled(...)
+                    .displayVersionInformation(...)
                     .build();
                     
 picker.launch(activity); //use an Activity instance to launch a picker                                                          
