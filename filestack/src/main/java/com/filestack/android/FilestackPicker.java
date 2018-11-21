@@ -29,7 +29,7 @@ public class FilestackPicker {
      * @param data - intent received in {@link Activity#onActivityResult(int, int, Intent)}
      * @return list of selected files ({@link Selection})
      */
-    public static List<Selection> extractSelectedFiles(Intent data) {
+    public static List<Selection> getSelectedFiles(Intent data) {
         if (!data.hasExtra(FsConstants.EXTRA_SELECTION_LIST)) {
             return Collections.emptyList();
         }
