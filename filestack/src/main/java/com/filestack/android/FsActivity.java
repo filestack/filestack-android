@@ -14,6 +14,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -215,6 +216,8 @@ public class FsActivity extends AppCompatActivity implements
             return true;
         } else if (id == R.id.action_upload) {
             uploadSelections(Util.getSelectionSaver().getItems());
+        } else if (id == R.id.action_about) {
+            showAboutDialog();
         }
 
         return super.onOptionsItemSelected(item);
@@ -359,5 +362,12 @@ public class FsActivity extends AppCompatActivity implements
     private void setGridToggleEnabled(boolean enabled) {
         gridToggleMenuItem.setEnabled(enabled);
         gridToggleMenuItem.setVisible(enabled);
+    }
+
+    private void showAboutDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.filestack__picker_title)
+                .setMessage(BuildConfig.FILESTACK_ANDROID_VERSION)
+                .show();
     }
 }

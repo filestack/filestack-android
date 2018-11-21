@@ -22,6 +22,7 @@
     <string name="filestack__menu_view_list">View as list</string>
     <string name="filestack__menu_logout">Logout</string>
     <string name="filestack__menu_upload">Upload</string>
+    <string name="filestack__menu_about">About</string>
 
     <string name="filestack__auth_description">You need to authenticate with Cloud.\nWe only extract files and never modify or delete them.</string>
     <string name="filestack__auth_title">Select Files From Cloud</string>
