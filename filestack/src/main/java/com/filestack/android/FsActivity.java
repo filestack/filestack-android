@@ -85,6 +85,7 @@ public class FsActivity extends AppCompatActivity implements
     private MenuItem gridToggleMenuItem;
 
     private boolean allowMultipleFiles;
+    private boolean showVersionInfo;
 
 
     @Override
@@ -116,6 +117,7 @@ public class FsActivity extends AppCompatActivity implements
         }
 
         allowMultipleFiles = intent.getBooleanExtra(FsConstants.EXTRA_ALLOW_MULTIPLE_FILES, true);
+        showVersionInfo = intent.getBooleanExtra(FsConstants.EXTRA_DISPLAY_VERSION_INFORMATION, true);
 
         String[] mimeTypes = intent.getStringArrayExtra(FsConstants.EXTRA_MIME_TYPES);
         if (mimeTypes != null && sources.contains(Sources.CAMERA)) {
@@ -228,6 +230,7 @@ public class FsActivity extends AppCompatActivity implements
         getMenuInflater().inflate(R.menu.filestack__menu, menu);
         logoutMenuItem = menu.findItem(R.id.action_logout);
         gridToggleMenuItem = menu.findItem(R.id.action_toggle_list_grid);
+        menu.findItem(R.id.action_about).setVisible(showVersionInfo);
         setLogOutEnabled(false);
         setGridToggleEnabled(false);
         return true;
