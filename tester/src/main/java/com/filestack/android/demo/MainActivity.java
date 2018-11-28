@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.filestack.Config;
+import com.filestack.android.FilestackPicker;
 import com.filestack.android.FsActivity;
 import com.filestack.android.FsConstants;
 import com.filestack.android.Selection;
@@ -25,6 +26,7 @@ import com.filestack.android.internal.Util;
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -51,17 +53,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Locale locale = Locale.getDefault();
-
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_FILESTACK && resultCode == RESULT_OK) {
+        if (FilestackPicker.canReadResult(requestCode, resultCode)) {
             Log.i(TAG, "received filestack selections");
-            String key = FsConstants.EXTRA_SELECTION_LIST;
-            ArrayList<Selection> selections = data.getParcelableArrayListExtra(key);
+            List<Selection> selections = FilestackPicker.getSelectedFiles(data);
             for (int i = 0; i < selections.size(); i++) {
                 Selection selection = selections.get(i);
-                String msg = String.format(locale, "selection %d: %s", i, selection.getName());
+                String msg = String.format(Locale.ROOT, "selection %d: %s", i, selection.getName());
                 Log.i(TAG, msg);
             }
         }
@@ -73,18 +71,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launch(View view) {
-        Intent intent = new Intent(this, FsActivity.class);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-
-        Set<String> sources = sharedPref.getStringSet("upload_sources", null);
-        intent.putExtra(FsConstants.EXTRA_SOURCES, new ArrayList<>(sources));
-
-        boolean autoUpload = sharedPref.getBoolean("auto_upload", false);
-        intent.putExtra(FsConstants.EXTRA_AUTO_UPLOAD, autoUpload);
-
         String mimeFilter = sharedPref.getString("mime_filter", null);
-        String[] mimeTypes = mimeFilter.split(",");
-        intent.putExtra(FsConstants.EXTRA_MIME_TYPES, mimeTypes);
+        List<String> mimeTypes = Arrays.asList(mimeFilter.split(","));
 
         String apiKey = sharedPref.getString("api_key", null);
         String policy = sharedPref.getString("policy", null);
@@ -96,11 +85,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Config config = new Config(apiKey, getString(R.string.return_url), policy, signature);
-        intent.putExtra(FsConstants.EXTRA_CONFIG, config);
 
-        boolean allowMultipleFiles = sharedPref.getBoolean("allow_multiple_files", true);
-        intent.putExtra(FsConstants.EXTRA_ALLOW_MULTIPLE_FILES, allowMultipleFiles);
-
-        startActivityForResult(intent, REQUEST_FILESTACK);
+        FilestackPicker picker = new FilestackPicker.Builder()
+                .config(config)
+                .sources(new ArrayList<>(sharedPref.getStringSet("upload_sources", Collections.<String>emptySet())))
+                .autoUploadEnabled(sharedPref.getBoolean("auto_upload", false))
+                .mimeTypes(mimeTypes)
+                .multipleFilesSelectionEnabled(sharedPref.getBoolean("allow_multiple_files", true))
+                .build();
+        picker.launch(this);
     }
 }
