@@ -35,7 +35,7 @@ public class FilestackPicker {
         return data.getParcelableArrayListExtra(FsConstants.EXTRA_SELECTION_LIST);
     }
 
-    private static final int FILESTACK_REQUEST_CODE = 20181130;
+    private static final short FILESTACK_REQUEST_CODE = 662;
 
     private final Config config;
     private final StorageOptions storageOptions;
