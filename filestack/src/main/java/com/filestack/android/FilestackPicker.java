@@ -2,7 +2,6 @@ package com.filestack.android;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.util.Log;
 
 import com.filestack.Config;
 import com.filestack.StorageOptions;
@@ -44,14 +43,16 @@ public class FilestackPicker {
     private final List<String> sources;
     private final List<String> mimeTypes;
     private final boolean allowMultipleFiles;
+    private final boolean displayVersionInformation;
 
-    private FilestackPicker(Config config, StorageOptions storageOptions, boolean autoUpload, List<String> sources, List<String> mimeTypes, boolean allowMultipleFiles) {
-        this.config = config;
-        this.storageOptions = storageOptions;
-        this.autoUpload = autoUpload;
-        this.sources = sources;
-        this.mimeTypes = mimeTypes;
-        this.allowMultipleFiles = allowMultipleFiles;
+    private FilestackPicker(Builder builder) {
+        this.config = builder.config;
+        this.storageOptions = builder.storageOptions;
+        this.autoUpload = builder.autoUpload;
+        this.sources = builder.sources;
+        this.mimeTypes = builder.mimeTypes;
+        this.allowMultipleFiles = builder.allowMultipleFiles;
+        this.displayVersionInformation = builder.displayVersionInfomation;
     }
 
     public void launch(Activity activity) {
@@ -62,6 +63,7 @@ public class FilestackPicker {
         intent.putExtra(FsConstants.EXTRA_AUTO_UPLOAD, autoUpload);
         intent.putExtra(FsConstants.EXTRA_SOURCES, new ArrayList<>(sources));
         intent.putExtra(FsConstants.EXTRA_ALLOW_MULTIPLE_FILES, allowMultipleFiles);
+        intent.putExtra(FsConstants.EXTRA_DISPLAY_VERSION_INFORMATION, displayVersionInformation);
 
         String[] mimeTypesArray = mimeTypes.toArray(new String[0]);
         intent.putExtra(FsConstants.EXTRA_MIME_TYPES, mimeTypesArray);
@@ -70,12 +72,13 @@ public class FilestackPicker {
     }
 
     public static class Builder {
-        private Config config;
-        private StorageOptions storageOptions;
-        private boolean autoUpload = false;
-        private List<String> sources = new ArrayList<>();
-        private List<String> mimeTypes = new ArrayList<>();
-        private boolean allowMultipleFiles = true;
+        Config config;
+        StorageOptions storageOptions;
+        boolean autoUpload = false;
+        List<String> sources = new ArrayList<>();
+        List<String> mimeTypes = new ArrayList<>();
+        boolean allowMultipleFiles = true;
+        boolean displayVersionInfomation = true;
 
         /**
          * Sets configuration object containing all of your account info (api key, policy).
@@ -138,6 +141,16 @@ public class FilestackPicker {
         }
 
         /**
+         * Sets whether version information should be displayed in picker's menu.
+         * Defaults to true.
+         * @param displayVersionInfomation - display version information in picker's menu
+         */
+        public Builder displayVersionInformation(boolean displayVersionInfomation) {
+            this.displayVersionInfomation = displayVersionInfomation;
+            return this;
+        }
+
+        /**
          * Creates a new FilePicker instance that one can use to spawn file pickers.
          * @return a FilePicker instance
          */
@@ -145,7 +158,7 @@ public class FilestackPicker {
             if (config == null) {
                 throw new IllegalStateException("Config cannot be null!");
             }
-            return new FilestackPicker(config, storageOptions, autoUpload, sources, mimeTypes, allowMultipleFiles);
+            return new FilestackPicker(this);
         }
 
     }

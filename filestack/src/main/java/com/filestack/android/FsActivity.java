@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,6 +14,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -79,8 +81,11 @@ public class FsActivity extends AppCompatActivity implements
     private String selectedSource;
     private boolean shouldCheckAuth;
     private NavigationView nav;
+    private MenuItem logoutMenuItem;
+    private MenuItem gridToggleMenuItem;
 
     private boolean allowMultipleFiles;
+    private boolean showVersionInfo;
 
 
     @Override
@@ -112,6 +117,7 @@ public class FsActivity extends AppCompatActivity implements
         }
 
         allowMultipleFiles = intent.getBooleanExtra(FsConstants.EXTRA_ALLOW_MULTIPLE_FILES, true);
+        showVersionInfo = intent.getBooleanExtra(FsConstants.EXTRA_DISPLAY_VERSION_INFORMATION, true);
 
         String[] mimeTypes = intent.getStringArrayExtra(FsConstants.EXTRA_MIME_TYPES);
         if (mimeTypes != null && sources.contains(Sources.CAMERA)) {
@@ -212,6 +218,8 @@ public class FsActivity extends AppCompatActivity implements
             return true;
         } else if (id == R.id.action_upload) {
             uploadSelections(Util.getSelectionSaver().getItems());
+        } else if (id == R.id.action_about) {
+            showAboutDialog();
         }
 
         return super.onOptionsItemSelected(item);
@@ -220,6 +228,11 @@ public class FsActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.filestack__menu, menu);
+        logoutMenuItem = menu.findItem(R.id.action_logout);
+        gridToggleMenuItem = menu.findItem(R.id.action_toggle_list_grid);
+        menu.findItem(R.id.action_about).setVisible(showVersionInfo);
+        setLogOutEnabled(false);
+        setGridToggleEnabled(false);
         return true;
     }
 
@@ -253,26 +266,26 @@ public class FsActivity extends AppCompatActivity implements
         SourceInfo sourceInfo = Util.getSourceInfo(source);
         getSupportActionBar().setSubtitle(sourceInfo.getTextId());
 
-        selectedSource = source;
+
         nav.setCheckedItem(id);
 
         switch (source) {
             case Sources.CAMERA:
                 fragment = new CameraFragment();
-                // Needed to prevent UI bug when selecting local source after cloud source
-                shouldCheckAuth = false;
                 break;
             case Sources.DEVICE:
                 fragment = LocalFilesFragment.newInstance(allowMultipleFiles);
-                // Needed to prevent UI bug when selecting local source after cloud source
-                shouldCheckAuth = false;
                 break;
-            default:
-                checkAuth();
         }
 
-        if (fragment != null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.content, fragment).commit();
+        selectedSource = source;
+        if (fragment == null) {
+            checkAuth();
+        } else {
+            shouldCheckAuth = false;
+            showFragment(fragment);
+            setLogOutEnabled(false);
+            setGridToggleEnabled(false);
         }
 
         if (drawer != null) {
@@ -298,19 +311,23 @@ public class FsActivity extends AppCompatActivity implements
 
         if (authUrl != null) {
             shouldCheckAuth = true;
-            CloudAuthFragment cloudAuthFragment = CloudAuthFragment.create(selectedSource, authUrl);
-            FragmentManager manager = getSupportFragmentManager();
-            FragmentTransaction transaction = manager.beginTransaction();
-            transaction.replace(R.id.content, cloudAuthFragment);
-            transaction.commit();
+            CloudAuthFragment fragment = CloudAuthFragment.create(selectedSource, authUrl);
+            showFragment(fragment);
+            setLogOutEnabled(false);
+            setGridToggleEnabled(false);
         } else {
             shouldCheckAuth = false;
-            CloudListFragment cloudListFragment = CloudListFragment.create(selectedSource, allowMultipleFiles);
-            FragmentManager manager = getSupportFragmentManager();
-            FragmentTransaction transaction = manager.beginTransaction();
-            transaction.replace(R.id.content, cloudListFragment);
-            transaction.commit();
+            CloudListFragment fragment = CloudListFragment.create(selectedSource, allowMultipleFiles);
+            showFragment(fragment);
+            setLogOutEnabled(true);
+            setGridToggleEnabled(true);
         }
+    }
+
+    private void showFragment(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content, fragment)
+                .commit();
     }
 
     private void checkAuth() {
@@ -338,5 +355,22 @@ public class FsActivity extends AppCompatActivity implements
         data.putExtra(FsConstants.EXTRA_SELECTION_LIST, selections);
         setResult(RESULT_OK, data);
         finish();
+    }
+
+    private void setLogOutEnabled(boolean enabled) {
+        logoutMenuItem.setEnabled(enabled);
+        logoutMenuItem.setVisible(enabled);
+    }
+
+    private void setGridToggleEnabled(boolean enabled) {
+        gridToggleMenuItem.setEnabled(enabled);
+        gridToggleMenuItem.setVisible(enabled);
+    }
+
+    private void showAboutDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.filestack__picker_title)
+                .setMessage(BuildConfig.FILESTACK_ANDROID_VERSION)
+                .show();
     }
 }

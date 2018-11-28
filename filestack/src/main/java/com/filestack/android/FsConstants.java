@@ -22,6 +22,8 @@ public class FsConstants {
     /** Action for upload broadcast intent filter. */
     public static final String BROADCAST_UPLOAD = "com.filestack.android.BROADCAST_UPLOAD";
 
+    static final String EXTRA_DISPLAY_VERSION_INFORMATION = "displayVersionInformation";
+
     // Keys to access data from result intents
     /** For selections, returns {{@link java.util.ArrayList}} of {{@link Selection}} objects. */
     public static final String EXTRA_SELECTION_LIST = "selectionList";
