@@ -3,7 +3,13 @@ package com.filestack.android;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -11,16 +17,24 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.ColorUtils;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuCompat;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.WindowCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.filestack.CloudResponse;
 import com.filestack.Config;
@@ -87,11 +101,11 @@ public class FsActivity extends AppCompatActivity implements
     private boolean allowMultipleFiles;
     private boolean showVersionInfo;
 
+    private Theme theme;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         Intent intent = getIntent();
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 
@@ -99,7 +113,20 @@ public class FsActivity extends AppCompatActivity implements
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.filestack__picker_title);
+
+        theme = intent.getParcelableExtra(FsConstants.EXTRA_THEME);
+        if (theme == null) {
+            theme = Theme.defaultTheme();
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(theme.getAccentColor());
+        }
+        getSupportActionBar().setTitle(theme.getTitle());
+        toolbar.setTitleTextColor(theme.getBackgroundColor());
+        toolbar.setSubtitleTextColor(ColorUtils.setAlphaComponent(theme.getBackgroundColor(), 220));
+        toolbar.setBackgroundColor(theme.getAccentColor());
+        findViewById(R.id.content).setBackgroundColor(theme.getBackgroundColor());
 
         drawer = findViewById(R.id.drawer_layout);
         if (drawer != null) {
@@ -108,9 +135,16 @@ public class FsActivity extends AppCompatActivity implements
             drawer.addDrawerListener(toggle);
             toggle.syncState();
         }
+
         nav = findViewById(R.id.nav_view);
         nav.setNavigationItemSelectedListener(this);
+        nav.setItemTextColor(ColorStateList.valueOf(theme.getAccentColor()));
+        nav.setBackgroundColor(theme.getBackgroundColor());
 
+        ((TextView) nav.getHeaderView(0).findViewById(R.id.filestack__drawer_title)).setTextColor(theme.getBackgroundColor());
+        nav.getHeaderView(0).findViewById(R.id.filestack__drawer_header_container).setBackgroundColor(theme.getAccentColor());
+
+        tintToolbar(toolbar, theme.getBackgroundColor());
         List<String> sources = (List<String>) intent.getSerializableExtra(FsConstants.EXTRA_SOURCES);
         if (sources == null) {
             sources = Util.getDefaultSources();
@@ -133,9 +167,10 @@ public class FsActivity extends AppCompatActivity implements
             int id = Util.getSourceIntId(source);
             SourceInfo info = Util.getSourceInfo(source);
             MenuItem item = menu.add(Menu.NONE, id, index++, info.getTextId());
-            item.setIcon(info.getIconId());
             item.setCheckable(true);
+            item.setIcon(info.getIconId());
         }
+        nav.setItemIconTintList(ColorStateList.valueOf(theme.getAccentColor()));
 
         if (savedInstanceState == null) {
             Config config = (Config) intent.getSerializableExtra(FsConstants.EXTRA_CONFIG);
@@ -158,9 +193,7 @@ public class FsActivity extends AppCompatActivity implements
     @Override
     protected void onStart() {
         super.onStart();
-
         Util.getSelectionSaver().setItemChangeListener(this);
-
         if (shouldCheckAuth) {
             checkAuth();
         }
@@ -169,7 +202,6 @@ public class FsActivity extends AppCompatActivity implements
     @Override
     protected void onStop() {
         super.onStop();
-
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 
         String sessionToken = Util.getClient().getSessionToken();
@@ -188,7 +220,6 @@ public class FsActivity extends AppCompatActivity implements
     @Override
     public void onAttachFragment(Fragment fragment) {
         super.onAttachFragment(fragment);
-
         try {
             backListener = (BackButtonListener) fragment;
         } catch (ClassCastException e) {
@@ -233,6 +264,15 @@ public class FsActivity extends AppCompatActivity implements
         menu.findItem(R.id.action_about).setVisible(showVersionInfo);
         setLogOutEnabled(false);
         setGridToggleEnabled(false);
+        for (int i = 0; i < menu.size(); i++) {
+            MenuItem item = menu.getItem(i);
+            Drawable drawable = DrawableCompat.wrap(item.getIcon());
+            if (drawable != null) {
+                drawable.setColorFilter(theme.getBackgroundColor(), PorterDuff.Mode.SRC_ATOP);
+                DrawableCompat.setTint(drawable, theme.getBackgroundColor());
+                item.setIcon(drawable);
+            }
+        }
         return true;
     }
 
@@ -372,5 +412,18 @@ public class FsActivity extends AppCompatActivity implements
                 .setTitle(R.string.filestack__picker_title)
                 .setMessage(BuildConfig.FILESTACK_ANDROID_VERSION)
                 .show();
+    }
+
+    private void tintToolbar(Toolbar toolbar, @ColorInt int color) {
+        Drawable drawable = DrawableCompat.wrap(toolbar.getOverflowIcon());
+        DrawableCompat.setTint(drawable.mutate(), color);
+        toolbar.setOverflowIcon(drawable);
+
+        for (int i = 0; i < toolbar.getChildCount(); i++) {
+            View child = toolbar.getChildAt(i);
+            if (child instanceof AppCompatImageButton) {
+                ((AppCompatImageButton) child).setSupportImageTintList(ColorStateList.valueOf(color));
+            }
+        }
     }
 }
