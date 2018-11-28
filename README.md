@@ -61,7 +61,45 @@ The "pictures" and "movies" names are expected to be defined.
 
 ## Upload files
 
-### Launch activity
+### Use FilestackPicker - new way
+`FilestackPicker.Builder` class has been introduced to simplify construction of Intents to run FsActivity.
+
+```java
+FilestackPicker picker = new FilestackPicker.Builder()
+                    .config(...)
+                    .storageOptions(...)
+                    .config(...)
+                    .autoUploadEnabled(...)                    
+                    .sources(...)
+                    .mimeTypes(...)
+                    .multipleFilesSelectionEnabled(...)
+                    .build();
+                    
+picker.launch(activity); //use an Activity instance to launch a picker                                                          
+```
+
+### Receive activity results - new way
+`FsActivity` returns immediately once a user selects files. The returned
+response will always be of `List<Selections>` type. Receive the response in
+the calling activity:
+
+```java
+@Override
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    if (FilestackPicker.canReadResult(requestCode, resultCode)) {
+        Log.i(TAG, "received filestack selections");
+        List<Selection> selections = FilestackPicker.getSelectedFiles(data);
+        for (int i = 0; i < selections.size(); i++) {
+            Selection selection = selections.get(i);
+            String msg = String.format(locale, "selection %d: %s", i, selection.getName());
+            Log.i(TAG, msg);
+        }
+    }    
+}
+```
+
+### Launch activity - old way
 ```java
 // Create an intent to launch FsActivity
 Intent intent = new Intent(this, FsActivity.class);
@@ -103,7 +141,7 @@ intent.putExtra(FsConstants.EXTRA_MIME_TYPES, mimeTypes);
 startActivityForResult(intent, REQUEST_FILESTACK);
 ```
 
-### Receive activity results
+### Receive activity results - old way
 `FsActivity` returns immediately once a user selects files. The returned
 response will always be an `ArrayList` of `Selection` objects. Receive the response in
 the calling activity:
