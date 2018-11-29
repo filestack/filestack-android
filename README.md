@@ -3,13 +3,13 @@
 
 <p align="center">
   <a href="https://bintray.com/filestack/maven/filestack-android">
-    <img src="https://img.shields.io/badge/bintray-v5.0.0--0.2.0-blue.svg?longCache=true&style=flat-square">
+    <img src="https://img.shields.io/badge/bintray-v5.3.0-blue.svg?longCache=true&style=flat-square">
   </a>
   <a href="https://filestack.github.io/filestack-android/">
     <img src="https://img.shields.io/badge/ref-javadoc-795548.svg?longCache=true&style=flat-square">
   </a>
-  <img src="https://img.shields.io/badge/min_sdk-19_(4.4_kitkat)-green.svg?longCache=true&style=flat-square">
-  <img src="https://img.shields.io/badge/target_sdk-27_(8.1_oreo)-green.svg?longCache=true&style=flat-square">
+  <img src="https://img.shields.io/badge/min_sdk-16_(4.1)-green.svg?longCache=true&style=flat-square">
+  <img src="https://img.shields.io/badge/target_sdk-28-green.svg?longCache=true&style=flat-square">
 </p>
 
 <p align="center">
@@ -21,7 +21,7 @@
 
 ## Install
 ```gradle
-implementation 'com.filestack:filestack-android:5.1.0'
+implementation 'com.filestack:filestack-android:5.3.0'
 ```
 
 ## Tester and Samples
