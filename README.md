@@ -209,8 +209,6 @@ Setting a theme requires passing a `Theme` to `Filestack.Builder#theme(Theme)` m
 `Theme` objects can be constructed with a `Theme.Builder` instance.
 If theme is not set, a default one will be used.
 
-  
-
 ## Native UI
 At present this SDK doesn't offer many customization options, but the [Java
 SDK][java-sdk] can be used to build a native UI. This SDK adds UI and
