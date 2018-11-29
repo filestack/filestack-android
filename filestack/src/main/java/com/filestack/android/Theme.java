@@ -47,26 +47,47 @@ public class Theme implements Parcelable {
         int accentColor = Color.parseColor("#FF9800");
         int textColor = Color.parseColor("#89000000");
 
+        /**
+         * Title of the Picker.
+         */
         public Builder title(String title) {
             this.title = title;
             return this;
         }
 
+        /**
+         * Background color. Displayed in lists and a navigation drawer.
+         * Used also as a text color for toolbar title and
+         *     buttons on authorization/local/camera screens.
+         * @param backgroundColor int representation of a color
+         */
         public Builder backgroundColor(@ColorInt int backgroundColor) {
             this.backgroundColor = backgroundColor;
             return this;
         }
 
+        /**
+         * Accent color. Used as a color for toolbar, selection markers and navigation drawer items.
+         * @param accentColor int representation of a color
+         */
         public Builder accentColor(@ColorInt int accentColor) {
             this.accentColor = accentColor;
             return this;
         }
 
+        /**
+         * Text color. Used as a color for text in camera/local/authorization/file list screens.
+         * @param textColor int representation of a color
+         */
         public Builder textColor(@ColorInt int textColor) {
             this.textColor = textColor;
             return this;
         }
 
+        /**
+         * Builds a new theme based on provided parameters.
+         * @return new {@link Theme} instance
+         */
         public Theme build() {
             return new Theme(this);
         }
