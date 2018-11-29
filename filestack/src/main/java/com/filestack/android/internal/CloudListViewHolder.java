@@ -3,6 +3,7 @@ package com.filestack.android.internal;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.support.annotation.ColorInt;
+import android.support.v4.graphics.ColorUtils;
 import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.filestack.android.R;
+import com.filestack.android.Theme;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -50,6 +52,12 @@ class CloudListViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
+    public void setInfoVisible(boolean isVisible) {
+        if (infoView != null) {
+            infoView.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        }
+    }
+
     public void setIcon(String url) {
         if (iconView != null) {
             Context context = iconView.getContext();
@@ -57,8 +65,17 @@ class CloudListViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    void setSelectionTint(@ColorInt int color) {
-        ImageViewCompat.setImageTintList(checkboxView, ColorStateList.valueOf(color));
+    public void apply(Theme theme) {
+        if (nameView != null) {
+            nameView.setTextColor(theme.getTextColor());
+        }
+
+        if (infoView!= null) {
+            infoView.setTextColor(ColorUtils.setAlphaComponent(theme.getTextColor(), 220));
+        }
+
+        ImageViewCompat.setImageTintList(checkboxView, ColorStateList.valueOf(theme.getAccentColor()));
+
     }
 
     void setOnClickListener(View.OnClickListener listener) {
@@ -74,10 +91,7 @@ class CloudListViewHolder extends RecyclerView.ViewHolder {
     }
 
     void setEnabled(boolean enabled) {
-        float alpha = 1.0f;
-        if (!enabled) {
-            alpha = 0.45f;
-        }
+        float alpha = enabled ? 1.0f : 0.45f;
         iconView.setAlpha(alpha);
         if (nameView != null) {
             nameView.setAlpha(alpha);

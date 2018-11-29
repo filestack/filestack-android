@@ -48,4 +48,31 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="Theme">
+
+        <EditTextPreference
+            android:key="theme_title"
+            android:title="Title"
+            android:defaultValue="Filestack Picker"
+            android:textIsSelectable="true" />
+
+        <com.kizitonwose.colorpreferencecompat.ColorPreferenceCompat
+            android:defaultValue="@color/colorAccent"
+            android:key="theme_accent"
+            android:title="Accent"/>
+
+        <com.kizitonwose.colorpreferencecompat.ColorPreferenceCompat
+            android:defaultValue="@color/colorPrimary"
+            android:key="theme_background"
+            android:title="Background"/>
+
+        <com.kizitonwose.colorpreferencecompat.ColorPreferenceCompat
+            android:defaultValue="@color/text"
+            android:key="theme_text"
+            android:title="Text"/>
+
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

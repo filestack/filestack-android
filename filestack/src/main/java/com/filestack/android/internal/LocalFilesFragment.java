@@ -11,6 +11,7 @@ import android.provider.OpenableColumns;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -46,6 +47,13 @@ public class LocalFilesFragment extends Fragment implements View.OnClickListener
         View view = inflater.inflate(R.layout.filestack__fragment_local_files, container, false);
         view.findViewById(R.id.select_gallery).setOnClickListener(this);
         return view;
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.findItem(R.id.action_logout).setVisible(false);
+        menu.findItem(R.id.action_toggle_list_grid).setVisible(false);
     }
 
     @Override

@@ -1,7 +1,10 @@
 package com.filestack.android.internal;
 
 import android.os.Bundle;
+import android.support.v4.graphics.ColorUtils;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +13,7 @@ import com.filestack.CloudItem;
 import com.filestack.CloudResponse;
 import com.filestack.android.R;
 import com.filestack.android.Selection;
+import com.filestack.android.Theme;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,16 +59,18 @@ class CloudListAdapter extends RecyclerView.Adapter<CloudListViewHolder> impleme
     private final String sourceId;
     private final String[] mimeTypes;
     private final Selector selector;
+    private final Theme theme;
     private int viewType;
     private RecyclerView recyclerView;
     private String currentPath;
 
 
     CloudListAdapter(String sourceId, String[] mimeTypes, Bundle saveInstanceState,
-                     Selector selector) {
+                     Selector selector, Theme theme) {
         this.sourceId = sourceId;
         this.mimeTypes = mimeTypes;
         this.selector = selector;
+        this.theme = theme;
         setHasStableIds(true);
         if (saveInstanceState != null) {
             currentPath = saveInstanceState.getString(STATE_CURRENT_PATH);
@@ -95,17 +101,15 @@ class CloudListAdapter extends RecyclerView.Adapter<CloudListViewHolder> impleme
         ArrayList<CloudItem> items = folders.get(currentPath);
         CloudItem item = items.get(i);
 
+        holder.apply(theme);
         holder.setId(i);
         holder.setName(item.getName());
-        Locale locale = Locale.getDefault();
-        String info = String.format(locale, "%s - %d", item.getMimetype(), item.getSize());
+        String info = formatInfo(item);
         holder.setInfo(info);
+        holder.setInfoVisible(!TextUtils.isEmpty(info));
         holder.setIcon(item.getThumbnail());
         holder.setOnClickListener(this);
         holder.setEnabled(item.isFolder() || Util.mimeAllowed(mimeTypes, item.getMimetype()));
-        int tintColor = holder.itemView.getResources().getColor(R.color.filestack__primary_dark);
-        holder.setSelectionTint(tintColor);
-        
         Selection selection = SelectionFactory.from(sourceId, item);
         holder.setSelected(selector.isSelected(selection));
         String nextToken = nextTokens.get(currentPath);
@@ -114,6 +118,17 @@ class CloudListAdapter extends RecyclerView.Adapter<CloudListViewHolder> impleme
                 loadMoreData();
             }
         }
+    }
+
+    private String formatInfo(CloudItem item) {
+        if (item.getSize() == 0 && item.getMimetype() == null) {
+            return "";
+        }
+        String fileSize = Formatter.formatShortFileSize(recyclerView.getContext(), item.getSize());
+        if (item.getMimetype() == null) {
+            return String.format(Locale.getDefault(), "%s", fileSize);
+        }
+        return String.format(Locale.getDefault(), "%s - %s", item.getMimetype(), fileSize);
     }
 
     @Override
