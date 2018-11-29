@@ -10,12 +10,14 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.filestack.android.FsConstants;
 import com.filestack.android.R;
+import com.filestack.android.Theme;
 
 /**
  * Mostly configures a contained {{@link RecyclerView}}. {{@link CloudListFragment}},
@@ -29,18 +31,21 @@ public class CloudListFragment extends Fragment implements BackButtonListener {
     private static final String ARG_SOURCE = "source";
     private static final String ARG_ALLOW_MULTIPLE_FILES = "multipleFiles";
     private static final String STATE_IS_LIST_MODE = "isListMode";
+    private static final String ARG_THEME = "theme";
 
     private boolean isListMode = true;
     private CloudListAdapter adapter;
     private SpacingDecoration spacer;
     private RecyclerView recyclerView;
     private SourceInfo sourceInfo;
+    private Theme theme;
 
-    public static CloudListFragment create(String source, boolean allowMultipleFiles) {
+    public static CloudListFragment create(String source, boolean allowMultipleFiles, Theme theme) {
         CloudListFragment fragment = new CloudListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_SOURCE, source);
         args.putBoolean(ARG_ALLOW_MULTIPLE_FILES, allowMultipleFiles);
+        args.putParcelable(ARG_THEME, theme);
         fragment.setArguments(args);
         return fragment;
     }
@@ -60,7 +65,8 @@ public class CloudListFragment extends Fragment implements BackButtonListener {
                              @Nullable Bundle savedInstanceState) {
 
         View baseView = inflater.inflate(R.layout.filestack__fragment_cloud_list, container, false);
-
+        theme = getArguments().getParcelable(ARG_THEME);
+        baseView.setBackgroundColor(theme.getBackgroundColor());
         recyclerView = baseView.findViewById(R.id.recycler);
         Intent intent = requireActivity().getIntent();
         String[] mimeTypes = intent.getStringArrayExtra(FsConstants.EXTRA_MIME_TYPES);
@@ -69,7 +75,7 @@ public class CloudListFragment extends Fragment implements BackButtonListener {
                 new Selector.Multi(Util.getSelectionSaver()) :
                 new Selector.Single(Util.getSelectionSaver());
 
-        adapter = new CloudListAdapter(sourceInfo.getId(), mimeTypes, savedInstanceState, selector);
+        adapter = new CloudListAdapter(sourceInfo.getId(), mimeTypes, savedInstanceState, selector, theme);
         recyclerView.setAdapter(adapter);
 
         if (savedInstanceState != null) {
@@ -109,6 +115,13 @@ public class CloudListFragment extends Fragment implements BackButtonListener {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.findItem(R.id.action_logout).setVisible(true);
+        menu.findItem(R.id.action_toggle_list_grid).setVisible(true);
     }
 
     private void setupRecyclerLayout() {

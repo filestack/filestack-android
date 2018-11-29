@@ -14,15 +14,18 @@
         android:icon="@drawable/filestack__ic_menu_grid_white"
         android:title="@string/filestack__menu_view_grid"
         app:showAsAction="ifRoom"
+        android:visible="false"
         android:orderInCategory="2"/>
     <item
         android:id="@+id/action_logout"
         android:title="@string/filestack__menu_logout"
+        android:visible="false"
         app:showAsAction="never"
         android:orderInCategory="3"/>
 
     <item android:id="@+id/action_about"
         android:title="@string/filestack__menu_about"
+        android:visible="false"
         app:showAsAction="never"
         android:orderInCategory="100"/>
 </menu>

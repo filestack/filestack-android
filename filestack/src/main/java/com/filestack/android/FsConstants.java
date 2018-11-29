@@ -23,6 +23,7 @@ public class FsConstants {
     public static final String BROADCAST_UPLOAD = "com.filestack.android.BROADCAST_UPLOAD";
 
     static final String EXTRA_DISPLAY_VERSION_INFORMATION = "displayVersionInformation";
+    static final String EXTRA_THEME = "theme";
 
     // Keys to access data from result intents
     /** For selections, returns {{@link java.util.ArrayList}} of {{@link Selection}} objects. */

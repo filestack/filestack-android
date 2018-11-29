@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -98,6 +99,13 @@ public class CameraFragment extends Fragment implements BackButtonListener, View
     @Override
     public boolean onBackPressed() {
         return false;
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.findItem(R.id.action_logout).setVisible(false);
+        menu.findItem(R.id.action_toggle_list_grid).setVisible(false);
     }
 
     private Intent createCameraIntent(String source) {

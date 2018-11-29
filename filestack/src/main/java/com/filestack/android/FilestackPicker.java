@@ -44,6 +44,7 @@ public class FilestackPicker {
     private final List<String> mimeTypes;
     private final boolean allowMultipleFiles;
     private final boolean displayVersionInformation;
+    private final Theme theme;
 
     private FilestackPicker(Builder builder) {
         this.config = builder.config;
@@ -53,6 +54,7 @@ public class FilestackPicker {
         this.mimeTypes = builder.mimeTypes;
         this.allowMultipleFiles = builder.allowMultipleFiles;
         this.displayVersionInformation = builder.displayVersionInfomation;
+        this.theme = builder.theme;
     }
 
     public void launch(Activity activity) {
@@ -64,6 +66,7 @@ public class FilestackPicker {
         intent.putExtra(FsConstants.EXTRA_SOURCES, new ArrayList<>(sources));
         intent.putExtra(FsConstants.EXTRA_ALLOW_MULTIPLE_FILES, allowMultipleFiles);
         intent.putExtra(FsConstants.EXTRA_DISPLAY_VERSION_INFORMATION, displayVersionInformation);
+        intent.putExtra(FsConstants.EXTRA_THEME, theme);
 
         String[] mimeTypesArray = mimeTypes.toArray(new String[0]);
         intent.putExtra(FsConstants.EXTRA_MIME_TYPES, mimeTypesArray);
@@ -79,6 +82,7 @@ public class FilestackPicker {
         List<String> mimeTypes = new ArrayList<>();
         boolean allowMultipleFiles = true;
         boolean displayVersionInfomation = true;
+        Theme theme = Theme.defaultTheme();
 
         /**
          * Sets configuration object containing all of your account info (api key, policy).
@@ -147,6 +151,17 @@ public class FilestackPicker {
          */
         public Builder displayVersionInformation(boolean displayVersionInfomation) {
             this.displayVersionInfomation = displayVersionInfomation;
+            return this;
+        }
+
+        /**
+         * Sets the picker theme (title and colors).
+         * See {@link Theme.Builder} for more info.
+         * Defaults to pre-assigned values.
+         * @param theme - picker's theming object
+         */
+        public Builder theme(Theme theme) {
+            this.theme = theme;
             return this;
         }
 

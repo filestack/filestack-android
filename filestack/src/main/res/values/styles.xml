@@ -3,9 +3,6 @@
     <style name="FilestackNoActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="colorPrimary">@color/filestack__primary</item>
-        <item name="colorPrimaryDark">@color/filestack__primary_dark</item>
-        <item name="colorAccent">@color/filestack__accent</item>
     </style>
 
     <style name="FilestackAppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

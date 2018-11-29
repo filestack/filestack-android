@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
@@ -21,6 +22,7 @@ import com.filestack.android.FilestackPicker;
 import com.filestack.android.FsActivity;
 import com.filestack.android.FsConstants;
 import com.filestack.android.Selection;
+import com.filestack.android.Theme;
 import com.filestack.android.internal.Util;
 
 import java.sql.Array;
@@ -83,8 +85,14 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.error_no_api_key, Toast.LENGTH_SHORT).show();
             return;
         }
-
         Config config = new Config(apiKey, getString(R.string.return_url), policy, signature);
+
+        Theme theme = new Theme.Builder()
+                .title(sharedPref.getString("theme_title", null))
+                .accentColor(sharedPref.getInt("theme_accent", ContextCompat.getColor(this, R.color.colorAccent)))
+                .backgroundColor(sharedPref.getInt("theme_background", ContextCompat.getColor(this, R.color.colorPrimary)))
+                .textColor(sharedPref.getInt("theme_text", ContextCompat.getColor(this, R.color.text)))
+                .build();
 
         FilestackPicker picker = new FilestackPicker.Builder()
                 .config(config)
@@ -92,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
                 .autoUploadEnabled(sharedPref.getBoolean("auto_upload", false))
                 .mimeTypes(mimeTypes)
                 .multipleFilesSelectionEnabled(sharedPref.getBoolean("allow_multiple_files", true))
+                .theme(theme)
                 .build();
         picker.launch(this);
     }

@@ -1,53 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/filestack__list_item_height"
     android:clickable="true"
-    android:longClickable="true">
+    android:gravity="center_vertical"
+    android:longClickable="true"
+    android:orientation="horizontal">
 
-    <View
-        android:id="@+id/button"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?attr/selectableItemBackground" />
-
-    <ImageView
-        android:id="@+id/icon"
-        android:layout_width="@dimen/filestack__list_icon_size"
-        android:layout_height="@dimen/filestack__list_icon_size"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="@dimen/filestack__list_item_horizontal_padding"
-        android:layout_marginEnd="@dimen/filestack__list_item_horizontal_padding"
-        android:scaleType="centerCrop" />
-
-    <ImageView
-        android:id="@+id/checkbox"
-        android:layout_width="@dimen/filestack__list_icon_size"
-        android:layout_height="@dimen/filestack__list_icon_size"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="@dimen/filestack__list_item_horizontal_padding"
-        android:layout_marginEnd="@dimen/filestack__list_item_horizontal_padding"
-        android:scaleType="centerCrop"
-        android:visibility="invisible"
-        app:srcCompat="@drawable/filestack__ic_list_checkbox" />
-
-    <Space
-        android:id="@+id/center"
+    <FrameLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true" />
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="@dimen/filestack__list_icon_size"
+            android:layout_height="@dimen/filestack__list_icon_size"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/filestack__list_item_horizontal_padding"
+            android:layout_marginEnd="@dimen/filestack__list_item_horizontal_padding"
+            android:scaleType="centerCrop"
+            tools:src="@tools:sample/avatars" />
+
+        <ImageView
+            android:id="@+id/checkbox"
+            android:layout_width="@dimen/filestack__list_icon_size"
+            android:layout_height="@dimen/filestack__list_icon_size"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/filestack__list_item_horizontal_padding"
+            android:layout_marginEnd="@dimen/filestack__list_item_horizontal_padding"
+            android:scaleType="centerCrop"
+            android:visibility="invisible"
+            app:srcCompat="@drawable/filestack__ic_list_checkbox"
+            tools:src="@tools:sample/cities" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/name"
         style="@style/TextAppearance.AppCompat.Subhead"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/center"
         android:layout_marginEnd="@dimen/filestack__list_item_horizontal_padding"
         android:layout_marginRight="@dimen/filestack__list_item_horizontal_padding"
-        android:layout_toEndOf="@id/icon"
-        android:layout_toRightOf="@id/icon"
+        tools:text="NAME OF THE FILE"
         android:ellipsize="end"
         android:maxLines="1" />
 
@@ -56,11 +57,11 @@
         style="@style/TextAppearance.AppCompat.Body1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/center"
         android:layout_marginEnd="@dimen/filestack__list_item_horizontal_padding"
         android:layout_marginRight="@dimen/filestack__list_item_horizontal_padding"
-        android:layout_toEndOf="@id/icon"
-        android:layout_toRightOf="@id/icon"
+        tools:text="DESCRIPTION OF THE FILE"
         android:textColor="@color/filestack__text_secondary" />
 
-</RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>
