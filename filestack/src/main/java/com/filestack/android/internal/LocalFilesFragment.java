@@ -4,20 +4,26 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.ImageViewCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 
 import com.filestack.android.FsConstants;
 import com.filestack.android.R;
 import com.filestack.android.Selection;
+import com.filestack.android.Theme;
 
 import java.util.ArrayList;
 
@@ -32,11 +38,13 @@ import static android.app.Activity.RESULT_FIRST_USER;
 public class LocalFilesFragment extends Fragment implements View.OnClickListener {
     private static final String ARG_ALLOW_MULTIPLE_FILES = "multipleFiles";
     private static final int READ_REQUEST_CODE = RESULT_FIRST_USER;
+    private static final String ARG_THEME = "theme";
 
-    public static Fragment newInstance(boolean allowMultipleFiles) {
+    public static Fragment newInstance(boolean allowMultipleFiles, Theme theme) {
         Fragment fragment = new LocalFilesFragment();
         Bundle args = new Bundle();
         args.putBoolean(ARG_ALLOW_MULTIPLE_FILES, allowMultipleFiles);
+        args.putParcelable(ARG_THEME, theme);
         fragment.setArguments(args);
         return fragment;
     }
@@ -45,7 +53,12 @@ public class LocalFilesFragment extends Fragment implements View.OnClickListener
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
         View view = inflater.inflate(R.layout.filestack__fragment_local_files, container, false);
-        view.findViewById(R.id.select_gallery).setOnClickListener(this);
+        Button openGalleryButton = view.findViewById(R.id.select_gallery);
+        openGalleryButton.setOnClickListener(this);
+        Theme theme = getArguments().getParcelable(ARG_THEME);
+        ViewCompat.setBackgroundTintList(openGalleryButton, ColorStateList.valueOf(theme.getAccentColor()));
+        openGalleryButton.setTextColor(theme.getBackgroundColor());
+        ImageViewCompat.setImageTintList((ImageView) view.findViewById(R.id.icon), ColorStateList.valueOf(theme.getTextColor()));
         return view;
     }
 

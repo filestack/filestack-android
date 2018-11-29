@@ -1,5 +1,15 @@
 Change Log
 ==========
+Version 5.3.0 *(2018-11-29)*
+----------------------------
+
+ * [Feature] New way to open up the Filestack Picker! Use `FilestackPicker.Builder` class to customize your picker easily.
+ * [Feature] A way to set Picker's theme is now available. Use `Theme.Builder` class to set your own color scheme to a picker.
+ * [Feature] Picker's version is now available in the picker's menu. This feature can be disabled using `FilestackPicker.Builder`.
+ * [UI change] Files descriptions are now formatted in a better way (e.g: 15360 is now properly displayed as 15kB).
+ * [UI fix] Menu options are now properly hidden in places that doesn't require them.  
+ * Tester module supports all of the new features introduced. Head to Settings to see new configuration options.
+
 Version 5.2.0 *(2018-10-15)*
 ----------------------------
 
