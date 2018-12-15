@@ -4,9 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_upload"
-        android:icon="@drawable/filestack__ic_menu_upload_white"
         android:title="@string/filestack__menu_upload"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:orderInCategory="1"
         android:visible="false"/>
     <item
