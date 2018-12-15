@@ -13,6 +13,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ImageViewCompat;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -39,6 +42,8 @@ public class LocalFilesFragment extends Fragment implements View.OnClickListener
     private static final String ARG_ALLOW_MULTIPLE_FILES = "multipleFiles";
     private static final int READ_REQUEST_CODE = RESULT_FIRST_USER;
     private static final String ARG_THEME = "theme";
+    private LocalFilesAdapter adapter = new LocalFilesAdapter();
+    private ImageView uploadLocalFilesImageView;
 
     public static Fragment newInstance(boolean allowMultipleFiles, Theme theme) {
         Fragment fragment = new LocalFilesFragment();
@@ -58,7 +63,12 @@ public class LocalFilesFragment extends Fragment implements View.OnClickListener
         Theme theme = getArguments().getParcelable(ARG_THEME);
         ViewCompat.setBackgroundTintList(openGalleryButton, ColorStateList.valueOf(theme.getAccentColor()));
         openGalleryButton.setTextColor(theme.getBackgroundColor());
-        ImageViewCompat.setImageTintList((ImageView) view.findViewById(R.id.icon), ColorStateList.valueOf(theme.getTextColor()));
+        uploadLocalFilesImageView = view.findViewById(R.id.icon);
+        ImageViewCompat.setImageTintList((uploadLocalFilesImageView), ColorStateList.valueOf(theme.getTextColor()));
+        RecyclerView filesListView = view.findViewById(R.id.gallery_list);
+        filesListView.setLayoutManager(new LinearLayoutManager(getContext()));
+        filesListView.setItemAnimator(new DefaultItemAnimator());
+        filesListView.setAdapter(adapter);
         return view;
     }
 
@@ -111,9 +121,20 @@ public class LocalFilesFragment extends Fragment implements View.OnClickListener
                 uris.add(resultData.getData());
             }
 
+            ArrayList<String> fileNames = new ArrayList<>();
             for (Uri uri : uris) {
                 Selection selection = processUri(uri);
                 Util.getSelectionSaver().toggleItem(selection);
+                if (selection != null) {
+                    fileNames.add(selection.getName());
+                }
+            }
+
+            if (fileNames.size() > 0) {
+                adapter.updateFileNames(fileNames);
+                uploadLocalFilesImageView.setVisibility(View.GONE);
+            } else {
+                uploadLocalFilesImageView.setVisibility(View.VISIBLE);
             }
         }
     }
