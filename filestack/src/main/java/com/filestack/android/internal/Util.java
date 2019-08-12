@@ -3,6 +3,7 @@ package com.filestack.android.internal;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.support.v4.content.FileProvider;
 import android.support.v4.content.MimeTypeFilter;
@@ -188,8 +189,14 @@ public class Util {
     // If we don't do this, we'll get the exception when sending the URI to the camera app
     // See the FileProvider example in https://developer.android.com/training/camera/photobasics
     public static Uri getUriForInternalMedia(Context context, File file) {
-        String authority = context.getPackageName() + ".fileprovider";
-        return FileProvider.getUriForFile(context, authority, file);
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            String authority = context.getPackageName() + ".fileprovider";
+            uri =  FileProvider.getUriForFile(context, authority, file);
+        } else {
+            uri = Uri.fromFile(file);
+        }
+        return uri;
     }
 
     // TODO This doesn't seem to work
