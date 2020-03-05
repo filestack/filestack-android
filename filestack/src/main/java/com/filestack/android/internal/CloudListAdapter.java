@@ -76,7 +76,8 @@ class CloudListAdapter extends RecyclerView.Adapter<CloudListViewHolder> impleme
             currentPath = saveInstanceState.getString(STATE_CURRENT_PATH);
             folders = (HashMap) saveInstanceState.getSerializable(STATE_FOLDERS);
             nextTokens = (HashMap) saveInstanceState.getSerializable(STATE_NEXT_TOKENS);
-        } else {
+        }
+        if (currentPath == null || folders == null || nextTokens == null){
             folders = new HashMap<>();
             nextTokens = new HashMap<>();
             setPath("/");
