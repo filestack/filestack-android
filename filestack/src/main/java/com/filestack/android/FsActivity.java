@@ -208,8 +208,11 @@ public class FsActivity extends AppCompatActivity implements
         super.onStop();
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 
-        String sessionToken = Util.getClient().getSessionToken();
-        preferences.edit().putString(PREF_SESSION_TOKEN, sessionToken).apply();
+        if (Util.getClient() != null) {
+            String sessionToken = Util.getClient().getSessionToken();
+            preferences.edit().putString(PREF_SESSION_TOKEN, sessionToken).apply();
+        }
+
         Util.getSelectionSaver().setItemChangeListener(null);
     }
 
