@@ -14,7 +14,8 @@
             android:name=".FsActivity"
             android:launchMode="singleTop"
             android:label="@string/filestack__picker_title"
-            android:theme="@style/FilestackNoActionBar">
+            android:theme="@style/FilestackNoActionBar"
+            android:exported="true">
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
