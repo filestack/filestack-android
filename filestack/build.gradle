@@ -7,7 +7,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group='com.github.teamsuitable'
-version = '1.0.9-beta'
+version = '1.0.9.1'
 project.archivesBaseName = 'filestack-android'
 
 android {
