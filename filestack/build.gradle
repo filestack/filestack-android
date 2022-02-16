@@ -1,13 +1,13 @@
 plugins {
-    id 'com.github.dcendents.android-maven' version '2.0'
     id 'com.jfrog.bintray' version '1.7.3'
 }
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.github.dcendents.android-maven'
 
-group = 'com.filestack'
-version = '5.3.0'
+group='com.github.teamsuitable'
+version = '1.0.9-beta'
 project.archivesBaseName = 'filestack-android'
 
 android {
@@ -43,7 +43,9 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support:design:28.0.0'
     implementation 'com.android.support:customtabs:28.0.0'
-    
+    implementation 'com.squareup.okhttp3:okhttp:4.9.1'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.0'
+
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
 
@@ -67,11 +69,11 @@ task javadoc(type: Javadoc) {
 }
 
 // Add dependencies to javadoc classpath so annotations work
-afterEvaluate {
-    javadoc.classpath += files(android.libraryVariants.collect { variant ->
-        variant.javaCompiler.classpath.files
-    })
-}
+//afterEvaluate {
+//    javadoc.classpath += files(android.libraryVariants.collect { variant ->
+//        variant.getJavaCompilerProvider().classpath.files
+//    })
+//}
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
