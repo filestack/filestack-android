@@ -2,6 +2,7 @@ plugins {
     id 'com.jfrog.bintray' version '1.7.3'
 }
 
+//apply from: file('publish.gradle')
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
@@ -57,17 +58,12 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
-}
-
-task javadoc(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    options.addStringOption('Xdoclint:none', '-quiet')
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    destinationDir = file("../docs/")
-}
+//task javadoc(type: Javadoc) {
+//    source = android.sourceSets.main.java.srcDirs
+//    options.addStringOption('Xdoclint:none', '-quiet')
+//    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+//    destinationDir = file("../docs/")
+//}
 
 // Add dependencies to javadoc classpath so annotations work
 //afterEvaluate {
@@ -76,40 +72,54 @@ task javadoc(type: Javadoc) {
 //    })
 //}
 
-afterEvaluate {
-    publishing {
-        publications {
-            // Creates a Maven publication called "release".
-            release(MavenPublication) {
-                // Applies the component for the release build variant.
-                from components.release
+//afterEvaluate {
+//    publishing {
+//        publications {
+//            // Creates a Maven publication called "release".
+//            release(MavenPublication) {
+//                // Applies the component for the release build variant.
+//                from components.release
+//
+//                // You can then customize attributes of the publication as shown below.
+//                groupId = 'com.github.teamsuitable'
+//                artifactId = 'final'
+//                version = '1.0.9-beta.1'
+//            }
+//            // Creates a Maven publication called “debug”.
+//            debug(MavenPublication) {
+//                // Applies the component for the debug build variant.
+//                from components.debug
+//
+//                groupId = 'com.github.teamsuitable'
+//                artifactId = 'final-debug'
+//                version = '1.0.9-beta.1'
+//            }
+//        }
+//    }
+//}
 
-                // You can then customize attributes of the publication as shown below.
-                groupId = 'com.github.teamsuitable'
-                artifactId = 'final'
-                version = '1.0.9-beta.1'
-            }
-            // Creates a Maven publication called “debug”.
-            debug(MavenPublication) {
-                // Applies the component for the debug build variant.
-                from components.debug
-
-                groupId = 'com.github.teamsuitable'
-                artifactId = 'final-debug'
-                version = '1.0.9-beta.1'
-            }
-        }
-    }
+// Build a jar with source files.
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
 }
 
+task javadoc(type: Javadoc) {
+    failOnError  false
+    source = android.sourceSets.main.java.sourceFiles
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    classpath += configurations.compile
+}
+
+// Build a jar with javadoc.
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
 }
 
 artifacts {
-    archives javadocJar
     archives sourcesJar
+    archives javadocJar
 }
 
 bintray {
