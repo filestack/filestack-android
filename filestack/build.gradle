@@ -4,6 +4,7 @@ plugins {
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'maven-publish'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group='com.github.teamsuitable'
@@ -74,6 +75,32 @@ task javadoc(type: Javadoc) {
 //        variant.getJavaCompilerProvider().classpath.files
 //    })
 //}
+
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                // Applies the component for the release build variant.
+                from components.release
+
+                // You can then customize attributes of the publication as shown below.
+                groupId = 'com.github.teamsuitable'
+                artifactId = 'final'
+                version = '1.0.9-beta.1'
+            }
+            // Creates a Maven publication called “debug”.
+            debug(MavenPublication) {
+                // Applies the component for the debug build variant.
+                from components.debug
+
+                groupId = 'com.github.teamsuitable'
+                artifactId = 'final-debug'
+                version = '1.0.9-beta.1'
+            }
+        }
+    }
+}
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
