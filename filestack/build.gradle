@@ -2,10 +2,9 @@ plugins {
     id 'com.jfrog.bintray' version '1.7.3'
 }
 
-//apply from: file('publish.gradle')
-apply plugin: 'com.android.library'
+apply from: file('publish.gradle')
 apply plugin: 'kotlin-android'
-apply plugin: 'maven-publish'
+//apply plugin: 'maven-publish'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group='com.github.teamsuitable'
@@ -58,9 +57,16 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
+//task sourcesJar(type: Jar) {
+//    from android.sourceSets.main.java.srcDirs
+//    classifier = 'sources'
+//}
+//
 //task javadoc(type: Javadoc) {
 //    source = android.sourceSets.main.java.srcDirs
 //    options.addStringOption('Xdoclint:none', '-quiet')
+//    options.addStringOption('encoding', 'UTF-8')
+//    options.addStringOption('charSet', 'UTF-8')
 //    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 //    destinationDir = file("../docs/")
 //}
@@ -82,7 +88,7 @@ dependencies {
 //
 //                // You can then customize attributes of the publication as shown below.
 //                groupId = 'com.github.teamsuitable'
-//                artifactId = 'final'
+//                artifactId = 'filestack-android'
 //                version = '1.0.9-beta.1'
 //            }
 //            // Creates a Maven publication called “debug”.
@@ -91,64 +97,50 @@ dependencies {
 //                from components.debug
 //
 //                groupId = 'com.github.teamsuitable'
-//                artifactId = 'final-debug'
+//                artifactId = 'filestack-android'
 //                version = '1.0.9-beta.1'
 //            }
 //        }
 //    }
 //}
+//
+//task javadocJar(type: Jar, dependsOn: javadoc) {
+//    classifier = 'javadoc'
+//    from javadoc.destinationDir
+//}
+//
+//artifacts {
+//    archives javadocJar
+//    archives sourcesJar
+//}
 
-// Build a jar with source files.
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
-}
-
-task javadoc(type: Javadoc) {
-    failOnError  false
-    source = android.sourceSets.main.java.sourceFiles
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    classpath += configurations.compile
-}
-
-// Build a jar with javadoc.
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-}
-
-bintray {
-    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser')
-            : System.getenv('BINTRAY_USER')
-    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey')
-            : System.getenv('BINTRAY_API_KEY')
-    configurations = ['archives']
-    publish = true
-    pkg {
-        repo = 'maven'
-        userOrg = 'filestack'
-        name = 'filestack-android'
-        desc = 'Official Android SDK for Filestack.'
-
-        publicDownloadNumbers = true
-        licenses = ['Apache-2.0']
-
-        websiteUrl = 'https://filestack.com'
-        vcsUrl = 'https://github.com/filestack/filestack-android.git'
-        issueTrackerUrl = 'https://github.com/filestack/filestack-android/issues'
-
-        githubRepo = 'filestack/filestack-android'
-        githubReleaseNotesFile = 'CHANGELOG.md'
-
-        version {
-            name = project.version
-            vcsTag = project.version
-            released = new Date()
-        }
-    }
-}
+//bintray {
+//    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser')
+//            : System.getenv('BINTRAY_USER')
+//    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey')
+//            : System.getenv('BINTRAY_API_KEY')
+//    configurations = ['archives']
+//    publish = true
+//    pkg {
+//        repo = 'maven'
+//        userOrg = 'filestack'
+//        name = 'filestack-android'
+//        desc = 'Official Android SDK for Filestack.'
+//
+//        publicDownloadNumbers = true
+//        licenses = ['Apache-2.0']
+//
+//        websiteUrl = 'https://filestack.com'
+//        vcsUrl = 'https://github.com/filestack/filestack-android.git'
+//        issueTrackerUrl = 'https://github.com/filestack/filestack-android/issues'
+//
+//        githubRepo = 'filestack/filestack-android'
+//        githubReleaseNotesFile = 'CHANGELOG.md'
+//
+//        version {
+//            name = project.version
+//            vcsTag = project.version
+//            released = new Date()
+//        }
+//    }
+//}
