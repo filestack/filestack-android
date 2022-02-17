@@ -127,7 +127,7 @@ public class UploadService extends Service {
         String mimeType = selection.getMimeType();
 
         StorageOptions options = baseOptions.newBuilder()
-                .filename(name)
+                .filename(baseOptions.getFilename() + name)
                 .mimeType(mimeType)
                 .build();
 
