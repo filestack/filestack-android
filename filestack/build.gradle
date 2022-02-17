@@ -1,5 +1,4 @@
 plugins {
-    id 'com.github.dcendents.android-maven'
     id 'com.jfrog.bintray' version '1.7.3'
 }
 
