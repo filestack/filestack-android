@@ -3,27 +3,22 @@ package com.filestack.android.internal;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.ImageViewCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 
 import com.filestack.Sources;
 import com.filestack.android.FsConstants;
 import com.filestack.android.R;
 import com.filestack.android.Selection;
-import com.filestack.android.Theme;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,21 +32,10 @@ import static com.filestack.android.internal.Constants.REQUEST_MEDIA_CAPTURE;
  */
 public class CameraFragment extends Fragment implements BackButtonListener, View.OnClickListener {
 
-    public static CameraFragment newInstance(Theme theme) {
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_THEME, theme);
-        CameraFragment fragment = new CameraFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     private static final String TYPE_PHOTO = "photo";
     private static final String TYPE_VIDEO = "video";
     private static final String PREF_PATH = "path";
     private static final String PREF_NAME= "name";
-    private static final String ARG_THEME = "theme";
-
-    private Theme theme;
 
     @Nullable
     @Override
@@ -74,14 +58,10 @@ public class CameraFragment extends Fragment implements BackButtonListener, View
                 videoButton.setVisibility(View.GONE);
             }
         }
-        theme = getArguments().getParcelable(ARG_THEME);
-        photoButton.setTextColor(theme.getBackgroundColor());
-        ViewCompat.setBackgroundTintList(photoButton, ColorStateList.valueOf(theme.getAccentColor()));
-        ViewCompat.setBackgroundTintList(videoButton, ColorStateList.valueOf(theme.getAccentColor()));
-        videoButton.setTextColor(theme.getBackgroundColor());
+
         photoButton.setOnClickListener(this);
         videoButton.setOnClickListener(this);
-        ImageViewCompat.setImageTintList((ImageView) root.findViewById(R.id.icon), ColorStateList.valueOf(theme.getTextColor()));
+
         return root;
     }
 
