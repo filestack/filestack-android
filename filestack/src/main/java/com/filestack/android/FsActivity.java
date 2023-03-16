@@ -311,10 +311,10 @@ public class FsActivity extends AppCompatActivity implements
 
         switch (source) {
             case Sources.CAMERA:
-                fragment = CameraFragment.newInstance(theme);
+                fragment = new CameraFragment();
                 break;
             case Sources.DEVICE:
-                fragment = LocalFilesFragment.newInstance(allowMultipleFiles, theme);
+                fragment = LocalFilesFragment.newInstance(allowMultipleFiles);
                 break;
         }
 

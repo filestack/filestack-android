@@ -7,7 +7,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 group = 'com.filestack'
-version = '5.3.0'
+version = '5.2.0'
 project.archivesBaseName = 'filestack-android'
 
 android {
