@@ -1,5 +1,4 @@
 plugins {
-    id 'com.github.dcendents.android-maven' version '2.0'
     id 'com.jfrog.bintray' version '1.7.3'
 }
 
@@ -11,11 +10,11 @@ version = '5.3.0'
 project.archivesBaseName = 'filestack-android'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 33
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 30
+        targetSdkVersion 33
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
