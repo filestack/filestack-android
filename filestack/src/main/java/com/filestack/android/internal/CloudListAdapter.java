@@ -1,8 +1,8 @@
 package com.filestack.android.internal;
 
 import android.os.Bundle;
-import android.support.v4.graphics.ColorUtils;
-import android.support.v7.widget.RecyclerView;
+import androidx.core.graphics.ColorUtils;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.view.LayoutInflater;
@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 
 import com.filestack.CloudItem;
 import com.filestack.CloudResponse;
-import com.filestack.android.R;
 import com.filestack.android.Selection;
 import com.filestack.android.Theme;
 

@@ -4,34 +4,26 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.PreferenceManager;
+import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.filestack.Config;
 import com.filestack.android.FilestackPicker;
-import com.filestack.android.FsActivity;
 import com.filestack.android.FsConstants;
 import com.filestack.android.Selection;
 import com.filestack.android.Theme;
-import com.filestack.android.internal.Util;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_FILESTACK = RESULT_FIRST_USER;

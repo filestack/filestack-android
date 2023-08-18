@@ -1,11 +1,9 @@
 package com.filestack.android;
 
-import android.content.Context;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.ColorInt;
+import androidx.annotation.ColorInt;
 
 public class Theme implements Parcelable {
 

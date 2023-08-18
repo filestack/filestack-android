@@ -1,24 +1,22 @@
 package com.filestack.android.internal;
 
 import android.annotation.TargetApi;
-import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.JobIntentService;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.app.ServiceCompat;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.JobIntentService;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.app.ServiceCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.filestack.FileLink;
 import com.filestack.Sources;
@@ -34,8 +32,6 @@ import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-
-import okhttp3.internal.Internal;
 
 /**
  * If the auto upload option is left enabled, a user's selections will be sent to this service
