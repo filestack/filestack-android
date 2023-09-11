@@ -34,8 +34,12 @@ public class FsConstants {
     public static final String EXTRA_FILE_LINK = "fileLink";
     /** For uploads, returns upload status string. */
     public static final String EXTRA_STATUS = "status";
+    /** For uploads, returns upload percent uploaded. */
+    public static final String EXTRA_PERCENT = "percent";
     /** Indicates an upload completed successfully. */
     public static final String STATUS_COMPLETE = "complete";
+    /** Indicates an upload is still in progress. */
+    public static final String STATUS_IN_PROGRESS = "inProgress";
     /** Indicates an upload failed. */
     public static final String STATUS_FAILED = "failed";
 
