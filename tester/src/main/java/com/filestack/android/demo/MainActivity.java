@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,8 +38,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             IntentFilter intentFilter = new IntentFilter(FsConstants.BROADCAST_UPLOAD);
+            ScrollView scrollView = findViewById(R.id.scrollView);
             TextView logView = findViewById(R.id.log);
-            UploadStatusReceiver receiver = new UploadStatusReceiver(logView);
+            UploadStatusReceiver receiver = new UploadStatusReceiver(logView, scrollView);
             LocalBroadcastManager.getInstance(this).registerReceiver(receiver, intentFilter);
         }
 
