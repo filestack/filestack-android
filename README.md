@@ -21,7 +21,7 @@
 
 ## Install
 ```gradle
-implementation 'com.filestack:filestack-android:5.3.0'
+implementation 'com.filestack:filestack-android:6.0.0'
 ```
 
 ## Tester and Samples

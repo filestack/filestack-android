@@ -1,5 +1,11 @@
 Change Log
 ==========
+Version 6.0.0 *(2023-12-18)*
+----------------------------
+  * [Upgrade] Gradle version upgrade completed
+  * [Fix] Picker crashing on the tablet
+  * [Fix] Progress bar is not updated until the upload is completed
+
 Version 5.3.0 *(2018-11-29)*
 ----------------------------
 
