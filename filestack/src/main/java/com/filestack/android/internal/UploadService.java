@@ -1,26 +1,22 @@
 package com.filestack.android.internal;
 
 import android.annotation.TargetApi;
-import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.JobIntentService;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.app.ServiceCompat;
-import android.support.v4.content.LocalBroadcastManager;
+
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.filestack.FileLink;
+import com.filestack.Progress;
 import com.filestack.Sources;
 import com.filestack.StorageOptions;
 import com.filestack.android.FsConstants;
@@ -35,7 +31,8 @@ import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import okhttp3.internal.Internal;
+import io.reactivex.Flowable;
+import io.reactivex.functions.Consumer;
 
 /**
  * If the auto upload option is left enabled, a user's selections will be sent to this service
@@ -114,7 +111,7 @@ public class UploadService extends Service {
             }
 
             sendProgressNotification(i, total, name);
-            sendBroadcast(item, fileLink);
+            sendBroadcast(item, fileLink, 1);
         }
     }
 
@@ -131,14 +128,26 @@ public class UploadService extends Service {
                 .mimeType(mimeType)
                 .build();
 
+        Consumer<Progress<FileLink>> progressConsumer = (Consumer<Progress<FileLink>>) progress -> {
+            double percent = progress.getPercent();
+            if (percent < 1) {
+                sendBroadcast(selection, progress.getData(), percent);
+            }
+        };
         try {
             switch (selection.getProvider()) {
                 case Sources.CAMERA:
                     // TODO This should maybe be unified into an InputStream upload
-                    return Util.getClient().upload(path, false, options);
+                    Flowable<Progress<FileLink>> cameraUpload = Util.getClient().uploadAsync(
+                            path, false, options);
+                    cameraUpload = cameraUpload.doOnNext(progressConsumer);
+                    return cameraUpload.blockingLast().getData();
                 case Sources.DEVICE:
                     InputStream input = getContentResolver().openInputStream(uri);
-                    return Util.getClient().upload(input, size, false, options);
+                    Flowable<Progress<FileLink>> deviceUpload = Util.getClient().uploadAsync(
+                            input, size, false, options);
+                    deviceUpload = deviceUpload.doOnNext(progressConsumer);
+                    return deviceUpload.blockingLast().getData();
                 default:
                     return Util.getClient().storeCloudItem(provider, path, options);
             }
@@ -201,14 +210,19 @@ public class UploadService extends Service {
         notificationManager.notify(errorNotificationId, builder.build());
     }
 
-    private void sendBroadcast(Selection selection, FileLink fileLink) {
+    private void sendBroadcast(Selection selection, FileLink fileLink, double percent) {
         Intent intent = new Intent(FsConstants.BROADCAST_UPLOAD);
         intent.putExtra(FsConstants.EXTRA_SELECTION, selection);
         if (fileLink == null) {
-            intent.putExtra(FsConstants.EXTRA_STATUS, FsConstants.STATUS_FAILED);
+            if (percent == 1) {
+                intent.putExtra(FsConstants.EXTRA_STATUS, FsConstants.STATUS_FAILED);
+            } else {
+                intent.putExtra(FsConstants.EXTRA_STATUS, FsConstants.STATUS_IN_PROGRESS);
+            }
         } else {
             intent.putExtra(FsConstants.EXTRA_STATUS, FsConstants.STATUS_COMPLETE);
         }
+        intent.putExtra(FsConstants.EXTRA_PERCENT, percent);
         intent.putExtra(FsConstants.EXTRA_FILE_LINK, fileLink);
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
