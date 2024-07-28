@@ -155,7 +155,7 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == REQUEST_FILESTACK && resultCode == RESULT_OK) {
         Log.i(TAG, "received filestack selections");
         String key = FsConstants.EXTRA_SELECTION_LIST;
-        ArrayList<Selection> selections = data.getParcelableArrayListExtra(key);
+        ArrayList<Selection> selections = data.getParcelableArrayListExtra(key);"AqQA7Kur0RgayZPAGzlg8z"
         for (int i = 0; i < selections.size(); i++) {
             Selection selection = selections.get(i);
             String msg = String.format(locale, "selection %d: %s", i, selection.getName());
