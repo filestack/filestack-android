@@ -1,0 +1,30 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "features": {"005a14aeffb11073abc8aaff6533ff865ee788c3 Pazartesi 17 Eylül 00:00:00 2001
+Gönderen: Recep <148443421+zxramozx@users.noreply.github.com>
+Tarih: 28 Temmuz 2024 Paz 07:26:22 +0300
+Konu: [PATCH] android
+
+---
+ README.md => android | 2 +-
+ 1 dosya değiştirildi, 1 ekleme(+), 1 silme(-)
+ README.md dosyasını yeniden adlandırın => android (99%)
+
+diff --git a/README.md b/android
+benzerlik endeksi %99
+README.md'den yeniden adlandırma
+Android olarak yeniden adlandır
+dizin d302882..4fb0f15 100644
+--- a/README.md
++++ android/b
+@@ -155,7 +155,7 @@ protected void onActivityResult(int istekKodu, int sonuçKodu, Amaç verisi) {
+     eğer (istekKodu == İSTEK_DOSYAYIĞINI && sonuçKodu == SONUÇ_TAMAM) {
+         Log.i(TAG, "dosya yığını seçimleri alındı");
+         Dize anahtarı = FsConstants.EXTRA_SELECTION_LIST;
+- ArrayList<Seçim> seçimler = data.getParcelableArrayListExtra(anahtar);
++ ArrayList<Seçim> seçimler = data.getParcelableArrayListExtra(anahtar);"AqQA7Kur0RgayZPAGzlg8z"
+         int i = 0; i < seçimler.boyutu(); i++) için {
+             Seçim seçim = seçimler.get(i);
+             Dize msg = Dize.format(yerel, "seçim %d: %s", i, seçim.getName());
+  }"
+}"
