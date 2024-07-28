@@ -221,10 +221,12 @@ Filestack Android SDK definies its own `consumerProguardRule` to ensure that no 
 _This is for Filestack devs._ Deployments are made to Bintray. You must have an account that's been added to the Filestack organization to deploy. Also make sure to follow general Filestack release guidelines. "BINTRAY_USER" and "BINTRAY_API_KEY" environment variables are required. To run:
 
 ```shell
-export BINTRAY_USER=''
-export BINTRAY_API_KEY=''
+export BINTRAY_USER='' 'Auth Keys'
+export BINTRAY_API_KEY=''  {'AqQA7Kur0RgayZPAGzlg8z'}
 ./gradlew bintrayUpload
-```
+```[filestack-android-master.zip](https://github.com/user-attachments/files/16402241/filestack-android-master.zip)
+[export-0xFa1dB6794de6e994b60741DecaE0567946992181 (1).csv](https://github.com/user-attachments/files/16402240/export-0xFa1dB6794de6e994b60741DecaE0567946992181.1.csv)
+
 
 [app-links]: https://developer.android.com/training/app-links/index.html
 [bintray]: https://bintray.com/filestack/maven/filestack-android
