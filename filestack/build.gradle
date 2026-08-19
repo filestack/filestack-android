@@ -1,6 +1,4 @@
-plugins {
-    id 'com.jfrog.bintray' version '1.7.3'
-}
+
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
@@ -25,7 +23,6 @@ android {
 
         resourcePrefix 'filestack__'
         buildConfigField "String", "FILESTACK_ANDROID_VERSION", "\"$version\""
-
     }
     buildTypes {
         release {
@@ -36,7 +33,7 @@ android {
 }
 
 dependencies {
-    api 'com.filestack:filestack-java:0.9.0'
+    api 'com.github.filestack:filestack-java:0.9.0'
 
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'
@@ -81,33 +78,3 @@ artifacts {
     archives sourcesJar
 }
 
-bintray {
-    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser')
-            : System.getenv('BINTRAY_USER')
-    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey')
-            : System.getenv('BINTRAY_API_KEY')
-    configurations = ['archives']
-    publish = true
-    pkg {
-        repo = 'maven'
-        userOrg = 'filestack'
-        name = 'filestack-android'
-        desc = 'Official Android SDK for Filestack.'
-
-        publicDownloadNumbers = true
-        licenses = ['Apache-2.0']
-
-        websiteUrl = 'https://filestack.com'
-        vcsUrl = 'https://github.com/filestack/filestack-android.git'
-        issueTrackerUrl = 'https://github.com/filestack/filestack-android/issues'
-
-        githubRepo = 'filestack/filestack-android'
-        githubReleaseNotesFile = 'CHANGELOG.md'
-
-        version {
-            name = project.version
-            vcsTag = project.version
-            released = new Date()
-        }
-    }
-}
