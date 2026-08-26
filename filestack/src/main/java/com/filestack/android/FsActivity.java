@@ -37,10 +37,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.filestack.CloudResponse;
-import com.filestack.Config;
-import com.filestack.Sources;
-import com.filestack.StorageOptions;
+import org.filestack.CloudResponse;
+import org.filestack.Config;
+import org.filestack.Sources;
+import org.filestack.StorageOptions;
 import com.filestack.android.internal.BackButtonListener;
 import com.filestack.android.internal.CameraFragment;
 import com.filestack.android.internal.CloudAuthFragment;
@@ -67,7 +67,7 @@ import io.reactivex.schedulers.Schedulers;
  * The keys and descriptions for these options are defined in {{@link FsConstants}}.
  *
  * There are two types of results from this activity, the files a user selects ({{@link Selection}})
- * and the metadata returned when these selections are uploaded ({{@link com.filestack.FileLink}}).
+ * and the metadata returned when these selections are uploaded ({{@link org.filestack.FileLink}}).
  * Automatic uploads can be disabled, in which case you will not receive any of the latter.
  *
  * User selections are returned as an {{@link ArrayList}} of {{@link Selection}} objects to
@@ -75,7 +75,7 @@ import io.reactivex.schedulers.Schedulers;
  * you must define and register a {{@link android.content.BroadcastReceiver}}. The corresponding
  * {{@link android.content.IntentFilter}} must be created to catch
  * {{@link FsConstants#BROADCAST_UPLOAD}}. Upload metadata is returned as
- * {{@link com.filestack.FileLink}} objects passed to
+ * {{@link org.filestack.FileLink}} objects passed to
  * {{@link android.content.BroadcastReceiver#onReceive(Context, Intent)}}. The key strings needed to
  * pull results from intents are defined in {{@link FsConstants}}.
  *

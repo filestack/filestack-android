@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.filestack.FileLink;
+import org.filestack.FileLink;
 import com.filestack.android.FsConstants;
 import com.filestack.android.Selection;
 

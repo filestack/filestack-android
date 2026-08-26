@@ -3,8 +3,8 @@ package com.filestack.android;
 import android.app.Activity;
 import android.content.Intent;
 
-import com.filestack.Config;
-import com.filestack.StorageOptions;
+import org.filestack.Config;
+import org.filestack.StorageOptions;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -114,7 +114,7 @@ public class FilestackPicker {
 
         /**
          * Sets sources available in a picker. Should contain values selected
-         *    from {@link com.filestack.Sources}.
+         *    from {@link org.filestack.Sources}.
          * The sources will appear in the order you add them to the list.
          * Defaults to Camera, Device, Google Drive, Facebook, Instagram, and Dropbox
          * @param sources - lists of sources available in a picker

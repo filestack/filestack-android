@@ -9,8 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.filestack.CloudItem;
-import com.filestack.CloudResponse;
+import org.filestack.CloudItem;
+import org.filestack.CloudResponse;
 import com.filestack.android.Selection;
 import com.filestack.android.Theme;
 
