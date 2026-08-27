@@ -14,7 +14,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.filestack.Config;
+import org.filestack.Config;
 import com.filestack.android.FilestackPicker;
 import com.filestack.android.FsConstants;
 import com.filestack.android.Selection;

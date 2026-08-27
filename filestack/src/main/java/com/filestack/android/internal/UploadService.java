@@ -15,10 +15,10 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.filestack.FileLink;
-import com.filestack.Progress;
-import com.filestack.Sources;
-import com.filestack.StorageOptions;
+import org.filestack.FileLink;
+import org.filestack.Progress;
+import org.filestack.Sources;
+import org.filestack.StorageOptions;
 import com.filestack.android.FsConstants;
 import com.filestack.android.R;
 import com.filestack.android.Selection;

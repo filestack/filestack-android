@@ -2,8 +2,8 @@ package com.filestack.android.internal;
 
 import android.net.Uri;
 
-import com.filestack.CloudItem;
-import com.filestack.Sources;
+import org.filestack.CloudItem;
+import org.filestack.Sources;
 import com.filestack.android.Selection;
 
 class SelectionFactory {

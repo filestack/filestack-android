@@ -15,12 +15,66 @@ buildscript {
     }
 }
 
+// org.filestack:filestack-java:0.9.0's published jar contains a duplicate zip
+// entry for org/filestack/FilestackBuildConfig.class, which trips AGP's
+// checkDuplicateClasses task (it inspects raw jar entries, so packagingOptions
+// pickFirst/exclude can't work around it - the check runs before packaging).
+// Repackage the jar once into a local Maven repo under the same GAV so the
+// dependency coordinate used by modules stays 'org.filestack:filestack-java:0.9.0'
+// (no change needed to publishing metadata) while resolution picks up the fixed jar.
+def patchedRepoDir = file("$rootDir/.patched-repo")
+
 allprojects {
     repositories {
+        maven { url patchedRepoDir }
         mavenLocal()
+        mavenCentral()
         jcenter()
         google()
     }
+}
+
+def patchedGroupPath = 'org/filestack'
+def patchedArtifact = 'filestack-java'
+def patchedVersion = '0.9.0'
+def patchedDir = file("$patchedRepoDir/$patchedGroupPath/$patchedArtifact/$patchedVersion")
+def patchedJar = file("$patchedDir/${patchedArtifact}-${patchedVersion}.jar")
+def patchedPom = file("$patchedDir/${patchedArtifact}-${patchedVersion}.pom")
+
+if (!patchedJar.exists() || !patchedPom.exists()) {
+
+    def mavenCentralBase = 'https://repo1.maven.org/maven2'
+    def originalGav = "org.filestack:filestack-java:0.9.0"
+    def originalJarUrl = "$mavenCentralBase/$patchedGroupPath/$patchedArtifact/$patchedVersion/${patchedArtifact}-${patchedVersion}.jar"
+    def originalPomUrl = "$mavenCentralBase/$patchedGroupPath/$patchedArtifact/$patchedVersion/${patchedArtifact}-${patchedVersion}.pom"
+
+    patchedDir.mkdirs()
+    def originalJarBytes = new URL(originalJarUrl).bytes
+    // We use a plain HTTP download instead of Gradle's dependency resolver, so Gradle doesn't cache the original broken jar and keep reusing it later.
+    // It reads the original jar as a zip stream, entry by entry, and writes a new zip file - but only writes each entry the first time it sees that exact file path
+    def seenEntries = new HashSet<String>()
+    new java.util.zip.ZipOutputStream(new FileOutputStream(patchedJar)).withCloseable { zos ->
+        new java.util.zip.ZipInputStream(new ByteArrayInputStream(originalJarBytes)).withCloseable { zis ->
+            def entry
+            while ((entry = zis.nextEntry) != null) {
+                if (seenEntries.add(entry.name)) {
+                    zos.putNextEntry(new java.util.zip.ZipEntry(entry.name))
+                    if (!entry.directory) {
+                        def buffer = new byte[8192]
+                        int read
+                        while ((read = zis.read(buffer)) != -1) {
+                            zos.write(buffer, 0, read)
+                        }
+                    }
+                    zos.closeEntry()
+                }
+                zis.closeEntry()
+            }
+        }
+    }
+    patchedPom.bytes = new URL(originalPomUrl).bytes
+    // Just downloads the .pom file as-is  - no patching needed here, since the corruption is specific to the jar's zip structure, not the metadata file
+    logger.lifecycle("Patched duplicate-entry jar for ${originalGav} -> ${patchedJar}")
 }
 
 task clean(type: Delete) {

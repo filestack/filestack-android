@@ -8,9 +8,9 @@ import androidx.core.content.FileProvider;
 import androidx.core.content.MimeTypeFilter;
 import android.widget.TextView;
 
-import com.filestack.Client;
-import com.filestack.Config;
-import com.filestack.Sources;
+import org.filestack.Client;
+import org.filestack.Config;
+import org.filestack.Sources;
 import com.filestack.android.R;
 
 import java.io.File;

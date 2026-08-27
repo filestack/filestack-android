@@ -19,7 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import com.filestack.Sources;
+import org.filestack.Sources;
 import com.filestack.android.FsConstants;
 import com.filestack.android.R;
 import com.filestack.android.Selection;
